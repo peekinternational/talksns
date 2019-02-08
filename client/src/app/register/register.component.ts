@@ -2,14 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { BackendConnector } from '../services/backendconnector.service';
 import { Router } from '@angular/router';
-import { LoginStatusService } from '../services/loginstatus.service';
-import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']
 })
+
 export class RegisterComponent implements OnInit {
 
   //-- Birthday Variables -------------------------------------------------------------------------
@@ -78,40 +77,35 @@ export class RegisterComponent implements OnInit {
     else
       this.birthdayValidationStatus = false;
 
-    // Storing User's Register Information in an array
-    const signUpdata = [
-      this.signupForm.value.username,
-      this.signupForm.value.email,
-      this.signupForm.value.gender,
-      this.signupForm.value.date,
-      this.signupForm.value.month,
-      this.signupForm.value.year,
-      this.signupForm.value.password,
-    ];
+    // Storing User's Register Information in an object
+    const signUpdata = {
+      'username': this.signupForm.value.username,
+      'email': this.signupForm.value.email,
+      'gender': this.signupForm.value.gender,
+      'date': this.signupForm.value.date,
+      'month': this.signupForm.value.month,
+      'year': this.signupForm.value.year,
+      'password': this.signupForm.value.password,
+    };
 
-    this.connectorService.signUpRequest(signUpdata); // send data to backend-connector service
-
-    // If Promise resolves in backend-Connector service, then this Promise-Handler executes
-    return this.connectorService.resolveBackendResponse().then(
+    this.connectorService.signUpRequest(signUpdata).then(
       (responseStatus: any) => {
-        if (!responseStatus[1]) { // if response is false
-          // check response message
-          if (responseStatus[0] == "nametaken") {
+        if (!responseStatus.status) { // if response is false
+          if (responseStatus.message == "nametaken") {
             this.nameValidationStatus = this.nameInputFieldError = true;
             this.usernameErrorMsg = "name already taken";
           }
-          if (responseStatus[0] == "emailtaken") {
+          if (responseStatus.message == "emailtaken") {
             this.emailValidationStatus = this.emailInputFieldError = true;
             this.emailErrorMsg = "email already taken";
           }
         }
         else { // if response is true
           this.message = "signin successfull";
+          this.router.navigate(['/signin']);
           this.removeMsg();
-          this.router.navigate(['/home']);
         }
-      }
-    )
+      });
   }
 
   // ****************** SignUp Form Validation Function **********************************

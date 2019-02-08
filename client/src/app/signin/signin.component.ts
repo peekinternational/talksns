@@ -65,7 +65,7 @@ export class SigninComponent implements OnInit, CanComponentDeactivate {
       this.message = "incorrect email/username or password";
     }
     // ----------------------------------------------------------------------
-
+    
     // store username/email and password to show them in input textFields
     this.emailFieldInputValue = this.loginService.getUserEmail();
     this.passwordFieldInputValue = this.loginService.getUserPassword();
@@ -78,22 +78,18 @@ export class SigninComponent implements OnInit, CanComponentDeactivate {
 
     if (email_username != "" || password != "") { // if required fields are filled
 
-      const formData = [email_username, password]; // store data in array
-      this.connectorService.signInRequest(formData); // send data to backConnector service
-
-      // If Promise resolves in backend-Connector service, then this Promise-Handler executes
-      return this.connectorService.resolveBackendResponse().then(
+      this.connectorService.signInRequest({'emailORusername':email_username, 'password': password}).then(
         (signInStatusResponse: any) => {
-          if (!signInStatusResponse[0]) { // if response has 'false' in it, then signIn failed
+          if (!signInStatusResponse.status) { // if response has 'false' in it, then signIn failed
             this.loginService.setSigninErrorStatus("bothInvalid");
             this.message = "incorrect email/password";
           }
-          else if (signInStatusResponse[0]) { // if response has 'true', then signIn is successful
+          else{
             this.loginService.setSigninErrorStatus("");
             this.loginService.activateLogin(); // update LoggedIn status
             this.loginService.deActivateLoginForm(); // deActivate loginForm in headers
             this.cookie.set("email", email_username); // store user data in cookie service
-            this.cookie.set("authUserId", signInStatusResponse[1].user_id);
+            this.cookie.set("authUserId", signInStatusResponse.data.user_id);
             this.router.navigate(['/home']);
           }
         }

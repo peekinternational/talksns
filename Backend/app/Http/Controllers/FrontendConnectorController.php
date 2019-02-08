@@ -12,41 +12,38 @@ class FrontendConnectorController extends Controller
     public function signUp(Request $request)
     {
         // extract signUp data from array-request
-        $signUpData[0] = $request[0]; //name
-        $signUpData[1] = $request[1]; //email
-        $signUpData[2] = $request[2]; //gender
-        $signUpData[3] = $request[3]; //birthdate
-        $signUpData[4] = $request[4]; //birthmonth
-        $signUpData[5] = $request[5]; //birthyear
-        $signUpData[6] = $request[6]; //password
+        $username = $request->username;
+        $email = $request->email;
+        $gender = $request->gender;
+        $date = $request->date; //birthdate
+        $month = $request->month; //birthmonth
+        $year = $request->year; //birthyear
+        $password = $request->password;
 
-        $birthday = $signUpData[3] . "/" . $signUpData[4] . "/" . $signUpData[5]; // append birthdate
+        $birthday = $date . "/" . $month . "/" . $year; // append birthdate
 
         // check if username already exist or not
-        if (DB::table('users')->where('username', $signUpData[0])->exists()) {
-            $result = ["nametaken", false];   // if username exist then store message and boolean-repsonse in an array
-            return response()->json($result); // send response
+        if (DB::table('users')->where('username', $username)->exists()) {
+            return response()->json(['status' => false, 'message' => "nametaken"]); // send response
         }
 
         // check if email already registered or not
-        if (DB::table('users')->where('email', $signUpData[1])->exists()) {
-            $result = ["emailtaken", false];  // if email exist then store message and boolean-repsonse in an array
-            return response()->json($result); // send response
+        if (DB::table('users')->where('email', $email)->exists()) {
+            return response()->json(['status' => false, 'message' => "emailtaken"]); // send response
         }
         
         // insert user signUp data in database
         $dataInserted = DB::table('users')->insert([
-            'username' => $signUpData[0],
-            'email' => $signUpData[1],
-            'gender' => $signUpData[2],
+            'username' => $username,
+            'email' => $email,
+            'gender' => $gender,
             'birthday' => $birthday,
-            'password' => $signUpData[6]
+            'password' => $password
         ]);
 
         // if data inserted, then send 'successful' response to frontend
         if ($dataInserted) {
-            $result = ["signup successfull", true];
-            return response()->json($result);
+            return response()->json(['status' => true, 'message' => "signup successfull"]);
         }
     } // ***** SignUp Function Ends *********
 
@@ -55,30 +52,27 @@ class FrontendConnectorController extends Controller
     public function signIn(Request $request)
     {
         // extract signIn data from array-request
-        $signInData[0] = $request[0]; // email or password
-        $signInData[1] = $request[1]; // password
+        $emailOrusername = $request->emailORusername;//$request[0]; // email or password
+        $password = $request->password; // password
 
         // get userData from database if email exist
-        $user = DB::table('users')->where('email', $signInData[0])->first();
+        $user = DB::table('users')->where('email', $emailOrusername)->first();
 
         if ($user == null) // if email not exist then check username
-        $user = DB::table('users')->where('username', $signInData[0])->first();
+        $user = DB::table('users')->where('username', $emailOrusername)->first();
         
         // if user data is received from DB
         if ($user != null) {
             // (if userName OR email matches) AND (Password matches)
-            if (($user->email == $signInData[0] || $user->username == $signInData[0]) && $user->password == $signInData[1]) {
-                $userData = [true, $user];
-                return response()->json($userData);
+            if (($user->email == $emailOrusername || $user->username == $emailOrusername) && $user->password == $password) {
+                return response()->json(['status' => true, 'data' => $user]);
             } 
             // (if userName OR email not matches) OR (Password not matches)
-            else if (($user->email != $signInData[0] || $user->username != $signInData[0]) || $user->password != $signInData[1]) {
-                $userData = [false, ""];
-                return response()->json($userData);
+            else if (($user->email != $emailOrusername || $user->username != $emailOrusername) || $user->password != $password) {
+                return response()->json(['status' => false]);
             }
         } else { // if userData still doesn't exist in database
-            $userData = [false, ""];
-            return response()->json($userData);
+            return response()->json(['status' => false]);
         }
     } // ***** SignIn Function Ends *********
 
@@ -105,61 +99,61 @@ class FrontendConnectorController extends Controller
         ]);
 
         if ($dataInserted) {
-            $imageFiles = $this->retrieveImage($userId);
-            $posts = DB::table('posts')->get();
 
-            // $getPostId = DB::table('posts')->where('user_id', '=', $userId)->first();
-            // $likesDataInserted = DB::table('postlikes')->insert([
-            //     'user_id' => $userId,
-            //     'post_id' => $getPostId->post_id//,
-            //    // 'likes' => 0,
-            //   //  'dislikes' => 0
-            // ]);
+            // $imageFiles = $this->retrieveImage();
+            // $posts = DB::table('posts')->get();
+            // $allpostLikes = DB::table('postlikes')->get();
+            // return response()->json(['posts' => $posts, 'imageFiles' => $imageFiles, 'postlikes' => $allpostLikes]);
 
-           // $allpostLikes = null;
-          //  if ($likesDataInserted) {
-               // $this->allpostLikes = DB::table('postlikes')->get();
-           // }
+            $getUserPostData = DB::table('postlikes')
+                ->join('posts', 'posts.post_id', '=', 'postlikes.post_id')
+                ->select('postlikes.*', 'posts.*')->where('postlikes.user_id', '=', $userId)
+                ->get();
 
-           $allpostLikes = DB::table('postlikes')->get();
+            for ($i = 0; $i < count($getUserPostData); $i++) {
+                $imageFileName = DB::table('posts')->select('imageFile')->where('imageFile', '=', $getUserPostData[$i]->imageFile)->get();
+                $getUserPostData[$i]->imageFile = url("images/" . $imageFileName[0]->imageFile);
+            }
 
-            $postData = [$posts, $imageFiles, $allpostLikes];
-            return response()->json($postData);
+            return response()->json($getUserPostData);
         }
     }
 
     // Send Image to FrontEnd's BackendConnector Service
     public function retrievePost(Request $request)
     {
-        $userId = $request;
-        $imageFiles = $this->retrieveImage($userId);
-        $posts = DB::table('posts')->get();
-        $allpostLikes = DB::table('postlikes')->get();
+        $userId = $request->userId;
+        $getUserPostData = DB::table('postlikes')
+            ->join('posts', 'posts.post_id', '=', 'postlikes.post_id')
+            ->select('postlikes.*', 'posts.*')->where('postlikes.user_id', '=', $userId)
+            ->get();
 
-        $postData = [$posts, $imageFiles, $allpostLikes];
-        return response()->json($postData);
+        for ($i = 0; $i < count($getUserPostData); $i++) {
+            $imageFileName = DB::table('posts')->select('imageFile')->where('imageFile', '=', $getUserPostData[$i]->imageFile)->get();
+            $getUserPostData[$i]->imageFile = url("images/" . $imageFileName[0]->imageFile);
+        }
+
+        return response()->json($getUserPostData);
     }
 
     // *** Retrieve Image from 'public/images' folder ***
-    public function retrieveImage($userId)
-    {
-        $images = DB::table('posts')->select('imageFile')->get();
-
-        $imageFiles = array();
-        foreach ($images as $img) {
-            $imageFiles[] = url("images/" . $img->imageFile);
-        }
-
-        return $imageFiles;
-    }
+    // public function retrieveImage()
+    // {
+    //     $images = DB::table('posts')->select('imageFile')->get();
+    //     $imageFiles = array();
+    //     foreach ($images as $img) {
+    //         $imageFiles[] = url("images/" . $img->imageFile);
+    //     }
+    //     return $imageFiles;
+    // }
 
     // Like the Post
     public function postLike(Request $request)
     {
-        $userId = $request[0];
-        $postId = $request[1];
-        $likeStatus = $request[2];
-        $dislikeStatus = $request[3];
+        $userId = $request->userId;
+        $postId = $request->postId;
+        $likeStatus = $request->isLiked;
+        $dislikeStatus = $request->isDisliked;
 
         $doesPostExist = DB::table('postlikes')->where('user_id', '=', $userId)->where('post_id', '=', $postId)->first();
 
@@ -167,8 +161,20 @@ class FrontendConnectorController extends Controller
             DB::table('postlikes')->where('user_id', '=', $userId)->where('post_id', '=', $postId)->update(['likes' => $likeStatus]);
             DB::table('postlikes')->where('user_id', '=', $userId)->where('post_id', '=', $postId)->update(['dislikes' => $dislikeStatus]);
 
-            $likes = DB::table('postlikes')->get();
-            return response()->json($likes);
+            //$likes = DB::table('postlikes')->where('user_id', '=', $userId)->where('post_id', '=', $postId)->get();
+            //return response()->json($likes);
+
+            $getUserPostData = DB::table('postlikes')
+                ->join('posts', 'posts.post_id', '=', 'postlikes.post_id')
+                ->select('postlikes.*', 'posts.*')->where('postlikes.user_id', '=', $userId)
+                ->get();
+
+            for ($i = 0; $i < count($getUserPostData); $i++) {
+                $imageFileName = DB::table('posts')->select('imageFile')->where('imageFile', '=', $getUserPostData[$i]->imageFile)->get();
+                $getUserPostData[$i]->imageFile = url("images/" . $imageFileName[0]->imageFile);
+            }
+
+            return response()->json($getUserPostData);
 
         } else {
             $dataInserted = DB::table('postlikes')->insert([
@@ -178,21 +184,48 @@ class FrontendConnectorController extends Controller
                 'dislikes' => $dislikeStatus
             ]);
 
-            $likes = DB::table('postlikes')->get();
-            return response()->json($likes);
+            $getUserPostData = DB::table('postlikes')
+                ->join('posts', 'posts.post_id', '=', 'postlikes.post_id')
+                ->select('postlikes.*', 'posts.*')->where('postlikes.user_id', '=', $userId)
+                ->get();
+
+            for ($i = 0; $i < count($getUserPostData); $i++) {
+                $imageFileName = DB::table('posts')->select('imageFile')->where('imageFile', '=', $getUserPostData[$i]->imageFile)->get();
+                $getUserPostData[$i]->imageFile = url("images/" . $imageFileName[0]->imageFile);
+            }
+
+            return response()->json($getUserPostData);
+            
+           // $likes = DB::table('postlikes')->get();
+            //return response()->json($likes);
         }
     }
 
     public function test()
     {
-        dd("working");
+        $userId = 11;
+
+        $getUserPostData = DB::table('postlikes')
+            ->join('posts', 'posts.post_id', '=', 'postlikes.post_id')
+            ->select('postlikes.*', 'posts.*')->where('postlikes.user_id', '=', $userId)
+            ->get();
+         
+            dd($getUserPostData);
+        // $getAllPosts = DB::table('posts')->get();
+        // $getAllLikes = DB::table('postlikes')->get();
+        // dd($getAllPosts);
+
+        // for ($i = 0; $i < count($getAllLikes); $i++) {
+        //     if ($getAllPosts[$i]->user_id == $getAllLikes->user_id && $getAllPosts[$i]->user_id == $getAllLikes->user_id) {
+
+        //     }
+        // }
+
+
+        for ($i = 0; $i < count($getAllPosts); $i++) {
+            $imageFileName = DB::table('posts')->select('imageFile')->where('imageFile', '=', $getUserPostData[$i]->imageFile)->get();
+            $getUserPostData[$i]->imageFile = url("images/" . $imageFileName[0]->imageFile);
+        }
     }
 
 } // **** Class Ends ****
-
-
-        // $getIds = DB::table('postlikes')
-        //     ->join('users', 'users.user_id', '=', 'postlikes.user_id')
-        //     ->join('posts', 'posts.post_id', '=', 'postlikes.post_id')
-        //     ->select('postlikes.*', 'users.user_id', 'posts.post_id')
-        //     ->get();

@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { ChatService } from './services/chat.service';
 
 @Component({
   selector: 'app-root',
@@ -9,19 +8,7 @@ import { ChatService } from './services/chat.service';
 
 export class AppComponent {
 
-  message: string;
-  messages: string[] = [];
-
-  constructor(private chatService: ChatService) { }
+  constructor() { }
   
-  ngOnInit() {
-    this.chatService.getMessages().subscribe((message: string) => {
-      this.messages.push(message);
-    });
-  }
-
-  sendMessage() {
-    this.chatService.sendMessage(this.message);
-    this.message = '';
-  }
+  ngOnInit() {}
 }

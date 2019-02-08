@@ -1,39 +1,44 @@
-import { PostService } from './postService.service';
+import { ChatService } from './chat.service';
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { CookieService } from "ngx-cookie-service";
-import { ChatService } from './chat.service';
-
+import { Subject } from 'rxjs';
 
 @Injectable()
 export class BackendConnector {
-
     //http://127.0.0.1:8000/api/signup
     //http://192.168.100.7:8000/api/signup
 
     responseStatus: any;
-    userId = [];
-    userData = [];
+    addPost = new Subject<any>();
+    addLike = new Subject<any>();
 
-    constructor (private http: HttpClient, private cookie: CookieService, private postService: PostService,
-                 private chatService: ChatService) { }
+    constructor(private http: HttpClient, private cookie: CookieService, private chatService: ChatService) { }
 
     // Connect and Send Registration Data to laravel-Backend function
     signUpRequest(signupData: any) {
-        return this.http.post("http://192.168.100.7:8000/api/signup", signupData).subscribe(
-            (response: any) => {
-                this.responseStatus = response; // store response 
-            }
-        );
+        var promise = new Promise((resolve, reject) => {
+            return this.http.post("http://127.0.0.1:8000/api/signup", signupData).subscribe(
+                (response: any) => {
+                    this.responseStatus = response; 
+                    resolve(this.responseStatus);
+                }
+            );
+        });
+        return promise;
     }
 
     // Connect and Sends SignIn Data to laravel-Backend function
     signInRequest(signinData: any) {
-        return this.http.post("http://192.168.100.7:8000/api/signin", signinData).subscribe(
-            (response: any) => {
-                this.responseStatus = response; // store response
-            }
-        );
+        var promise = new Promise((resolve, reject) => {
+            return this.http.post("http://127.0.0.1:8000/api/signin", signinData).subscribe(
+                (response: any) => {
+                    this.responseStatus = response;
+                    resolve(this.responseStatus);
+                }
+            );
+        });
+        return promise;
     }
 
     public uploadPost(imageFile: File, description: string) {
@@ -55,41 +60,30 @@ export class BackendConnector {
 
         fd.append('description', desc);
 
-        return this.http.post("http://192.168.100.7:8000/api/uploadpost", fd).subscribe(
+        return this.http.post("http://127.0.0.1:8000/api/uploadpost", fd).subscribe(
             (response: any) => {
-                this.postService.setAllPosts(response);
+                this.chatService.sendPost(response);
             }
         );
     }
 
     public getPost() {
-        this.userId[0] = this.cookie.get('authUserId');
-        return this.http.post("http://192.168.100.7:8000/api/retrievepost", this.userId).subscribe(
+        return this.http.post("http://127.0.0.1:8000/api/retrievepost", {'userId': this.cookie.get('authUserId')}).subscribe(
             (response: any) => {
-             this.postService.setAllPosts(response);
-         
+               this.chatService.sendPost(response);
             }
         );
     }
 
     // ********* LIKES - dISLIKES ***************************************************************
     public setLike(isLiked: boolean, isDisliked: boolean, postId: number) {
-        this.userData = [this.cookie.get('authUserId'), postId, isLiked, isDisliked];
-        return this.http.post("http://192.168.100.7:8000/api/postlike", this.userData).subscribe(
+        const postLikeData = {'userId': this.cookie.get('authUserId'), 'postId': postId, 'isLiked': isLiked, 'isDisliked': isDisliked}
+
+        return this.http.post("http://127.0.0.1:8000/api/postlike", postLikeData).subscribe(
             (response: any) => {
-               this.postService.setAllLikes(response);
+                this.chatService.sendPost(response);
+               // this.addLike.next(response);
             }
         );
-    }
-
-    // Response Promise Resolver 
-    // (Promise-Handler used in Register, Header and SignIn Components Script)
-    resolveBackendResponse() {
-        var promise = new Promise((resolve, reject) => {
-            setTimeout(() => {
-                resolve(this.responseStatus);
-            }, 500);
-        });
-        return promise;
     }
 }

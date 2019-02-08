@@ -1,5 +1,6 @@
+import {share} from 'rxjs/operators';
 import * as io from 'socket.io-client';
-import { Observable } from 'rxjs';
+import { Observable} from 'rxjs';
 
 export class ChatService {
 
@@ -12,10 +13,6 @@ export class ChatService {
 
     // ************************ EMITTERS ***********************************
 
-    public sendMessage(message) {
-        this.socket.emit('new-message', message);
-    }
-
     public sendPost(post) {
         this.socket.emit('new-post', post)
     }
@@ -26,20 +23,13 @@ export class ChatService {
 
     // ************************ OBSERVERS *********************************
 
-    public getMessages = () => {
-        return Observable.create((observer) => {
-            this.socket.on('new-message', (message) => {
-                observer.next(message);
-            });
-        });
-    }
-
     public getPost = () => {
-        return Observable.create((observer) => {
+        return Observable.create(
+            (observer) => {
             this.socket.on('new-post', (post) => {
                 observer.next(post);
             });
-        });
+        }).pipe(share());
     }
 
     public getLikes = () => {

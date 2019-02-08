@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { BackendConnector } from '../services/backendconnector.service';
-import { FormGroup, Validators, FormBuilder, AbstractControl } from '@angular/forms';
+import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { LoginStatusService } from '../services/loginstatus.service';
 import { CookieService } from 'ngx-cookie-service';
-import { PostService } from '../services/postService.service';
 
 @Component({
   selector: 'app-header',
@@ -18,7 +17,7 @@ export class HeaderComponent implements OnInit {
   showLoginForm: boolean; // loginForm on Header is visible or not
 
   constructor(private connectorService: BackendConnector, private loginService: LoginStatusService,
-    private formBuilder: FormBuilder, private router: Router, private cookie: CookieService, private postService: PostService) {
+    private formBuilder: FormBuilder, private router: Router, private cookie: CookieService) {
 
     //Initialize formGroup with initial values and validators
     this.signinForm = this.formBuilder.group({
@@ -70,9 +69,6 @@ export class HeaderComponent implements OnInit {
       else if (password == "" || password == null) {
         this.loginService.setSigninErrorStatus("invalidPassword");
       }
-      // else {
-      //   this.loginService.setSigninErrorStatus("bothInvalid");
-      // }
       // -------------------------------------------------------------
 
       // If email/username or password is not empty then store it (to show it on signIn component) 
@@ -87,31 +83,27 @@ export class HeaderComponent implements OnInit {
       this.router.navigate(['/signin']); // navigate to SignIn Page
     }
 
-    else { // if form is valid
-
-      const formData = [EmailorUsername, password]; // store signIn data in array
-      this.connectorService.signInRequest(formData); // send data to BackendConnector-Service
-
-      // If Promise resolves in backend-Connector service, then this Promise-Handler executes
-      return this.connectorService.resolveBackendResponse().then(
+    else { // --------- if form is valid ---
+      this.connectorService.signInRequest({ 'emailORusername': EmailorUsername, 'password': password }).then(
         (signInStatus: any) =>  // get data receieved from backend
-        {  
-          if (!signInStatus[0]) { // if response has 'false' in it, then signIn failed
+        {
+          if (!signInStatus.status) { // if response has 'false' in it, then signIn failed
             this.loginService.setSigninErrorStatus("incorrectData"); // store error msg, to show it in signIn page
             this.loginService.setUserEmail(EmailorUsername); // store username or email
             this.loginService.setUserPassword(password);  // store password
             this.router.navigate(['/signin']);
           }
-          else if (signInStatus[0]) { // if response has 'true', then signIn is successful
+          else { 
             this.loginService.activateLogin(); // update LoggedIn status
             this.loginService.deActivateLoginForm(); // deActivate loginForm in headers
             this.cookie.set("email", EmailorUsername); // store user data in cookie service
-            this.cookie.set("authUserId", signInStatus[1].user_id)
+            this.cookie.set("authUserId", signInStatus.data.user_id)
             this.router.navigate(['/home']);
           }
         }
       );
     }
+
   }
 
   // Show main-page (i.e. Register Component)
@@ -130,7 +122,6 @@ export class HeaderComponent implements OnInit {
     this.loginService.activateLoginForm();
     this.signinForm.reset();
     this.loginService.clearInputData();
-    this.postService.removeAllPosts();
     this.loginService.setSigninErrorStatus("");
     this.router.navigate(['/']);
   }
