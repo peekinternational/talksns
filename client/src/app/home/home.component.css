@@ -11,6 +11,11 @@
 /*===============
 ***General Styling 
 ===============*/
+
+.likedORdisliked{
+    color: green;
+}
+
 html,body{
 	font-family: "Muli", "Segoe Ui";
 }

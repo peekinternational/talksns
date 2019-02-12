@@ -105,17 +105,20 @@ class FrontendConnectorController extends Controller
             // $allpostLikes = DB::table('postlikes')->get();
             // return response()->json(['posts' => $posts, 'imageFiles' => $imageFiles, 'postlikes' => $allpostLikes]);
 
-            $getUserPostData = DB::table('postlikes')
-                ->join('posts', 'posts.post_id', '=', 'postlikes.post_id')
-                ->select('postlikes.*', 'posts.*')->where('postlikes.user_id', '=', $userId)
-                ->get();
+            $allPosts = DB::table('posts')->get();
+            $allPostLikes = DB::table('postlikes')->get();
 
-            for ($i = 0; $i < count($getUserPostData); $i++) {
-                $imageFileName = DB::table('posts')->select('imageFile')->where('imageFile', '=', $getUserPostData[$i]->imageFile)->get();
-                $getUserPostData[$i]->imageFile = url("images/" . $imageFileName[0]->imageFile);
+            foreach ($allPosts as &$post) {
+                $post->getPost = DB::table('postlikes')->select('likes', 'dislikes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.user_id', '=', $userId)->get();
+                $imageFileName = DB::table('posts')->select('imageFile')->where('imageFile', '=', $post->imageFile)->get();
+
+                if ($post->imageFile != '')
+                    $post->imageFile = url("images/" . $imageFileName[0]->imageFile);
+                else
+                    $post->imageFile = '';
             }
 
-            return response()->json($getUserPostData);
+            return response()->json(['posts' => $allPosts, 'postlikes' => $allPostLikes]);
         }
     }
 
@@ -123,29 +126,22 @@ class FrontendConnectorController extends Controller
     public function retrievePost(Request $request)
     {
         $userId = $request->userId;
-        $getUserPostData = DB::table('postlikes')
-            ->join('posts', 'posts.post_id', '=', 'postlikes.post_id')
-            ->select('postlikes.*', 'posts.*')->where('postlikes.user_id', '=', $userId)
-            ->get();
 
-        for ($i = 0; $i < count($getUserPostData); $i++) {
-            $imageFileName = DB::table('posts')->select('imageFile')->where('imageFile', '=', $getUserPostData[$i]->imageFile)->get();
-            $getUserPostData[$i]->imageFile = url("images/" . $imageFileName[0]->imageFile);
+        $allPosts = DB::table('posts')->get();
+        $allPostLikes = DB::table('postlikes')->get();
+
+        foreach ($allPosts as &$post) {
+            $post->getPost = DB::table('postlikes')->select('likes', 'dislikes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.user_id', '=', $userId)->get();
+            $imageFileName = DB::table('posts')->select('imageFile')->where('imageFile', '=', $post->imageFile)->get();
+
+            if ($post->imageFile != '')
+                $post->imageFile = url("images/" . $imageFileName[0]->imageFile);
+            else
+                $post->imageFile = '';
         }
 
-        return response()->json($getUserPostData);
+        return response()->json(['posts' => $allPosts, 'postlikes' => $allPostLikes]);
     }
-
-    // *** Retrieve Image from 'public/images' folder ***
-    // public function retrieveImage()
-    // {
-    //     $images = DB::table('posts')->select('imageFile')->get();
-    //     $imageFiles = array();
-    //     foreach ($images as $img) {
-    //         $imageFiles[] = url("images/" . $img->imageFile);
-    //     }
-    //     return $imageFiles;
-    // }
 
     // Like the Post
     public function postLike(Request $request)
@@ -164,17 +160,20 @@ class FrontendConnectorController extends Controller
             //$likes = DB::table('postlikes')->where('user_id', '=', $userId)->where('post_id', '=', $postId)->get();
             //return response()->json($likes);
 
-            $getUserPostData = DB::table('postlikes')
-                ->join('posts', 'posts.post_id', '=', 'postlikes.post_id')
-                ->select('postlikes.*', 'posts.*')->where('postlikes.user_id', '=', $userId)
-                ->get();
+            $allPosts = DB::table('posts')->get();
+            $allPostLikes = DB::table('postlikes')->get();
 
-            for ($i = 0; $i < count($getUserPostData); $i++) {
-                $imageFileName = DB::table('posts')->select('imageFile')->where('imageFile', '=', $getUserPostData[$i]->imageFile)->get();
-                $getUserPostData[$i]->imageFile = url("images/" . $imageFileName[0]->imageFile);
+            foreach ($allPosts as &$post) {
+                $post->getPost = DB::table('postlikes')->select('likes', 'dislikes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.user_id', '=', $userId)->get();
+                $imageFileName = DB::table('posts')->select('imageFile')->where('imageFile', '=', $post->imageFile)->get();
+
+                if ($post->imageFile != '')
+                    $post->imageFile = url("images/" . $imageFileName[0]->imageFile);
+                else
+                    $post->imageFile = '';
             }
 
-            return response()->json($getUserPostData);
+            return response()->json(['posts' => $allPosts, 'postlikes' => $allPostLikes]);
 
         } else {
             $dataInserted = DB::table('postlikes')->insert([
@@ -184,48 +183,44 @@ class FrontendConnectorController extends Controller
                 'dislikes' => $dislikeStatus
             ]);
 
-            $getUserPostData = DB::table('postlikes')
-                ->join('posts', 'posts.post_id', '=', 'postlikes.post_id')
-                ->select('postlikes.*', 'posts.*')->where('postlikes.user_id', '=', $userId)
-                ->get();
+            $allPosts = DB::table('posts')->get();
+            $allPostLikes = DB::table('postlikes')->get();
 
-            for ($i = 0; $i < count($getUserPostData); $i++) {
-                $imageFileName = DB::table('posts')->select('imageFile')->where('imageFile', '=', $getUserPostData[$i]->imageFile)->get();
-                $getUserPostData[$i]->imageFile = url("images/" . $imageFileName[0]->imageFile);
+            foreach ($allPosts as &$post) {
+                $post->getPost = DB::table('postlikes')->select('likes', 'dislikes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.user_id', '=', $userId)->get();
+                $imageFileName = DB::table('posts')->select('imageFile')->where('imageFile', '=', $post->imageFile)->get();
+
+                if ($post->imageFile != '')
+                    $post->imageFile = url("images/" . $imageFileName[0]->imageFile);
+                else
+                    $post->imageFile = '';
             }
 
-            return response()->json($getUserPostData);
+            return response()->json(['posts' => $allPosts, 'postlikes' => $allPostLikes]);
             
            // $likes = DB::table('postlikes')->get();
-            //return response()->json($likes);
+           // return response()->json($likes);
         }
     }
 
-    public function test()
-    {
-        $userId = 11;
+    // public function test()
+    // {
+    //     $userId = 1;
 
-        $getUserPostData = DB::table('postlikes')
-            ->join('posts', 'posts.post_id', '=', 'postlikes.post_id')
-            ->select('postlikes.*', 'posts.*')->where('postlikes.user_id', '=', $userId)
-            ->get();
-         
-            dd($getUserPostData);
-        // $getAllPosts = DB::table('posts')->get();
-        // $getAllLikes = DB::table('postlikes')->get();
-        // dd($getAllPosts);
+    //     $allPosts = DB::table('posts')->get();
+    //     $allPostLikes = DB::table('postlikes')->get();
+        
+    //     foreach ($allPosts as &$post) {
+    //         $post->getPost = DB::table('postlikes')->select('likes', 'dislikes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.user_id', '=', $userId)->get();
+    //         $imageFileName = DB::table('posts')->select('imageFile')->where('imageFile', '=', $post->imageFile)->get();
+            
+    //         if ($post->imageFile != '')
+    //             $post->imageFile = url("images/" . $imageFileName[0]->imageFile);
+    //         else
+    //             $post->imageFile = '';
+    //     }
 
-        // for ($i = 0; $i < count($getAllLikes); $i++) {
-        //     if ($getAllPosts[$i]->user_id == $getAllLikes->user_id && $getAllPosts[$i]->user_id == $getAllLikes->user_id) {
+    //     dd($allPosts);
+    // }
 
-        //     }
-        // }
-
-
-        for ($i = 0; $i < count($getAllPosts); $i++) {
-            $imageFileName = DB::table('posts')->select('imageFile')->where('imageFile', '=', $getUserPostData[$i]->imageFile)->get();
-            $getUserPostData[$i]->imageFile = url("images/" . $imageFileName[0]->imageFile);
-        }
-    }
-
-} // **** Class Ends ****
+} // **** Class Ends *****

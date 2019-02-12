@@ -17,11 +17,13 @@ export class HomeComponent implements OnInit {
 
   postingFormGroup: FormGroup
   createpost: any;
-  setPostData = [];
+  createlike: any;
+  //setPostData = [];
 
   isPostLiked: boolean = false;
   isPostdisLiked: boolean = false;
 
+  userId: number = 0;
   imageSrc: string = "";
   selectedUploadFile: File = null;
 
@@ -29,6 +31,7 @@ export class HomeComponent implements OnInit {
     private backendService: BackendConnector, private formbuilder: FormBuilder, private chatService: ChatService) { }
 
   ngOnInit() {
+    this.userId = parseInt(this.cookie.get('authUserId'));
 
     this.postingFormGroup = this.formbuilder.group({
       'desc': [''],
@@ -36,59 +39,16 @@ export class HomeComponent implements OnInit {
 
     this.chatService.getPost().subscribe(
       (newpost: any) => {
-        this.createpost = newpost;
-        //console.log (this.createpost);
-       // this.setAllPostData(newpost);
-      });
-
-    this.backendService.addLike.subscribe(
-      (likesDisLikes: any) => {
-        this.setAllLikes(likesDisLikes);
+           this.createpost = newpost.posts;
+           this.createlike = newpost.postlikes;
+        console.log(this.createpost);
+        console.log(this.createlike);
+    
       });
 
     this.backendService.getPost();
 
   } // *** OnInit Ends *************
-
-  // public setAllPostData(createdpost: any) {
-  //   this.createpost = [];
-  
-  //   for (var i = 0; i < createdpost.posts.length; i++) {
-  //     if (createdpost.posts[i].imageFile == "" || createdpost.posts[i].imageFile == null) {
-  //       this.setPostData = [createdpost.posts[i].post_id, createdpost.posts[i].user_id, "", createdpost.posts[i].description, 0, 0, ""];
-  //     }
-  //     else {
-  //       this.setPostData = [createdpost.posts[i].post_id, createdpost.posts[i].user_id, createdpost.imageFiles[i], createdpost.posts[i].description, 0, 0, ""];
-  //     }
-
-  //     this.createpost.push(this.setPostData.slice());
-
-  //     for (var j = 0; j < createdpost.postlikes.length; j++) {
-  //       if (createdpost.postlikes[j].user_id == this.cookie.get('authUserId') && createdpost.postlikes[j].post_id == this.createpost[i][0]) {
-  //         this.createpost[i][4] = createdpost.postlikes[j].likes;
-  //         this.createpost[i][5] = createdpost.postlikes[j].dislikes;
-  //         break;
-  //       }
-  //     }
-  //   }
-  // }
-
-  public setAllLikes(allLikes: any) {
-    for (var i = 0; i < this.createpost.length; i++) {
-
-      for (var j = 0; j < allLikes.length; j++) {
-
-        if (allLikes[j].user_id == this.cookie.get('authUserId')) {
-
-          if (allLikes[j].post_id == this.createpost[i][0]) {
-            this.createpost[i][4] = allLikes[j].likes;
-            this.createpost[i][5] = allLikes[j].dislikes;
-            break;
-          }
-        }
-      }
-    }
-  }
 
   public addMyPost(desc: string) {
     this.backendService.uploadPost(this.selectedUploadFile, desc);
@@ -130,3 +90,44 @@ export class HomeComponent implements OnInit {
   }
 
 }
+
+// public setAllPostData(createdpost: any) {
+  //   this.createpost = [];
+
+  //   for (var i = 0; i < createdpost.posts.length; i++) {
+  //     if (createdpost.posts[i].imageFile == "" || createdpost.posts[i].imageFile == null) {
+  //       this.setPostData = [createdpost.posts[i].post_id, createdpost.posts[i].user_id, "", createdpost.posts[i].description, 0, 0, ""];
+  //     }
+  //     else {
+  //       this.setPostData = [createdpost.posts[i].post_id, createdpost.posts[i].user_id, createdpost.imageFiles[i], createdpost.posts[i].description, 0, 0, ""];
+  //     }
+
+  //     this.createpost.push(this.setPostData.slice());
+
+  //     for (var j = 0; j < createdpost.postlikes.length; j++) {
+  //       if (createdpost.postlikes[j].user_id == this.cookie.get('authUserId') && createdpost.postlikes[j].post_id == this.createpost[i][0]) {
+  //         this.createpost[i][4] = createdpost.postlikes[j].likes;
+  //         this.createpost[i][5] = createdpost.postlikes[j].dislikes;
+  //         break;
+  //       }
+  //     }
+  //   }
+  // }
+
+
+  // public setAllLikes(allLikes: any) {
+  //   for (var i = 0; i < this.createpost.length; i++) {
+
+  //     for (var j = 0; j < allLikes.length; j++) {
+
+  //       if (allLikes[j].user_id == this.cookie.get('authUserId')) {
+
+  //         if (allLikes[j].post_id == this.createpost[i][0]) {
+  //           this.createpost[i][4] = allLikes[j].likes;
+  //           this.createpost[i][5] = allLikes[j].dislikes;
+  //           break;
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
