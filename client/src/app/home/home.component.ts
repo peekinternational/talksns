@@ -25,6 +25,7 @@ export class HomeComponent implements OnInit {
 
   userId: number = 0;
   imageSrc: string = "";
+  show: boolean = false;
   selectedUploadFile: File = null;
 
   constructor(private route: Router, private loginService: LoginStatusService, private cookie: CookieService,
@@ -39,11 +40,19 @@ export class HomeComponent implements OnInit {
 
     this.chatService.getPost().subscribe(
       (newpost: any) => {
-           this.createpost = newpost.posts;
-           this.createlike = newpost.postlikes;
-        console.log(this.createpost);
-        console.log(this.createlike);
-    
+        this.createpost = newpost.posts;
+        this.createlike = newpost.postlikes;
+      });
+
+    this.backendService.quickLike.subscribe(
+      (postLikeData: any) => {
+        for (var i = 0; i < this.createlike.length; i++) {
+          if (this.createlike[i].user_id == this.cookie.get('authUserId') && postLikeData.postId == this.createlike[i].post_id){
+            this.createlike[i].likes = postLikeData.LikedStatus;
+            this.createlike[i].dislikes = postLikeData.dislikedStatus;
+            break;
+          }
+        }
       });
 
     this.backendService.getPost();
@@ -72,12 +81,21 @@ export class HomeComponent implements OnInit {
 
   onPostLike(postId: number, isLiked: number) {
     this.isPostLiked = !(isLiked);
+    this.backendService.setCurrentLike({ 'postId': postId, 'LikedStatus': this.isPostLiked, 'dislikedStatus': false});
     this.backendService.setLike(this.isPostLiked, false, postId);
   }
 
   onPostdisLike(postId: number, isDisliked: number) {
     this.isPostdisLiked = !(isDisliked);
+    this.backendService.setCurrentLike({ 'postId': postId, 'dislikedStatus': this.isPostdisLiked, 'likedStatus': false });
     this.backendService.setLike(false, this.isPostdisLiked, postId);
+  }
+
+  resetShow() {
+    this.show = false;
+  }
+  check() {
+    this.show = true;
   }
 
   canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
@@ -88,46 +106,4 @@ export class HomeComponent implements OnInit {
       this.route.navigate(['/home']); return false;
     }
   }
-
 }
-
-// public setAllPostData(createdpost: any) {
-  //   this.createpost = [];
-
-  //   for (var i = 0; i < createdpost.posts.length; i++) {
-  //     if (createdpost.posts[i].imageFile == "" || createdpost.posts[i].imageFile == null) {
-  //       this.setPostData = [createdpost.posts[i].post_id, createdpost.posts[i].user_id, "", createdpost.posts[i].description, 0, 0, ""];
-  //     }
-  //     else {
-  //       this.setPostData = [createdpost.posts[i].post_id, createdpost.posts[i].user_id, createdpost.imageFiles[i], createdpost.posts[i].description, 0, 0, ""];
-  //     }
-
-  //     this.createpost.push(this.setPostData.slice());
-
-  //     for (var j = 0; j < createdpost.postlikes.length; j++) {
-  //       if (createdpost.postlikes[j].user_id == this.cookie.get('authUserId') && createdpost.postlikes[j].post_id == this.createpost[i][0]) {
-  //         this.createpost[i][4] = createdpost.postlikes[j].likes;
-  //         this.createpost[i][5] = createdpost.postlikes[j].dislikes;
-  //         break;
-  //       }
-  //     }
-  //   }
-  // }
-
-
-  // public setAllLikes(allLikes: any) {
-  //   for (var i = 0; i < this.createpost.length; i++) {
-
-  //     for (var j = 0; j < allLikes.length; j++) {
-
-  //       if (allLikes[j].user_id == this.cookie.get('authUserId')) {
-
-  //         if (allLikes[j].post_id == this.createpost[i][0]) {
-  //           this.createpost[i][4] = allLikes[j].likes;
-  //           this.createpost[i][5] = allLikes[j].dislikes;
-  //           break;
-  //         }
-  //       }
-  //     }
-  //   }
-  // }

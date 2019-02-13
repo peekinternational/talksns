@@ -10,8 +10,7 @@ export class BackendConnector {
     //http://192.168.100.7:8000/api/signup
 
     responseStatus: any;
-    addPost = new Subject<any>();
-    addLike = new Subject<any>();
+    quickLike = new Subject<any>();
 
     constructor(private http: HttpClient, private cookie: CookieService, private chatService: ChatService) { }
 
@@ -20,7 +19,7 @@ export class BackendConnector {
         var promise = new Promise((resolve, reject) => {
             return this.http.post("http://192.168.100.7:8000/api/signup", signupData).subscribe(
                 (response: any) => {
-                    this.responseStatus = response; 
+                    this.responseStatus = response;
                     resolve(this.responseStatus);
                 }
             );
@@ -68,22 +67,26 @@ export class BackendConnector {
     }
 
     public getPost() {
-        return this.http.post("http://192.168.100.7:8000/api/retrievepost", {'userId': this.cookie.get('authUserId')}).subscribe(
+        return this.http.post("http://192.168.100.7:8000/api/retrievepost", { 'userId': this.cookie.get('authUserId') }).subscribe(
             (response: any) => {
-               this.chatService.sendPost(response);
+                this.chatService.sendPost(response);
             }
         );
     }
 
     // ********* LIKES - dISLIKES ***************************************************************
     public setLike(isLiked: boolean, isDisliked: boolean, postId: number) {
-        const postLikeData = {'userId': this.cookie.get('authUserId'), 'postId': postId, 'isLiked': isLiked, 'isDisliked': isDisliked}
+        const postLikeData = { 'userId': this.cookie.get('authUserId'), 'postId': postId, 'isLiked': isLiked, 'isDisliked': isDisliked }
 
         return this.http.post("http://192.168.100.7:8000/api/postlike", postLikeData).subscribe(
             (response: any) => {
                 this.chatService.sendPost(response);
-               // this.addLike.next(response);
             }
         );
+    }
+
+
+    public setCurrentLike(currentPostLike: any) {
+        this.quickLike.next(currentPostLike);
     }
 }
