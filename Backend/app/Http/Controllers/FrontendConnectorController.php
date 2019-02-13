@@ -107,6 +107,8 @@ class FrontendConnectorController extends Controller
                 $post->getPost = DB::table('postlikes')->select('likes', 'dislikes')->where('postlikes.post_id', '=', $post->post_id)->get();
                 $post->totalLiked = DB::table('postlikes')->select('likes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.likes', '=', 1)->count();
                 $post->totaldisLiked = DB::table('postlikes')->select('dislikes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.dislikes', '=', 1)->count();
+                $post->name = DB::table('users')->select('username')->where('users.user_id', '=', $post->user_id)->first();
+
                 $imageFileName = DB::table('posts')->select('imageFile')->where('imageFile', '=', $post->imageFile)->get();
 
                 if ($post->imageFile != '')
@@ -131,6 +133,7 @@ class FrontendConnectorController extends Controller
             $post->getPost = DB::table('postlikes')->select('likes', 'dislikes')->where('postlikes.post_id', '=', $post->post_id)->get();
             $post->totalLiked = DB::table('postlikes')->select('likes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.likes', '=', 1)->count();
             $post->totaldisLiked = DB::table('postlikes')->select('dislikes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.dislikes', '=', 1)->count();
+            $post->name = DB::table('users')->select('username')->where('users.user_id', '=', $post->user_id)->first();
             $imageFileName = DB::table('posts')->select('imageFile')->where('imageFile', '=', $post->imageFile)->get();
 
             if ($post->imageFile != '')
@@ -163,6 +166,7 @@ class FrontendConnectorController extends Controller
                 $post->getPost = DB::table('postlikes')->select('likes', 'dislikes')->where('postlikes.post_id', '=', $post->post_id)->get();
                 $post->totalLiked = DB::table('postlikes')->select('likes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.likes', '=', 1)->count();
                 $post->totaldisLiked = DB::table('postlikes')->select('dislikes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.dislikes', '=', 1)->count();
+                $post->name = DB::table('users')->select('username')->where('users.user_id', '=', $post->user_id)->first();
                 $imageFileName = DB::table('posts')->select('imageFile')->where('imageFile', '=', $post->imageFile)->get();
 
                 if ($post->imageFile != '')
@@ -188,6 +192,7 @@ class FrontendConnectorController extends Controller
                 $post->getPost = DB::table('postlikes')->select('likes', 'dislikes')->where('postlikes.post_id', '=', $post->post_id)->get();
                 $post->totalLiked = DB::table('postlikes')->select('likes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.likes', '=', 1)->count();
                 $post->totaldisLiked = DB::table('postlikes')->select('dislikes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.dislikes', '=', 1)->count();
+                $post->name = DB::table('users')->select('username')->where('users.user_id', '=', $post->user_id)->first();
                 $imageFileName = DB::table('posts')->select('imageFile')->where('imageFile', '=', $post->imageFile)->get();
 
                 if ($post->imageFile != '')
@@ -206,6 +211,7 @@ class FrontendConnectorController extends Controller
 
     //     $allPosts = DB::table('posts')->get();
     //     $allPostLikes = DB::table('postlikes')->get();
+    //     //$userData = DB::table('users')->get();
         
     //     foreach ($allPosts as &$post) {
     //         $post->getPost = DB::table('postlikes')->select('likes', 'dislikes')->where('postlikes.post_id', '=', $post->post_id)->get();
@@ -218,6 +224,7 @@ class FrontendConnectorController extends Controller
 
     //         $post->totalLiked = DB::table('postlikes')->select('likes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.likes', '=', 1)->count();
     //         $post->totaldisLiked = DB::table('postlikes')->select('dislikes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.dislikes', '=', 1)->count();
+    //         $post->name = DB::table('users')->select('username')->where('users.user_id', '=', $post->user_id)->first();
     //     }
 
         

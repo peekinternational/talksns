@@ -475,10 +475,20 @@
 																alt="">
 														</figure>
 														<div class="friend-name">
-															<ins><a href="time-line.html" title="">Ammar Khan</a></ins>
+															<ins>
+																<a href="time-line.html" title="">
+                                                                        {{ posts.name.username }}
+																</a>
+															
+															</ins>
 															<span>published: june,2 2018 19:PM</span>
 														</div>
 														<div class="post-meta">
+															<div class="description">
+																<p class="">
+																	{{posts.description}}
+																</p>
+															</div>
 
 															<img *ngIf="posts.imageFile != null || posts.imageFile != ''"
 																[src]="posts?.imageFile" alt="">
@@ -492,12 +502,14 @@
 																			<ins>1.2k</ins>
 																		</span>
 																	</li>
+
 																	<li>
 																		<span title="comments">
-																			<i class="fa fa-comments"></i>
-																			<ins>52</ins>
+																			<i class="fa fa-comments" style="cursor:pointer"></i>
+																			<ins></ins>
 																		</span>
 																	</li>
+
 
 																	<span
 																		*ngFor="let like of createlike ; let j = index">
@@ -525,7 +537,8 @@
 																		</span>
 
 																		<ng-template #notLiked>
-																			<span *ngIf="this.show==false && j==(createlike.length-1)">
+																			<span
+																				*ngIf="this.show==false && j==(createlike.length-1)">
 																				<li>
 																					<span title="like">
 																						<i class="fa fa-thumbs-up"
@@ -553,18 +566,35 @@
 																		</div>
 																	</li>
 																</ul>
+                                                                 <br>
+																<div class="post-comment">
+																	<div class="comet-avatar">            
+																		<img src="/assets/winkuLandingPage/images/resources/admin2.jpg" alt="">
+																	</div>
+																	<div class="post-comt-box">
+																		<form method="post">
+																			<textarea placeholder="Post your comment"></textarea>
+																			<div class="add-smiles">
+																				<span class="em em-expressionless" title="add icon"></span>
+																			</div>
+																			<button type="submit"></button>
+																		</form>	
+																	</div>
+																</div>
+																
+																<!-- <div class="comet-avatar">
+																	<figure>
+																		<img src="/assets/winkuLandingPage/images/resources/admin2.jpg" alt="">
+																	</figure>
+																</div> 
+																<div class="we-comment"></div> -->
+																
 															</div>
-															<div class="description">
-																<p class="">
-																	{{posts.description}}
-																</p>
-															</div>
+															
 														</div>
 													</div>
 												</div>
 											</div>
-
-
 										</div>
 									</div>
 
