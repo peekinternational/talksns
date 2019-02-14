@@ -21,10 +21,12 @@ use Illuminate\Http\Request;
 
 Route::post("/signup", "FrontendConnectorController@signUp");
 Route::post("/signin", "FrontendConnectorController@signIn");
+
 Route::post("/uploadpost", "FrontendConnectorController@uploadPost");
 Route::post("/retrievepost", "FrontendConnectorController@retrievePost");
 
 Route::post("/postlike", "FrontendConnectorController@postLike");
 Route::post("/getlike", "FrontendConnectorController@getLikes");
-//Route::post("/postdislike", "FrontendConnectorController@postDislike");
-//Route::post("/getdislike", "FrontendConnectorController@getDislikes");
+
+Route::post("/comment", "FrontendConnectorController@comments");
+Route::post("/reply", "FrontendConnectorController@replies");

@@ -437,7 +437,7 @@
 											</figure>
 											<div class="newpst-input">
 												<form [formGroup]="postingFormGroup">
-													<textarea rows="2" placeholder="write something"
+													<textarea class="postTextarea" rows="2" placeholder="write something"
 														formControlName="desc" name="desc" #desc></textarea>
 													<img class="img-responsive" [src]="imageSrc">
 													<div class="attachments">
@@ -566,28 +566,91 @@
 																		</div>
 																	</li>
 																</ul>
-                                                                 <br>
+																 <br>
+																 
 																<div class="post-comment">
 																	<div class="comet-avatar">            
 																		<img src="/assets/winkuLandingPage/images/resources/admin2.jpg" alt="">
 																	</div>
 																	<div class="post-comt-box">
-																		<form method="post">
-																			<textarea placeholder="Post your comment"></textarea>
-																			<div class="add-smiles">
-																				<span class="em em-expressionless" title="add icon"></span>
-																			</div>
-																			<button type="submit"></button>
-																		</form>	
+																	
+																		<textarea class="commentTextarea" [(ngModel)]="commentValue" (keydown)="MainComment($event, posts.post_id, mainComment)" placeholder="Post your comment" #mainComment></textarea>
+                                                                       
+																		<span class="" *ngFor="let comment of createcomments">
+																				<!-- <div *appclearspace="!clearView"><p>asadsa</p></div> -->
+
+																			<ul class="we-comet" *ngIf="comment.post_id == posts.post_id">
+																				<li>
+																						<!-- <div class="comet-avatar"> <img src="" alt=""> </div> -->
+																							<div class="we-comment">
+																								<div class="coment-head">
+																									<h5 *ngFor="let names of usernames">
+																										<a href="" title="" *ngIf="comment.user_id==names.user_id">
+																										{{ names.username }}
+																									</a>
+																								</h5>
+																									<!-- <span>1 year ago</span> -->
+																									<a class="we-reply" style="cursor:pointer" (click)="showCommentReply(comment.comment_id)" title="Reply"><i class="fa fa-reply"></i></a>
+																								</div>
+																								<p> {{ comment.description }}  </p>
+																							</div>
+																				</li>
+																				<li>
+																						<div title="main" class="post-comment" style="margin-top: 9px" *ngIf="commentReplyStatus && comment.post_id == posts.post_id && comment.comment_id == currentReplyId">
+																								<div class="comet-avatar">            
+																									<img src="/assets/winkuLandingPage/images/resources/admin2.jpg" alt="">
+																								</div>
+					
+																								<div class="post-comt-box">
+																										<textarea class="replyComment" [(ngModel)]="replyValue" (keydown)="ReplyComment($event, posts.post_id, comment.comment_id, commentReply)" placeholder="Post your comment" #commentReply></textarea>
+																								</div>
+																							</div>
+																				</li>
+
+																				<!--  SHOW INLINE COMMENTS -->
+																				<li>
+                                                                                 <span class="" *ngFor="let reply of createreplies">
+																					<ul class="we-comet" *ngIf="comment.post_id == posts.post_id && reply.comment_id == comment.comment_id">
+																							<li>
+																									<!-- <div class="comet-avatar"> <img src="" alt=""> </div> -->
+																										<div class="we-comment">
+																											<div class="coment-head">
+																												<h5 *ngFor="let names of usernames">
+																													<a href="" title="" *ngIf="reply.user_id==names.user_id">
+																															<!-- <input type="hidden" [value]="names.username" #username> -->
+																													{{ names.username }}
+																												    </a>
+																												</h5>
+																												<!-- <span>1 year ago</span> -->
+																												
+																												<a class="we-reply" style="cursor:pointer" (click)="showReplyComment(reply.comment_id)" title="Reply"><i class="fa fa-reply"></i></a>
+																											</div>
+																											<p> {{ reply.replydescription }}  </p>
+																										</div>
+																							</li>
+
+																							<li>
+																									<div title="main" class="post-comment" style="margin-top: 9px" *ngIf="replyCommentStatus && comment.post_id == posts.post_id && reply.comment_id == currentReplyId">
+																											<div class="comet-avatar">            
+																												<img src="/assets/winkuLandingPage/images/resources/admin2.jpg" alt="">
+																											</div>
+								
+																											<div class="post-comt-box">
+																													<textarea class="replyComment" [(ngModel)]="replyValue" (keydown)="ReplyComment($event, posts.post_id, comment.comment_id, inlineCommentReply)" placeholder="Post your comment" #inlineCommentReply></textarea>
+																											</div>
+																										</div>
+																							</li>
+																					</ul>
+																				 </span>
+																				</li>
+
+																				</ul>
+					
+																		</span> <!-- coment-area ends here -->
+																	 <!-- </div>  -->
 																	</div>
+																	
 																</div>
-																
-																<!-- <div class="comet-avatar">
-																	<figure>
-																		<img src="/assets/winkuLandingPage/images/resources/admin2.jpg" alt="">
-																	</figure>
-																</div> 
-																<div class="we-comment"></div> -->
 																
 															</div>
 															

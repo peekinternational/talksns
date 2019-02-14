@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { LoginStatusService } from '../services/loginstatus.service';
@@ -18,18 +18,28 @@ export class HomeComponent implements OnInit {
   postingFormGroup: FormGroup
   createpost: any;
   createlike: any;
-  //setPostData = [];
+  createcomments: any;
+  createreplies: any;
+  usernames: any;
 
   isPostLiked: boolean = false;
   isPostdisLiked: boolean = false;
 
   userId: number = 0;
   imageSrc: string = "";
+  commentValue: string = '';
+  replyValue: string = '';
+  currentReplyId: number = 0;
+  previousReplyId: number = 0;
   show: boolean = false;
+  clearView: boolean = false;
+  commentReplyStatus: boolean = false;
+  replyCommentStatus: boolean = false;
   selectedUploadFile: File = null;
 
   constructor(private route: Router, private loginService: LoginStatusService, private cookie: CookieService,
     private backendService: BackendConnector, private formbuilder: FormBuilder, private chatService: ChatService) { }
+
 
   ngOnInit() {
     this.userId = parseInt(this.cookie.get('authUserId'));
@@ -42,12 +52,15 @@ export class HomeComponent implements OnInit {
       (newpost: any) => {
         this.createpost = newpost.posts;
         this.createlike = newpost.postlikes;
+        this.createcomments = newpost.comments;
+        this.usernames = newpost.usernames;
+        this.createreplies = newpost.replies;
       });
 
     this.backendService.quickLike.subscribe(
       (postLikeData: any) => {
         for (var i = 0; i < this.createlike.length; i++) {
-          if (this.createlike[i].user_id == this.cookie.get('authUserId') && postLikeData.postId == this.createlike[i].post_id){
+          if (this.createlike[i].user_id == this.cookie.get('authUserId') && postLikeData.postId == this.createlike[i].post_id) {
             this.createlike[i].likes = postLikeData.LikedStatus;
             this.createlike[i].dislikes = postLikeData.dislikedStatus;
             break;
@@ -81,7 +94,7 @@ export class HomeComponent implements OnInit {
 
   onPostLike(postId: number, isLiked: number) {
     this.isPostLiked = !(isLiked);
-    this.backendService.setCurrentLike({ 'postId': postId, 'LikedStatus': this.isPostLiked, 'dislikedStatus': false});
+    this.backendService.setCurrentLike({ 'postId': postId, 'LikedStatus': this.isPostLiked, 'dislikedStatus': false });
     this.backendService.setLike(this.isPostLiked, false, postId);
   }
 
@@ -97,6 +110,65 @@ export class HomeComponent implements OnInit {
   check() {
     this.show = true;
   }
+  clearEmptyView(){console.log(this.clearView);
+    this.clearView = true;
+  }
+
+  MainComment(event, postId: number, textArea: HTMLInputElement) {
+    if (event.keyCode == 13) {
+      this.backendService.setComment(postId, textArea.value);
+      this.commentValue = "";
+    }
+  }
+
+  ReplyComment(event, postId: number, commentId: number, textArea: HTMLInputElement){
+    if (event.keyCode == 13) {
+      this.backendService.setReply(postId, commentId, textArea.value);
+      this.replyValue = "";
+    }
+  }
+
+  showCommentReply(commentId: number) {
+
+    this.commentReplyStatus = !this.commentReplyStatus;
+
+    if (this.commentReplyStatus)
+       this.replyCommentStatus = false;
+
+    if (this.previousReplyId == commentId) {
+      this.currentReplyId = this.previousReplyId;
+    }
+    else {
+      this.currentReplyId = commentId;
+      this.previousReplyId = this.currentReplyId;
+
+      if (!this.commentReplyStatus) {
+        this.commentReplyStatus = true;
+      }
+    }
+  }
+
+  showReplyComment(replyId: number){
+   
+    this.replyCommentStatus = !this.replyCommentStatus;
+
+    if (this.replyCommentStatus)
+      this.commentReplyStatus = false;
+
+      console.log(this.previousReplyId +" == "+ replyId);
+    if (this.previousReplyId == replyId) {
+      this.currentReplyId = this.previousReplyId;
+    }
+    else {
+      this.currentReplyId = replyId;
+      this.previousReplyId = this.currentReplyId;
+
+      if (!this.replyCommentStatus) {
+        this.replyCommentStatus = true;
+      }
+    }
+  }
+
 
   canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
     if (!this.loginService.getuserLogedinStatus()) {

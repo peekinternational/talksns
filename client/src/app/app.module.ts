@@ -21,6 +21,7 @@ import { LoginStatusService } from './services/loginstatus.service';
 import { AuthGuardService } from './services/authguard.service';
 import { DeactivateGuardService } from './services/deactivateguard.service';
 import { ReversePipe } from './shared/reverse.pipe';
+import { ClearspaceDirective } from './shared/clearspace.directive';
 
 const appRoutes : Routes = [
   {path: '', component: RegisterComponent},
@@ -37,7 +38,7 @@ const appRoutes : Routes = [
     HomeComponent,
     HeaderComponent,
     FooterComponent,
-    ReversePipe
+    ReversePipe, ClearspaceDirective
   ],
   imports: [
     BrowserModule,

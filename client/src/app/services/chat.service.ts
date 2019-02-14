@@ -21,6 +21,10 @@ export class ChatService {
         this.socket.emit('new-like', like);
     }
 
+    public sendComment(comment) {
+        this.socket.emit('new-comment', comment);
+    }
+
     // ************************ OBSERVERS *********************************
 
     public getPost = () => {
@@ -36,6 +40,14 @@ export class ChatService {
         return Observable.create((observer) => {
             this.socket.on('new-like', (like) => {
                 observer.next(like);
+            });
+        });
+    }
+
+    public getComments = () => {
+        return Observable.create((observer) => {
+            this.socket.on('new-comment', (comment) => {
+                observer.next(comment);
             });
         });
     }
