@@ -5,6 +5,7 @@
 	<meta name="keywords" content="" />
 	<title>HOME</title>
 	<link rel="icon" href="/assets/winkuLandingPage/images/fav.png" type="image/png" sizes="16x16">
+	<!-- <link rel="stylesheet" href="/assets/winkuLandingPage/css/responsive.css"> -->
 	<link rel="stylesheet" href="/assets/FontAwesome/css/font-awesome.min.css">
 </head>
 
@@ -506,7 +507,7 @@
 																	<li>
 																		<span title="comments">
 																			<i class="fa fa-comments" style="cursor:pointer"></i>
-																			<ins></ins>
+																			<ins *ngIf="posts.totalcomments > 0">{{posts.totalcomments + posts.totalreplies}}</ins>
 																		</span>
 																	</li>
 
@@ -569,12 +570,15 @@
 																 <br>
 																 
 																<div class="post-comment">
-																	<div class="comet-avatar">            
-																		<img src="/assets/winkuLandingPage/images/resources/admin2.jpg" alt="">
-																	</div>
+																	<!-- <span class="comet-avatar">            
+																			<img src="/assets/winkuLandingPage/images/resources/admin2.jpg" alt="" style="float:left">
+																	</span> -->
 																	<div class="post-comt-box">
-																	
-																		<textarea class="commentTextarea" [(ngModel)]="commentValue" (keydown)="MainComment($event, posts.post_id, mainComment)" placeholder="Post your comment" #mainComment></textarea>
+																		<span class="comet-avatar">
+																			<img src="/assets/winkuLandingPage/images/resources/admin2.jpg" alt="" style="float:left">
+																			<textarea class="commentTextarea" [(ngModel)]="commentValue" (keydown.enter)="MainComment($event, posts.post_id, mainComment);false" placeholder="Post your comment" #mainComment></textarea>
+																		</span>
+																		
                                                                        
 																		<span class="" *ngFor="let comment of createcomments">
 																				<!-- <div *appclearspace="!clearView"><p>asadsa</p></div> -->
@@ -595,25 +599,26 @@
 																								<p> {{ comment.description }}  </p>
 																							</div>
 																				</li>
-																				<li>
-																						<div title="main" class="post-comment" style="margin-top: 9px" *ngIf="commentReplyStatus && comment.post_id == posts.post_id && comment.comment_id == currentReplyId">
-																								<div class="comet-avatar">            
+																				<li *ngIf="commentReplyStatus && comment.post_id == posts.post_id && comment.comment_id == currentReplyId">
+																						<div  style="margin-top: 9px" >
+																								<span class="comet-avatar">            
 																									<img src="/assets/winkuLandingPage/images/resources/admin2.jpg" alt="">
-																								</div>
+																									<textarea class="replyComment" style="vertical-align: middle" [(ngModel)]="replyValue" (keydown.enter)="ReplyComment($event, posts.post_id, comment.comment_id, commentReply);false" placeholder="Post your comment" #commentReply></textarea>
+																								</span>
 					
-																								<div class="post-comt-box">
-																										<textarea class="replyComment" [(ngModel)]="replyValue" (keydown)="ReplyComment($event, posts.post_id, comment.comment_id, commentReply)" placeholder="Post your comment" #commentReply></textarea>
-																								</div>
+																								<!-- <div class="post-comt-box">
+																									
+																								</div> -->
 																							</div>
 																				</li>
 
-																				<!--  SHOW INLINE COMMENTS -->
+																				<!-----------------  SHOW INLINE COMMENTS ---------------------------------------------------->
 																				<li>
                                                                                  <span class="" *ngFor="let reply of createreplies">
-																					<ul class="we-comet" *ngIf="comment.post_id == posts.post_id && reply.comment_id == comment.comment_id">
+																					<ul class="we-comet" *ngIf="reply.post_id == posts.post_id && reply.comment_id == comment.comment_id"> 
 																							<li>
 																									<!-- <div class="comet-avatar"> <img src="" alt=""> </div> -->
-																										<div class="we-comment">
+																										<div class="we-reply-comment">
 																											<div class="coment-head">
 																												<h5 *ngFor="let names of usernames">
 																													<a href="" title="" *ngIf="reply.user_id==names.user_id">
@@ -623,21 +628,21 @@
 																												</h5>
 																												<!-- <span>1 year ago</span> -->
 																												
-																												<a class="we-reply" style="cursor:pointer" (click)="showReplyComment(reply.comment_id)" title="Reply"><i class="fa fa-reply"></i></a>
+																												<a class="we-reply" style="cursor:pointer" (click)="showReplyComment(reply.comment_id, reply.reply_id)" title="Reply"><i class="fa fa-reply"></i></a>
 																											</div>
 																											<p> {{ reply.replydescription }}  </p>
 																										</div>
 																							</li>
 
-																							<li>
-																									<div title="main" class="post-comment" style="margin-top: 9px" *ngIf="replyCommentStatus && comment.post_id == posts.post_id && reply.comment_id == currentReplyId">
-																											<div class="comet-avatar">            
+																							<li *ngIf="replyCommentStatus && reply.post_id == posts.post_id && reply.comment_id == comment.comment_id && reply.reply_id == currentReplyId">
+																									    <div style="margin-top: 9px" >
+																											<span class="comet-avatar">     
 																												<img src="/assets/winkuLandingPage/images/resources/admin2.jpg" alt="">
-																											</div>
+																												<textarea class="replyComment" style="vertical-align: middle" [(ngModel)]="replyValue" (keydown.enter)="ReplyComment($event, posts.post_id, reply.comment_id, inlineCommentReply);false" placeholder="Post your comment" #inlineCommentReply></textarea>
+																											</span>
 								
-																											<div class="post-comt-box">
-																													<textarea class="replyComment" [(ngModel)]="replyValue" (keydown)="ReplyComment($event, posts.post_id, comment.comment_id, inlineCommentReply)" placeholder="Post your comment" #inlineCommentReply></textarea>
-																											</div>
+																											<!-- <div class="post-comt-box">
+																											</div> -->
 																										</div>
 																							</li>
 																					</ul>

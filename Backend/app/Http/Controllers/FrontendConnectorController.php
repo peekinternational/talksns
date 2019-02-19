@@ -182,6 +182,8 @@ class FrontendConnectorController extends Controller
             $post->totalLiked = DB::table('postlikes')->select('likes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.likes', '=', 1)->count();
             $post->totaldisLiked = DB::table('postlikes')->select('dislikes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.dislikes', '=', 1)->count();
             $post->name = DB::table('users')->select('username')->where('users.user_id', '=', $post->user_id)->first();
+            $post->totalcomments = DB::table('comments')->select('description')->where('comments.post_id', '=', $post->post_id)->count();
+            $post->totalreplies = DB::table('replycomments')->select('replydescription')->where('replycomments.post_id', '=', $post->post_id)->count();
 
             $imageFileName = DB::table('posts')->select('imageFile')->where('imageFile', '=', $post->imageFile)->get();
 
@@ -196,31 +198,33 @@ class FrontendConnectorController extends Controller
 
 
 
-    public function test() // for testing purposes
-    {
-        $userId = 1;
+    // public function test() // for testing purposes
+    // {
+    //     $userId = 1;
 
-        $allPosts = DB::table('posts')->get();
-        $allPostLikes = DB::table('postlikes')->get();
+    //     $allPosts = DB::table('posts')->get();
+    //     $allPostLikes = DB::table('postlikes')->get();
     
         
-        foreach ($allPosts as &$post) {
-            $post->getPost = DB::table('postlikes')->select('likes', 'dislikes')->where('postlikes.post_id', '=', $post->post_id)->get();
-            $imageFileName = DB::table('posts')->select('imageFile')->where('imageFile', '=', $post->imageFile)->get();
+    //     foreach ($allPosts as &$post) {
+    //         $post->getPost = DB::table('postlikes')->select('likes', 'dislikes')->where('postlikes.post_id', '=', $post->post_id)->get();
+    //         $imageFileName = DB::table('posts')->select('imageFile')->where('imageFile', '=', $post->imageFile)->get();
             
-            if ($post->imageFile != '')
-                $post->imageFile = url("images/" . $imageFileName[0]->imageFile);
-            else
-                $post->imageFile = '';
+    //         if ($post->imageFile != '')
+    //             $post->imageFile = url("images/" . $imageFileName[0]->imageFile);
+    //         else
+    //             $post->imageFile = '';
 
-            $post->totalLiked = DB::table('postlikes')->select('likes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.likes', '=', 1)->count();
-            $post->totaldisLiked = DB::table('postlikes')->select('dislikes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.dislikes', '=', 1)->count();
-            $post->name = DB::table('users')->select('username')->where('users.user_id', '=', $post->user_id)->first();
+    //         $post->totalLiked = DB::table('postlikes')->select('likes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.likes', '=', 1)->count();
+    //         $post->totaldisLiked = DB::table('postlikes')->select('dislikes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.dislikes', '=', 1)->count();
+    //         $post->name = DB::table('users')->select('username')->where('users.user_id', '=', $post->user_id)->first();
 
-            $post->comments = DB::table('comments')->select('description')->where('comments.post_id', '=', $post->post_id)->first();
-        }
+    //         $post->comments = DB::table('comments')->select('description')->where('comments.post_id', '=', $post->post_id)->first();
+    //         $post->totalcomments = DB::table('comments')->select('description')->where('comments.post_id', '=', $post->post_id)->count();
+    //         $post->totalreplies = DB::table('replycomments')->select('replydescription')->where('replycomments.post_id', '=', $post->post_id)->count();
+    //     }
 
-        dd($allPosts);
-    }
+    //     dd($allPosts);
+    // }
 
 } // **** Class Ends *****

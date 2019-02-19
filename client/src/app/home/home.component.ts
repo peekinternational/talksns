@@ -118,6 +118,9 @@ export class HomeComponent implements OnInit {
     if (event.keyCode == 13) {
       this.backendService.setComment(postId, textArea.value);
       this.commentValue = "";
+      this.commentReplyStatus = false;
+      this.replyCommentStatus = false;
+      textArea.placeholder = "Post your comment";
     }
   }
 
@@ -125,6 +128,9 @@ export class HomeComponent implements OnInit {
     if (event.keyCode == 13) {
       this.backendService.setReply(postId, commentId, textArea.value);
       this.replyValue = "";
+      this.replyCommentStatus = false;
+      this.commentReplyStatus = false;
+      textArea.placeholder = "Post your comment";
     }
   }
 
@@ -148,14 +154,13 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  showReplyComment(replyId: number){
+  showReplyComment(commentId: number, replyId: number){
    
     this.replyCommentStatus = !this.replyCommentStatus;
-
+ 
     if (this.replyCommentStatus)
       this.commentReplyStatus = false;
 
-      console.log(this.previousReplyId +" == "+ replyId);
     if (this.previousReplyId == replyId) {
       this.currentReplyId = this.previousReplyId;
     }
