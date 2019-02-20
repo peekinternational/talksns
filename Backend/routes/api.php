@@ -30,3 +30,5 @@ Route::post("/getlike", "FrontendConnectorController@getLikes");
 
 Route::post("/comment", "FrontendConnectorController@comments");
 Route::post("/reply", "FrontendConnectorController@replies");
+
+Route::post("/profilepic", "FrontendConnectorController@profilePic");

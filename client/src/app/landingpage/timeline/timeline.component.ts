@@ -1,19 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
-import { LoginStatusService } from '../services/loginstatus.service';
-import { BackendConnector } from '../services/backendconnector.service';
+import { LoginStatusService } from 'src/app/services/loginstatus.service';
+import { BackendConnector } from 'src/app/services/backendconnector.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
-import { ChatService } from '../services/chat.service';
 import { CookieService } from 'ngx-cookie-service';
+import { ChatService } from 'src/app/services/chat.service';
+import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css', './responsivehome.component.css']
+  selector: 'app-timeline',
+  templateUrl: './timeline.component.html',
+  styleUrls: ['./timeline.component.css']
 })
-
-export class HomeComponent implements OnInit {
+export class TimelineComponent implements OnInit {
 
   postingFormGroup: FormGroup
   createpost: any;
@@ -28,6 +26,7 @@ export class HomeComponent implements OnInit {
 
   userId: number = 0;
   imageSrc: string = "";
+  profilePicSrc: string = "";
   commentValue: string = '';
   replyValue: string = '';
   currentReplyId: number = 0;
@@ -43,6 +42,7 @@ export class HomeComponent implements OnInit {
     private backendService: BackendConnector, private formbuilder: FormBuilder, private chatService: ChatService) { }
 
   ngOnInit() {
+
     this.userId = parseInt(this.cookie.get('authUserId'));
 
     this.postingFormGroup = this.formbuilder.group({
@@ -57,16 +57,17 @@ export class HomeComponent implements OnInit {
         this.usernames = newpost.usernames;
         this.createreplies = newpost.replies;
         this.profilePics = newpost.profilepics;
-
-        for (var pics of this.profilePics) {
-          if (pics.user_id == this.userId) {
-            this.setUserProfilePic = pics.pic;
-            break;
-          }
-          else {
+       
+        for(var pics of this.profilePics){
+           if (pics.user_id == this.userId){
+                this.setUserProfilePic = pics.pic;
+                break;
+           }
+           else{
             this.setUserProfilePic = "/assets/pics/noProfile.png";
-          }
+           }
         }
+
       });
 
     this.backendService.quickLike.subscribe(
@@ -81,8 +82,8 @@ export class HomeComponent implements OnInit {
       });
 
     this.backendService.getPost();
+  }
 
-  } // *** OnInit Ends *************
 
   public addMyPost(desc: string) {
     this.backendService.uploadPost(this.selectedUploadFile, desc);
@@ -92,17 +93,32 @@ export class HomeComponent implements OnInit {
   }
 
   onImageUpload(event) {
-    if (this.selectedUploadFile == null) {
-      this.selectedUploadFile = <File>event.target.files[0];
+    // if (this.selectedUploadFile == null) {
+    this.selectedUploadFile = <File>event.target.files[0];
 
-      if (event.target.files && event.target.files[0]) {
-        const file = event.target.files[0];
-        const reader = new FileReader();
-        reader.onload = e => this.imageSrc = reader.result as string;
-        reader.readAsDataURL(file);
-      }
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = e => this.imageSrc = reader.result as string;
+      reader.readAsDataURL(file);
     }
+    // }
   }
+
+  onProfilePicUpload(event) {
+    const profileUploadedFile = <File>event.target.files[0];
+
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = e => this.profilePicSrc = reader.result as string;
+      reader.readAsDataURL(file);
+    }
+
+    this.backendService.uploadProfilePic(profileUploadedFile);
+  }
+
+
 
   onPostLike(postId: number, isLiked: number) {
     this.isPostLiked = !(isLiked);
@@ -121,10 +137,6 @@ export class HomeComponent implements OnInit {
   }
   check() {
     this.show = true;
-  }
-  clearEmptyView() {
-    console.log(this.clearView);
-    this.clearView = true;
   }
 
   MainComment(event, postId: number, textArea: HTMLInputElement) {
@@ -191,35 +203,6 @@ export class HomeComponent implements OnInit {
       if (!this.replyCommentStatus) {
         this.replyCommentStatus = true;
       }
-    }
-  }
-
-  // goToRoute(nextRoute: string) {
-  //   this.loginService.setNextRouteName(nextRoute);
-  //   this.route.navigate(['landingpage/timeline']);
-  // }
-
-  // canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
-  //   if (!this.loginService.getuserLogedinStatus()) {
-  //     return true;
-  //   }
-  //   else {
-  //     console.log(this.route.url);
-  //     console.log("nextRoute: " + this.nextRouteName);
-  //     this.route.navigate(['landingpage/home']);
-  //     return false;
-  //   }
-  // }
-
-  canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
-
-    if (this.loginService.getNextRouteName() != "")
-      return true;
-    if (!this.loginService.getuserLogedinStatus())
-      return true;
-    else {
-      this.route.navigate(['landingpage/home']);
-      return false;
     }
   }
 

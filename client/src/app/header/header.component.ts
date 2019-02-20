@@ -30,7 +30,7 @@ export class HeaderComponent implements OnInit {
     // If user is logged-In, then navigate it to 'home' page
     if (this.loginService.isUserLoggedIn()) {
       this.loginService.deActivateLoginForm();
-      this.router.navigate(["/home"]);
+      this.router.navigate(["landingpage/home"]);
     }
     else {
       // get loginForm visibilty status from LoginService
@@ -98,7 +98,7 @@ export class HeaderComponent implements OnInit {
             this.loginService.deActivateLoginForm(); // deActivate loginForm in headers
             this.cookie.set("email", EmailorUsername); // store user data in cookie service
             this.cookie.set("authUserId", signInStatus.data.user_id)
-            this.router.navigate(['/home']);
+            this.router.navigate(['landingpage/home']);
           }
         }
       );
@@ -124,6 +124,11 @@ export class HeaderComponent implements OnInit {
     this.loginService.clearInputData();
     this.loginService.setSigninErrorStatus("");
     this.router.navigate(['/']);
+  }
+
+  goToRoute(nextRoute: string) {
+    this.loginService.setNextRouteName(nextRoute);
+    //this.route.navigate(['landingpage/timeline']);
   }
 
 }

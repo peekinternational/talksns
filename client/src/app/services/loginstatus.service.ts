@@ -7,6 +7,7 @@ export class LoginStatusService {
     private signInErrorStatus: string = "";
     private userEmail: string = "";
     private userPassword: string = "";
+    public nextRouteName: string = "";
 
     private logInFormActivated: boolean = true;
     private isLoggedIn: boolean = false;
@@ -86,5 +87,12 @@ export class LoginStatusService {
         this.signInErrorStatus = "";
         this.userEmail = "";
         this.userPassword = "";
+    }
+
+    public setNextRouteName(nextRoute: string){
+        this.nextRouteName = nextRoute;
+    }
+    public getNextRouteName(){
+        return this.nextRouteName;
     }
 }

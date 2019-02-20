@@ -83,18 +83,18 @@ class FrontendConnectorController extends Controller
         $item_image = $request->image;
         $description = $request->description;
 
-        $profilePicture = "";
+        $uploadPicture = "";
         if ($item_image != "") {
-            $profilePicture = rand(000000, 999999) . '.' . $item_image->getClientOriginalExtension();
+            $uploadPicture = rand(000000, 999999) . '.' . $item_image->getClientOriginalExtension();
             $destinationPath = public_path('images');
-            $item_image->move($destinationPath, $profilePicture);
-            $item_info['item_image'] = $profilePicture;
+            $item_image->move($destinationPath, $uploadPicture);
+            $item_info['item_image'] = $uploadPicture;
         }
 
         // insert image in database
         $dataInserted = DB::table('posts')->insert([
             'user_id' => $userId,
-            'imageFile' => $profilePicture,
+            'imageFile' => $uploadPicture,
             'description' => $description
         ]);
 
@@ -138,7 +138,8 @@ class FrontendConnectorController extends Controller
         }
     }
 
-    public function comments(Request $request){
+    public function comments(Request $request)
+    {
         $userId = $request->userId;
         $postId = $request->postId;
         $comment = $request->comment;
@@ -152,7 +153,8 @@ class FrontendConnectorController extends Controller
         return response()->json($this->getandSendAllPostData());
     }
 
-    public function replies(Request $request){
+    public function replies(Request $request)
+    {
         $userId = $request->userId;
         $postId = $request->postId;
         $commentId = $request->commentId;
@@ -164,6 +166,24 @@ class FrontendConnectorController extends Controller
             'comment_id' => $commentId,
             'replydescription' => $reply,
         ]);
+
+        return response()->json($this->getandSendAllPostData());
+    }
+
+    public function profilePic(Request $request)
+    {
+        $userId = $request->userId;
+        $profilepic = $request->profilePic;
+      
+        $uploadPicture = "";
+        if ($profilepic != "") {
+            $uploadPicture = rand(000000, 999999) . '.' . $profilepic->getClientOriginalExtension();
+            $destinationPath = public_path('profilepics');
+            $profilepic->move($destinationPath, $uploadPicture);
+            $item_info['item_image'] = $uploadPicture;
+        }
+
+        DB::table('users')->where('user_id', '=', $userId)->update(['ProfilePic' => $uploadPicture]);
 
         return response()->json($this->getandSendAllPostData());
     }
@@ -193,10 +213,18 @@ class FrontendConnectorController extends Controller
                 $post->imageFile = '';
         }
 
-        return ['posts' => $allPosts, 'postlikes' => $allPostLikes, 'comments' => $allPostComments, 'usernames' => $usersName, 'replies' => $replies];
+        $profilepicFileNames = DB::table('users')->select('user_id','ProfilePic')->where('ProfilePic', '!=', null)->get();
+ 
+        foreach ($profilepicFileNames as &$profilepic) {
+            
+            if ($profilepic != '' || $profilepic != null)
+                $profilepic->pic = url("profilepics/" . $profilepic->ProfilePic);
+            else
+                $profilepic->pic = '';
+        }
+
+        return ['posts' => $allPosts, 'postlikes' => $allPostLikes, 'comments' => $allPostComments, 'usernames' => $usersName, 'replies' => $replies, 'profilepics' => $profilepicFileNames];
     }
-
-
 
     // public function test() // for testing purposes
     // {
@@ -204,12 +232,12 @@ class FrontendConnectorController extends Controller
 
     //     $allPosts = DB::table('posts')->get();
     //     $allPostLikes = DB::table('postlikes')->get();
-    
-        
+
+
     //     foreach ($allPosts as &$post) {
     //         $post->getPost = DB::table('postlikes')->select('likes', 'dislikes')->where('postlikes.post_id', '=', $post->post_id)->get();
     //         $imageFileName = DB::table('posts')->select('imageFile')->where('imageFile', '=', $post->imageFile)->get();
-            
+
     //         if ($post->imageFile != '')
     //             $post->imageFile = url("images/" . $imageFileName[0]->imageFile);
     //         else
@@ -224,7 +252,18 @@ class FrontendConnectorController extends Controller
     //         $post->totalreplies = DB::table('replycomments')->select('replydescription')->where('replycomments.post_id', '=', $post->post_id)->count();
     //     }
 
-    //     dd($allPosts);
+    //     $profilepicFileNames = DB::table('users')->select('user_id','ProfilePic')->where('ProfilePic', '!=', null)->get();
+ 
+    //     foreach ($profilepicFileNames as &$profilepic) {
+            
+    //         if ($profilepic != '' || $profilepic != null)
+    //             $profilepic->pics = url("profilepics/" . $profilepic->ProfilePic);
+    //         else
+    //             $profilepic->pics = '';
+    //     }
+
+    //     dd($profilepicFileNames);
+      
     // }
 
 } // **** Class Ends *****

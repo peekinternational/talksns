@@ -22,12 +22,19 @@ import { AuthGuardService } from './services/authguard.service';
 import { DeactivateGuardService } from './services/deactivateguard.service';
 import { ReversePipe } from './shared/reverse.pipe';
 import { ClearspaceDirective } from './shared/clearspace.directive';
+import { TimelineComponent } from './landingpage/timeline/timeline.component';
+import { LandingpageComponent } from './landingpage/landingpage.component';
 
 const appRoutes : Routes = [
   {path: '', component: RegisterComponent},
   {path: 'signin', component: SigninComponent, canDeactivate : [DeactivateGuardService]},
-  {path: 'home', component: HomeComponent , canActivate: [AuthGuardService], canDeactivate : [DeactivateGuardService]}, //, canActivate: [AuthGuardService]
-  {path : '**' , component: RegisterComponent}
+  //{path: 'home', component: HomeComponent, canActivate: [AuthGuardService], canDeactivate : [DeactivateGuardService]},
+  {path: 'landingpage', canActivate: [AuthGuardService] ,component: LandingpageComponent ,children: [
+    {path: 'home', component: HomeComponent, canDeactivate : [DeactivateGuardService]},
+    {path: 'timeline', component: TimelineComponent}
+  ]},
+  
+  // {path : '**' , component: RegisterComponent}
 ]
 
 @NgModule({
@@ -38,7 +45,7 @@ const appRoutes : Routes = [
     HomeComponent,
     HeaderComponent,
     FooterComponent,
-    ReversePipe, ClearspaceDirective
+    ReversePipe, ClearspaceDirective, TimelineComponent, LandingpageComponent
   ],
   imports: [
     BrowserModule,
