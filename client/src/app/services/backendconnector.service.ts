@@ -126,7 +126,6 @@ export class BackendConnector {
         );
     }
 
-
     public setCurrentLike(currentPostLike: any) {
         this.quickLike.next(currentPostLike);
     }

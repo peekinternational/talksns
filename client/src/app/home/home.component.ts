@@ -22,9 +22,11 @@ export class HomeComponent implements OnInit {
   createreplies: any;
   usernames: any;
   profilePics: any;
+  loggedInUserProfilePic: any = "";
 
   isPostLiked: boolean = false;
   isPostdisLiked: boolean = false;
+  isProfileFound: boolean = false;
 
   userId: number = 0;
   imageSrc: string = "";
@@ -37,10 +39,11 @@ export class HomeComponent implements OnInit {
   commentReplyStatus: boolean = false;
   replyCommentStatus: boolean = false;
   selectedUploadFile: File = null;
-  setUserProfilePic: any;
+  // setUserProfilePic: any;
 
   constructor(private route: Router, private loginService: LoginStatusService, private cookie: CookieService,
-    private backendService: BackendConnector, private formbuilder: FormBuilder, private chatService: ChatService) { }
+    private backendService: BackendConnector, private formbuilder: FormBuilder, private chatService: ChatService) {
+  }
 
   ngOnInit() {
     this.userId = parseInt(this.cookie.get('authUserId'));
@@ -56,17 +59,8 @@ export class HomeComponent implements OnInit {
         this.createcomments = newpost.comments;
         this.usernames = newpost.usernames;
         this.createreplies = newpost.replies;
-        this.profilePics = newpost.profilepics;
-
-        for (var pics of this.profilePics) {
-          if (pics.user_id == this.userId) {
-            this.setUserProfilePic = pics.pic;
-            break;
-          }
-          else {
-            this.setUserProfilePic = "/assets/pics/noProfile.png";
-          }
-        }
+        this.profilePics = newpost.profilepicsName;
+        this.loggedInUserProfilePic = newpost.loggedInUserProfilepic;
       });
 
     this.backendService.quickLike.subscribe(
@@ -76,6 +70,37 @@ export class HomeComponent implements OnInit {
             this.createlike[i].likes = postLikeData.LikedStatus;
             this.createlike[i].dislikes = postLikeData.dislikedStatus;
             break;
+          }
+        }
+
+        for (var i = 0; i < this.createpost.length; i++) {
+          if (this.createpost[i].post_id == postLikeData.postId) {
+            if (postLikeData.LikedStatus && !postLikeData.dislikedStatus) {
+              this.createpost[i].totalLiked += 1;
+              if (this.createpost[i].totaldisLiked > 0)
+                this.createpost[i].totaldisLiked -= 1;
+              else
+                this.createpost[i].totaldisLiked = 0;
+            }
+            else if (!postLikeData.LikedStatus && postLikeData.dislikedStatus) {
+              if (this.createpost[i].totalLiked > 0)
+                this.createpost[i].totalLiked -= 1;
+              else
+                this.createpost[i].totalLiked = 0;
+
+              this.createpost[i].totaldisLiked += 1;
+            }
+            else if (!postLikeData.LikedStatus && !postLikeData.dislikedStatus) {
+              if (this.createpost[i].totalLiked > 0)
+                this.createpost[i].totalLiked -= 1;
+              else
+                this.createpost[i].totalLiked = 0;
+
+              if (this.createpost[i].totaldisLiked > 0)
+                this.createpost[i].totaldisLiked -= 1;
+              else
+                this.createpost[i].totaldisLiked = 0;
+            }
           }
         }
       });
@@ -121,10 +146,6 @@ export class HomeComponent implements OnInit {
   }
   check() {
     this.show = true;
-  }
-  clearEmptyView() {
-    console.log(this.clearView);
-    this.clearView = true;
   }
 
   MainComment(event, postId: number, textArea: HTMLInputElement) {
@@ -192,6 +213,13 @@ export class HomeComponent implements OnInit {
         this.replyCommentStatus = true;
       }
     }
+  }
+
+  ProfilePicFound() {
+    this.isProfileFound = true;
+  }
+  ProfilePicNotFound() {
+    this.isProfileFound = false;
   }
 
   // goToRoute(nextRoute: string) {

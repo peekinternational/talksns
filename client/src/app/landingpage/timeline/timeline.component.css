@@ -11,6 +11,12 @@
 ***General Styling 
 ===============*/
 
+@media screen and (max-width: 1000px){
+    .resize{
+        width: 60% !important;
+    }
+}
+
 .likedORdisliked{
     color: green;
 }

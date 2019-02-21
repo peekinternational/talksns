@@ -328,13 +328,20 @@
 									<div class="central-meta">
 										<div class="new-postbox">
 											<figure>
-												<img [src]="setUserProfilePic" alt="">
+													<span *ngIf="loggedInUserProfilePic != ''">
+															<img [src]="loggedInUserProfilePic" alt="">
+													</span>
+													<span *ngIf="loggedInUserProfilePic == ''">
+															<img src="/assets/pics/noProfile.png" alt="">
+													</span>
 											</figure>
 											<div class="newpst-input">
 												<form [formGroup]="postingFormGroup">
 													<textarea class="postTextarea" rows="2" placeholder="write something"
 														formControlName="desc" name="desc" #desc></textarea>
+													
 													<img class="img-responsive" [src]="imageSrc">
+													
 													<div class="attachments">
 														<ul>
 															<li>
@@ -366,14 +373,14 @@
 												<div class="user-post">
 													<div class="friend-info">
 														<figure>
-                              <span *ngFor="let pic of profilePics; let j = index">
-																 <span *ngIf="pic.user_id == posts.user_id">
-																   <img [src]="pic.pic" alt="">
+                              <!-- <span *ngFor="let pic of profilePics; let j = index"> -->
+																 <span *ngIf="posts.postUserpic != ''">
+																   <img [src]="posts.postUserpic" alt="">
 																 </span>
-																 <!-- <span *ngIf="j == (profilePics.length-1) && pic.user_id != posts.user_id">
+																 <span *ngIf="posts.postUserpic == ''">
 																		<img src="/assets/pics/noProfile.png" alt="">
-																 </span> -->
-															</span>
+																 </span>
+															<!-- </span> -->
 														</figure>
 
 														<div class="friend-name">
@@ -392,7 +399,7 @@
 																</p>
 															</div>
 
-															<img *ngIf="posts.imageFile != null || posts.imageFile != ''"
+															<img class="resize" *ngIf="posts.imageFile != null || posts.imageFile != ''"
 																[src]="posts?.imageFile" alt="">
 
 															<input type="hidden" [value]="posts.post_id" #postIdField>
@@ -411,7 +418,6 @@
 																			<ins *ngIf="posts.totalcomments > 0">{{posts.totalcomments + posts.totalreplies}}</ins>
 																		</span>
 																	</li>
-
 
 																	<span
 																		*ngFor="let like of createlike ; let j = index">
@@ -475,20 +481,46 @@
 																			<img src="/assets/winkuLandingPage/images/resources/admin2.jpg" alt="" style="float:left">
 																	</span> -->
 																	<div class="post-comt-box">
-																		<span class="comet-avatar">
-																			<img src="/assets/winkuLandingPage/images/resources/admin2.jpg" alt="" style="float:left">
+																		<span>
+																		
+																					<span class="comet-avatar" *ngIf="loggedInUserProfilePic != ''">
+																							<img [src]="loggedInUserProfilePic" alt="" style="width:15%; float:left">
+																					</span>
+																					<span class="comet-avatar" *ngIf="loggedInUserProfilePic == ''">
+																							<img src="/assets/pics/noProfile.png" alt="" style="width:15%; float:left">
+																					</span>
+																		
 																			<textarea class="commentTextarea" [(ngModel)]="commentValue" (keydown.enter)="MainComment($event, posts.post_id, mainComment);false" placeholder="Post your comment" #mainComment></textarea>
 																		</span>
 																		
-                                                                       
-																		<span class="" *ngFor="let comment of createcomments">
-																				<!-- <div *appclearspace="!clearView"><p>asadsa</p></div> -->
+																		<!-- <span *ngIf="isProfileFound==true"> -->
+																			
+																		<!-- </span> -->
 
+																		<span class="" *ngFor="let comment of createcomments">
 																			<ul class="we-comet" *ngIf="comment.post_id == posts.post_id">
 																				<li>
-																						<!-- <div class="comet-avatar"> <img src="" alt=""> </div> -->
+																						<!-- <div class="comet-avatar"> <img src="/assets/pics/noProfile.png" alt=""> </div> -->
+
 																							<div class="we-comment">
 																								<div class="coment-head">
+
+																								 <!-- Commented User Profile Pic set  -->
+																								 <span *ngIf="ProfilePicNotFound() "> </span>
+																								 
+																									<span *ngFor="let pic of profilePics; let p = index">
+																											<span class="comet-avatar" *ngIf="comment.user_id == pic.user_id; else picNotFound"> 
+																												<span *ngIf="ProfilePicFound()"> </span>
+																													<img [src]="pic.picFile" alt="" style=" width: 15px"> 
+																										  	</span>
+																											<ng-template #picNotFound>
+																													<span *ngIf="!isProfileFound && p == (profilePics.length-1)">
+																															<img src="/assets/pics/noProfile.png" alt="" style=" width: 15px"> 
+																													
+																													</span>
+																											</ng-template>
+																									</span>
+
 																									<h5 *ngFor="let names of usernames">
 																										<a href="" title="" *ngIf="comment.user_id==names.user_id">
 																										{{ names.username }}
@@ -502,8 +534,13 @@
 																				</li>
 																				<li *ngIf="commentReplyStatus && comment.post_id == posts.post_id && comment.comment_id == currentReplyId">
 																						<div  style="margin-top: 9px" >
-																								<span class="comet-avatar">            
-																									<img src="/assets/winkuLandingPage/images/resources/admin2.jpg" alt="">
+																								<span>            
+																										<span class="comet-avatar" *ngIf="loggedInUserProfilePic != ''">
+																												<img [src]="loggedInUserProfilePic" alt="" style="width:15%; float:left">
+																										</span>
+																										<span class="comet-avatar" *ngIf="loggedInUserProfilePic == ''">
+																												<img src="/assets/pics/noProfile.png" alt="" style="width:15%; float:left">
+																										</span>
 																									<textarea class="replyComment" style="vertical-align: middle" [(ngModel)]="replyValue" (keydown.enter)="ReplyComment($event, posts.post_id, comment.comment_id, commentReply);false" placeholder="Post your comment" #commentReply></textarea>
 																								</span>
 					
@@ -515,12 +552,28 @@
 
 																				<!-----------------  SHOW INLINE COMMENTS ---------------------------------------------------->
 																				<li>
-                                                                                 <span class="" *ngFor="let reply of createreplies">
+																					
+                                           <span class="" *ngFor="let reply of createreplies">
 																					<ul class="we-comet" *ngIf="reply.post_id == posts.post_id && reply.comment_id == comment.comment_id"> 
 																							<li>
-																									<!-- <div class="comet-avatar"> <img src="" alt=""> </div> -->
 																										<div class="we-reply-comment">
 																											<div class="coment-head">
+
+																												 <!-- Replied User Profile Pic set  -->
+																												 <span *ngIf="ProfilePicNotFound() "> </span>
+
+																												 <span *ngFor="let pic of profilePics; let pr = index">
+																														<span class="comet-avatar" *ngIf="reply.user_id == pic.user_id; else replypicNotFound"> 
+																															<span *ngIf="ProfilePicFound()"> </span>
+																																<img [src]="pic.picFile" alt="" style=" width: 15px"> 
+																															</span>
+																														<ng-template #replypicNotFound>
+																																<span *ngIf="!isProfileFound && pr == (profilePics.length-1)">
+																																		<img src="/assets/pics/noProfile.png" alt="" style=" width: 15px"> 
+																																</span>
+																														</ng-template>
+																												</span>
+
 																												<h5 *ngFor="let names of usernames">
 																													<a href="" title="" *ngIf="reply.user_id==names.user_id">
 																													{{ names.username }}
@@ -536,8 +589,13 @@
 
 																							<li *ngIf="replyCommentStatus && reply.post_id == posts.post_id && reply.comment_id == comment.comment_id && reply.reply_id == currentReplyId">
 																									    <div style="margin-top: 9px" >
-																											<span class="comet-avatar">     
-																												<img src="/assets/winkuLandingPage/images/resources/admin2.jpg" alt="">
+																											<span>     		
+																													<span class="comet-avatar" *ngIf="loggedInUserProfilePic != ''">
+																															<img [src]="loggedInUserProfilePic" alt="" style="width:15%; float:left">
+																													</span>
+																													<span class="comet-avatar" *ngIf="loggedInUserProfilePic == ''">
+																															<img src="/assets/pics/noProfile.png" alt="" style="width:15%; float:left">
+																													</span>
 																												<textarea class="replyComment" style="vertical-align: middle" [(ngModel)]="replyValue" (keydown.enter)="ReplyComment($event, posts.post_id, reply.comment_id, inlineCommentReply);false" placeholder="Post your comment" #inlineCommentReply></textarea>
 																											</span>
 								

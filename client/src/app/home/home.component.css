@@ -15,6 +15,12 @@
     color: green;
 }
 
+@media screen and (max-width: 1000px){
+    .resize{
+        width: 60% !important;
+    }
+}
+
 html,body{
 	font-family: "Muli", "Segoe Ui";
 }

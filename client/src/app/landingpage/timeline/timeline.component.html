@@ -228,8 +228,8 @@
                                     <!-- <img src="/assets/winkuLandingPage/images/resources/user-avatar.jpg" alt=""> -->
                                     <!-- <span *ngFor="let pic of profilePics"> -->
                                         <!-- <span *ngIf="pic.user_id == userId; else showDummyPic"> -->
-                                            <span *ngIf="setUserProfilePic != '' ">
-                                                <img [src]="setUserProfilePic" alt="">
+                                            <span *ngIf="loggedInUserProfilePic != '' ">
+                                                <img [src]="loggedInUserProfilePic" alt="">
                                             </span>
                                          
                                         <!-- </span> -->
@@ -434,7 +434,12 @@
                                     <div class="central-meta">
                                         <div class="new-postbox">
                                             <figure>
-                                                <img [src]="setUserProfilePic" alt="">
+                                                    <span class="comet-avatar" *ngIf="loggedInUserProfilePic != ''">
+                                                            <img [src]="loggedInUserProfilePic" alt="" >
+                                                    </span>
+                                                    <span class="comet-avatar" *ngIf="loggedInUserProfilePic == ''">
+                                                            <img src="/assets/pics/noProfile.png" alt="" >
+                                                    </span>
                                             </figure>
                                             <div class="newpst-input">
                                                 <form [formGroup]="postingFormGroup">
@@ -472,8 +477,12 @@
                                                 <div class="user-post">
                                                     <div class="friend-info">
                                                         <figure>
-                                                            <img src="/assets/winkuLandingPage/images/resources/friend-avatar10.jpg"
-                                                                alt="">
+                                                                <span class="comet-avatar" *ngIf="loggedInUserProfilePic != ''">
+                                                                        <img [src]="loggedInUserProfilePic" alt="" >
+                                                                </span>
+                                                                <span class="comet-avatar" *ngIf="loggedInUserProfilePic == ''">
+                                                                        <img src="/assets/pics/noProfile.png" alt="" >
+                                                                </span>
                                                         </figure>
                                                         <div class="friend-name">
                                                             <ins>
@@ -491,7 +500,7 @@
                                                                 </p>
                                                             </div>
 
-                                                            <img *ngIf="posts.imageFile != null || posts.imageFile != ''"
+                                                            <img class="resize" *ngIf="posts.imageFile != null || posts.imageFile != ''"
                                                                 [src]="posts?.imageFile" alt="">
 
                                                             <input type="hidden" [value]="posts.post_id" #postIdField>
@@ -577,8 +586,15 @@
 																	</span>  -->
                                                                     <div class="post-comt-box">
                                                                         <span class="comet-avatar">
-                                                                            <img [src]="setUserProfilePic"
-                                                                                alt="" style="float:left; width: 15%">
+                                                                            <!-- <img [src]="setUserProfilePic"
+                                                                                alt="" style="float:left; width: 15%"> -->
+                                                                                <span class="comet-avatar" *ngIf="loggedInUserProfilePic != ''">
+                                                                                        <img [src]="loggedInUserProfilePic" alt="" style="width:15%; float:left">
+                                                                                </span>
+                                                                                <span class="comet-avatar" *ngIf="loggedInUserProfilePic == ''">
+                                                                                        <img src="/assets/pics/noProfile.png" alt="" style="width:15%; float:left">
+                                                                                </span>
+
                                                                             <textarea class="commentTextarea"
                                                                                 [(ngModel)]="commentValue"
                                                                                 (keydown.enter)="MainComment($event, posts.post_id, mainComment);false"
@@ -595,6 +611,23 @@
 
                                                                                     <div class="we-comment">
                                                                                         <div class="coment-head">
+
+                                                                                             <!-- Commented User Profile Pic set  -->
+																								 <span *ngIf="ProfilePicNotFound() "> </span>
+																								 
+                                                                                                 <span *ngFor="let pic of profilePics; let p = index">
+                                                                                                         <span class="comet-avatar" *ngIf="comment.user_id == pic.user_id; else picNotFound"> 
+                                                                                                             <span *ngIf="ProfilePicFound()"> </span>
+                                                                                                                 <img [src]="pic.picFile" alt="" style=" width: 15px"> 
+                                                                                                           </span>
+                                                                                                         <ng-template #picNotFound>
+                                                                                                                 <span *ngIf="!isProfileFound && p == (profilePics.length-1)">
+                                                                                                                         <img src="/assets/pics/noProfile.png" alt="" style=" width: 15px"> 
+                                                                                                                 
+                                                                                                                 </span>
+                                                                                                         </ng-template>
+                                                                                                 </span>
+
                                                                                             <h5
                                                                                                 *ngFor="let names of usernames">
                                                                                                 <a href="" title=""
@@ -617,7 +650,12 @@
                                                                                     *ngIf="commentReplyStatus && comment.post_id == posts.post_id && comment.comment_id == currentReplyId">
                                                                                     <div style="margin-top: 9px">
                                                                                         <span class="comet-avatar">
-                                                                                            <img [src]="setUserProfilePic" style="width: 15%" alt="">
+                                                                                                <span class="comet-avatar" *ngIf="loggedInUserProfilePic != ''">
+                                                                                                        <img [src]="loggedInUserProfilePic" alt="" style="width:15%; float:left">
+                                                                                                </span>
+                                                                                                <span class="comet-avatar" *ngIf="loggedInUserProfilePic == ''">
+                                                                                                        <img src="/assets/pics/noProfile.png" alt="" style="width:15%; float:left">
+                                                                                                </span>
                                                                                             <textarea
                                                                                                 class="replyComment"
                                                                                                 style="vertical-align: middle"
@@ -641,8 +679,23 @@
 
                                                                                                 <div
                                                                                                     class="we-reply-comment">
-                                                                                                    <div
-                                                                                                        class="coment-head">
+                                                                                                    <div class="coment-head">
+
+                                                                                                         <!-- Replied User Profile Pic set  -->
+																												 <span *ngIf="ProfilePicNotFound() "> </span>
+
+																												 <span *ngFor="let pic of profilePics; let pr = index">
+																														<span class="comet-avatar" *ngIf="reply.user_id == pic.user_id; else replypicNotFound"> 
+																															<span *ngIf="ProfilePicFound()"> </span>
+																																<img [src]="pic.picFile" alt="" style=" width: 15px"> 
+																															</span>
+																														<ng-template #replypicNotFound>
+																																<span *ngIf="!isProfileFound && pr == (profilePics.length-1)">
+																																		<img src="/assets/pics/noProfile.png" alt="" style=" width: 15px"> 
+																																</span>
+																														</ng-template>
+                                                                                                                </span>
+                                                                                                                
                                                                                                         <h5
                                                                                                             *ngFor="let names of usernames">
                                                                                                             <a href=""
@@ -670,8 +723,12 @@
                                                                                                     style="margin-top: 9px">
                                                                                                     <span
                                                                                                         class="comet-avatar">
-                                                                                                        <img [src]="setUserProfilePic" style=" width: 15%"
-                                                                                                            alt="">
+                                                                                                        <span class="comet-avatar" *ngIf="loggedInUserProfilePic != ''">
+                                                                                                                <img [src]="loggedInUserProfilePic" alt="" style="width:15%; float:left">
+                                                                                                        </span>
+                                                                                                        <span class="comet-avatar" *ngIf="loggedInUserProfilePic == ''">
+                                                                                                                <img src="/assets/pics/noProfile.png" alt="" style="width:15%; float:left">
+                                                                                                        </span>
                                                                                                         <textarea
                                                                                                             class="replyComment"
                                                                                                             style="vertical-align: middle"
