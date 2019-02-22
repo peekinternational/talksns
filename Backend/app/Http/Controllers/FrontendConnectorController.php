@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use DB;
-use File;
 
 class FrontendConnectorController extends Controller
 {
@@ -31,7 +30,7 @@ class FrontendConnectorController extends Controller
         if (DB::table('users')->where('email', $email)->exists()) {
             return response()->json(['status' => false, 'message' => "emailtaken"]); // send response
         }
-        
+
         // insert user signUp data in database
         $dataInserted = DB::table('users')->insert([
             'username' => $username,
@@ -52,7 +51,7 @@ class FrontendConnectorController extends Controller
     public function signIn(Request $request)
     {
         // extract signIn data from array-request
-        $emailOrusername = $request->emailORusername;//$request[0]; // email or password
+        $emailOrusername = $request->emailORusername; //$request[0]; // email or password
         $password = $request->password; // password
 
         // get userData from database if email exist
@@ -60,13 +59,13 @@ class FrontendConnectorController extends Controller
 
         if ($user == null) // if email not exist then check username
         $user = DB::table('users')->where('username', $emailOrusername)->first();
-        
+
         // if user data is received from DB
         if ($user != null) {
             // (if userName OR email matches) AND (Password matches)
             if (($user->email == $emailOrusername || $user->username == $emailOrusername) && $user->password == $password) {
                 return response()->json(['status' => true, 'data' => $user]);
-            } 
+            }
             // (if userName OR email not matches) OR (Password not matches)
             else if (($user->email != $emailOrusername || $user->username != $emailOrusername) || $user->password != $password) {
                 return response()->json(['status' => false]);
@@ -125,7 +124,6 @@ class FrontendConnectorController extends Controller
             DB::table('postlikes')->where('user_id', '=', $userId)->where('post_id', '=', $postId)->update(['dislikes' => $dislikeStatus]);
 
             return response()->json($this->getandSendAllPostData($userId));
-
         } else {
             $dataInserted = DB::table('postlikes')->insert([
                 'user_id' => $userId,
@@ -213,9 +211,9 @@ class FrontendConnectorController extends Controller
             $imageFileName = DB::table('posts')->select('imageFile')->where('imageFile', '=', $post->imageFile)->get();
 
             if ($post->imageFile != '')
-                $post->imageFile = url("images/" . $imageFileName[0]->imageFile);
+            $post->imageFile = url("images/" . $imageFileName[0]->imageFile);
             else
-                $post->imageFile = '';
+            $post->imageFile = '';
 
             foreach ($profilepicFileNames as $profilepic) {
                 $profilePicFiles[] = url("images/" . $imageFileName[0]->imageFile);
@@ -293,5 +291,5 @@ class FrontendConnectorController extends Controller
     //     }
     //     dd($profilepicFileNames);
     // }
+} 
 
-} // **** Class Ends *****

@@ -14,6 +14,32 @@ background-color: rgba(36, 119, 196, 0.918);
 font-size: 30px;
 }
 
+.dropDownMenuOveride{
+    transform: translate3d(-126px, 48px, 0px) !important;  
+}
+
+.dropDownUserOveride{
+    min-width: 16rem !important;
+    height: 100px;
+    transform: translate3d(-195px, 40px, 0px) !important
+}
+
+.settingsOveride{
+ margin-top: 14px;
+}
+
+.dropDownOveride{
+    border-radius: 50%;
+}
+
+.removeDropdownArrow::after{
+    content: none !important;
+}
+
+.dropdownItemOveride{
+    margin-top: 0em;
+}
+
 .header {
     width: 100%;
     height: 80px;
@@ -642,7 +668,7 @@ header.sticky {
     background: #fff;
     display: block;
     height: 60px;
-    padding: 0 48px;
+    padding: 0 30px;
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
     z-index: 99;
     position: relative;
@@ -691,6 +717,7 @@ header.sticky {
 }
 
 .top-area .user-img {
+
     cursor: pointer;
     display: inline-block;
     vertical-align: middle;

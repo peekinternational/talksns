@@ -24,6 +24,7 @@ import { ReversePipe } from './shared/reverse.pipe';
 import { ClearspaceDirective } from './shared/clearspace.directive';
 import { TimelineComponent } from './landingpage/timeline/timeline.component';
 import { LandingpageComponent } from './landingpage/landingpage.component';
+import { DropdownDirective } from './shared/dropdown.directive';
 
 const appRoutes : Routes = [
   {path: '', component: RegisterComponent},
@@ -45,7 +46,7 @@ const appRoutes : Routes = [
     HomeComponent,
     HeaderComponent,
     FooterComponent,
-    ReversePipe, ClearspaceDirective, TimelineComponent, LandingpageComponent
+    ReversePipe, ClearspaceDirective, TimelineComponent, LandingpageComponent, DropdownDirective
   ],
   imports: [
     BrowserModule,

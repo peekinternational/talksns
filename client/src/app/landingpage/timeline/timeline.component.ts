@@ -1,19 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { LoginStatusService } from 'src/app/services/loginstatus.service';
 import { BackendConnector } from 'src/app/services/backendconnector.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
 import { ChatService } from 'src/app/services/chat.service';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-timeline',
   templateUrl: './timeline.component.html',
   styleUrls: ['./timeline.component.css']
 })
-export class TimelineComponent implements OnInit {
+export class TimelineComponent implements OnInit, OnDestroy {
 
-  postingFormGroup: FormGroup
+  postSubscription: Subscription;
+  getPostSubscription: Subscription;
+  postingFormGroup: FormGroup;
   createpost: any;
   createlike: any;
   createcomments: any;
@@ -51,7 +54,7 @@ export class TimelineComponent implements OnInit {
       'desc': [''],
     });
 
-    this.chatService.getPost().subscribe(
+    this.getPostSubscription = this.chatService.getPost().subscribe(
       (newpost: any) => {
         this.createpost = newpost.posts;
         this.createlike = newpost.postlikes;
@@ -62,44 +65,68 @@ export class TimelineComponent implements OnInit {
         this.loggedInUserProfilePic = newpost.loggedInUserProfilepic;
       });
 
-    this.backendService.quickLike.subscribe(
+    this.postSubscription = this.backendService.quickLike.subscribe(
       (postLikeData: any) => {
         for (var i = 0; i < this.createlike.length; i++) {
           if (this.createlike[i].user_id == this.cookie.get('authUserId') && postLikeData.postId == this.createlike[i].post_id) {
+
+            for (var j = 0; j < this.createpost.length; j++) {
+
+              if (this.createpost[j].post_id == postLikeData.postId) {
+
+                if ((!this.createlike[i].likes && !this.createlike[i].dislikes) && (postLikeData.LikedStatus && !postLikeData.dislikedStatus)) {
+                  this.createpost[j].totalLiked += 1; break;
+                }
+                else if ((!this.createlike[i].likes && !this.createlike[i].dislikes) && (!postLikeData.LikedStatus && postLikeData.dislikedStatus)) {
+                  this.createpost[j].totaldisLiked += 1; break;
+                }
+                //********* */
+                else if ((this.createlike[i].likes && !this.createlike[i].dislikes) && (!postLikeData.LikedStatus && !postLikeData.dislikedStatus)) {
+                  this.createpost[j].totalLiked -= 1;
+                  if (this.createpost[j].totalLiked <= 0)
+                    this.createpost[j].totalLiked = 0;
+                  break;
+                }
+                else if ((this.createlike[i].likes && !this.createlike[i].dislikes) && (postLikeData.LikedStatus && !postLikeData.dislikedStatus)) {
+                  this.createpost[j].totalLiked -= 1;
+                  if (this.createpost[j].totalLiked <= 0)
+                    this.createpost[j].totalLiked = 0;
+                  break;
+                }
+                else if ((this.createlike[i].likes && !this.createlike[i].dislikes) && (!postLikeData.LikedStatus && postLikeData.dislikedStatus)) {
+                  this.createpost[j].totalLiked -= 1;
+                  this.createpost[j].totaldisLiked += 1;
+                  if (this.createpost[j].totalLiked <= 0)
+                    this.createpost[j].totalLiked = 0;
+                  break;
+                }
+                //********* */
+                else if ((!this.createlike[i].likes && this.createlike[i].dislikes) && (!postLikeData.LikedStatus && !postLikeData.dislikedStatus)) {
+                  this.createpost[j].totaldisLiked -= 1;
+                  if (this.createpost[j].totaldisLiked <= 0)
+                    this.createpost[j].totaldisLiked = 0;
+                  break;
+                }
+                else if ((!this.createlike[i].likes && this.createlike[i].dislikes) && (!postLikeData.LikedStatus && postLikeData.dislikedStatus)) {
+                  this.createpost[j].totaldisLiked -= 1;
+                  if (this.createpost[j].totaldisLiked <= 0)
+                    this.createpost[j].totaldisLiked = 0;
+                  break;
+                }
+                else if ((!this.createlike[i].likes && this.createlike[i].dislikes) && (postLikeData.LikedStatus && !postLikeData.dislikedStatus)) {
+                  this.createpost[j].totalLiked += 1;
+                  this.createpost[j].totaldisLiked -= 1;
+                  if (this.createpost[j].totaldisLiked <= 0)
+                    this.createpost[j].totaldisLiked = 0;
+                  break;
+                }
+              }
+            }
+
             this.createlike[i].likes = postLikeData.LikedStatus;
             this.createlike[i].dislikes = postLikeData.dislikedStatus;
+
             break;
-          }
-        }
-
-        for (var i = 0; i < this.createpost.length; i++) {
-          if (this.createpost[i].post_id == postLikeData.postId) {
-            if (postLikeData.LikedStatus && !postLikeData.dislikedStatus) {
-              this.createpost[i].totalLiked += 1;
-              if (this.createpost[i].totaldisLiked > 0)
-                this.createpost[i].totaldisLiked -= 1;
-              else
-                this.createpost[i].totaldisLiked = 0;
-            }
-            else if (!postLikeData.LikedStatus && postLikeData.dislikedStatus) {
-              if (this.createpost[i].totalLiked > 0)
-                this.createpost[i].totalLiked -= 1;
-              else
-                this.createpost[i].totalLiked = 0;
-
-              this.createpost[i].totaldisLiked += 1;
-            }
-            else if (!postLikeData.LikedStatus && !postLikeData.dislikedStatus) {
-              if (this.createpost[i].totalLiked > 0)
-                this.createpost[i].totalLiked -= 1;
-              else
-                this.createpost[i].totalLiked = 0;
-
-              if (this.createpost[i].totaldisLiked > 0)
-                this.createpost[i].totaldisLiked -= 1;
-              else
-                this.createpost[i].totaldisLiked = 0;
-            }
           }
         }
       });
@@ -236,4 +263,8 @@ export class TimelineComponent implements OnInit {
     this.isProfileFound = false;
   }
 
+  ngOnDestroy(){
+    this.postSubscription.unsubscribe();
+    this.getPostSubscription.unsubscribe();
+  }
 }

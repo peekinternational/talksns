@@ -1,11 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { LoginStatusService } from '../services/loginstatus.service';
 import { BackendConnector } from '../services/backendconnector.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { ChatService } from '../services/chat.service';
 import { CookieService } from 'ngx-cookie-service';
+import { jitExpression } from '@angular/compiler';
 
 @Component({
   selector: 'app-home',
@@ -13,7 +14,10 @@ import { CookieService } from 'ngx-cookie-service';
   styleUrls: ['./home.component.css', './responsivehome.component.css']
 })
 
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
+
+  postSubscription: Subscription;
+  getPostSubscription: Subscription;
 
   postingFormGroup: FormGroup
   createpost: any;
@@ -29,6 +33,7 @@ export class HomeComponent implements OnInit {
   isProfileFound: boolean = false;
 
   userId: number = 0;
+  index: number = 0;
   imageSrc: string = "";
   commentValue: string = '';
   replyValue: string = '';
@@ -52,7 +57,7 @@ export class HomeComponent implements OnInit {
       'desc': [''],
     });
 
-    this.chatService.getPost().subscribe(
+    this.getPostSubscription = this.chatService.getPost().subscribe(
       (newpost: any) => {
         this.createpost = newpost.posts;
         this.createlike = newpost.postlikes;
@@ -61,48 +66,76 @@ export class HomeComponent implements OnInit {
         this.createreplies = newpost.replies;
         this.profilePics = newpost.profilepicsName;
         this.loggedInUserProfilePic = newpost.loggedInUserProfilepic;
+       
       });
 
-    this.backendService.quickLike.subscribe(
+    this.postSubscription = this.backendService.quickLike.subscribe(
       (postLikeData: any) => {
+  
         for (var i = 0; i < this.createlike.length; i++) {
           if (this.createlike[i].user_id == this.cookie.get('authUserId') && postLikeData.postId == this.createlike[i].post_id) {
+
+            for (var j = 0; j < this.createpost.length; j++) {
+
+              if (this.createpost[j].post_id == postLikeData.postId) {
+
+                if ((!this.createlike[i].likes && !this.createlike[i].dislikes) && (postLikeData.LikedStatus && !postLikeData.dislikedStatus)) {
+                  this.createpost[j].totalLiked += 1; break;
+                }
+                else if ((!this.createlike[i].likes && !this.createlike[i].dislikes) && (!postLikeData.LikedStatus && postLikeData.dislikedStatus)) {
+                  this.createpost[j].totaldisLiked += 1; break;
+                }
+                //********* */
+                else if ((this.createlike[i].likes && !this.createlike[i].dislikes) && (!postLikeData.LikedStatus && !postLikeData.dislikedStatus)) {
+                  this.createpost[j].totalLiked -= 1;
+                  if (this.createpost[j].totalLiked <= 0)
+                    this.createpost[j].totalLiked = 0;
+                  break;
+                }
+                else if ((this.createlike[i].likes && !this.createlike[i].dislikes) && (postLikeData.LikedStatus && !postLikeData.dislikedStatus)) {
+                  this.createpost[j].totalLiked -= 1;
+                  if (this.createpost[j].totalLiked <= 0)
+                    this.createpost[j].totalLiked = 0;
+                  break;
+                }
+                else if ((this.createlike[i].likes && !this.createlike[i].dislikes) && (!postLikeData.LikedStatus && postLikeData.dislikedStatus)) {
+                  this.createpost[j].totalLiked -= 1;
+                  this.createpost[j].totaldisLiked += 1;
+                  if (this.createpost[j].totalLiked <= 0)
+                    this.createpost[j].totalLiked = 0;
+                  break;
+                }
+                //********* */
+                else if ((!this.createlike[i].likes && this.createlike[i].dislikes) && (!postLikeData.LikedStatus && !postLikeData.dislikedStatus)) {
+                  this.createpost[j].totaldisLiked -= 1;
+                  if (this.createpost[j].totaldisLiked <= 0)
+                    this.createpost[j].totaldisLiked = 0;
+                  break;
+                }
+                else if ((!this.createlike[i].likes && this.createlike[i].dislikes) && (!postLikeData.LikedStatus && postLikeData.dislikedStatus)) {
+                  this.createpost[j].totaldisLiked -= 1;
+                  if (this.createpost[j].totaldisLiked <= 0)
+                    this.createpost[j].totaldisLiked = 0;
+                  break;
+                }
+                else if ((!this.createlike[i].likes && this.createlike[i].dislikes) && (postLikeData.LikedStatus && !postLikeData.dislikedStatus)) {
+                  this.createpost[j].totalLiked += 1;
+                  this.createpost[j].totaldisLiked -= 1;
+                  if (this.createpost[j].totaldisLiked <= 0)
+                    this.createpost[j].totaldisLiked = 0;
+                  break;
+                }
+              }
+            }
+
             this.createlike[i].likes = postLikeData.LikedStatus;
             this.createlike[i].dislikes = postLikeData.dislikedStatus;
+
             break;
           }
         }
 
-        for (var i = 0; i < this.createpost.length; i++) {
-          if (this.createpost[i].post_id == postLikeData.postId) {
-            if (postLikeData.LikedStatus && !postLikeData.dislikedStatus) {
-              this.createpost[i].totalLiked += 1;
-              if (this.createpost[i].totaldisLiked > 0)
-                this.createpost[i].totaldisLiked -= 1;
-              else
-                this.createpost[i].totaldisLiked = 0;
-            }
-            else if (!postLikeData.LikedStatus && postLikeData.dislikedStatus) {
-              if (this.createpost[i].totalLiked > 0)
-                this.createpost[i].totalLiked -= 1;
-              else
-                this.createpost[i].totalLiked = 0;
 
-              this.createpost[i].totaldisLiked += 1;
-            }
-            else if (!postLikeData.LikedStatus && !postLikeData.dislikedStatus) {
-              if (this.createpost[i].totalLiked > 0)
-                this.createpost[i].totalLiked -= 1;
-              else
-                this.createpost[i].totalLiked = 0;
-
-              if (this.createpost[i].totaldisLiked > 0)
-                this.createpost[i].totaldisLiked -= 1;
-              else
-                this.createpost[i].totaldisLiked = 0;
-            }
-          }
-        }
       });
 
     this.backendService.getPost();
@@ -117,16 +150,16 @@ export class HomeComponent implements OnInit {
   }
 
   onImageUpload(event) {
-    if (this.selectedUploadFile == null) {
-      this.selectedUploadFile = <File>event.target.files[0];
+    //if (this.selectedUploadFile == null) {
+    this.selectedUploadFile = <File>event.target.files[0];
 
-      if (event.target.files && event.target.files[0]) {
-        const file = event.target.files[0];
-        const reader = new FileReader();
-        reader.onload = e => this.imageSrc = reader.result as string;
-        reader.readAsDataURL(file);
-      }
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = e => this.imageSrc = reader.result as string;
+      reader.readAsDataURL(file);
     }
+    //}
   }
 
   onPostLike(postId: number, isLiked: number) {
@@ -222,23 +255,6 @@ export class HomeComponent implements OnInit {
     this.isProfileFound = false;
   }
 
-  // goToRoute(nextRoute: string) {
-  //   this.loginService.setNextRouteName(nextRoute);
-  //   this.route.navigate(['landingpage/timeline']);
-  // }
-
-  // canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
-  //   if (!this.loginService.getuserLogedinStatus()) {
-  //     return true;
-  //   }
-  //   else {
-  //     console.log(this.route.url);
-  //     console.log("nextRoute: " + this.nextRouteName);
-  //     this.route.navigate(['landingpage/home']);
-  //     return false;
-  //   }
-  // }
-
   canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
 
     if (this.loginService.getNextRouteName() != "")
@@ -251,4 +267,8 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  ngOnDestroy(){
+    this.postSubscription.unsubscribe();
+    this.getPostSubscription.unsubscribe();
+  }
 }
