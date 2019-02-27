@@ -19,8 +19,8 @@ font-size: 30px;
 }
 
 .dropDownUserOveride{
-    min-width: 16rem !important;
-    height: 100px;
+    min-width: 20rem !important;
+    height: auto;
     transform: translate3d(-195px, 40px, 0px) !important
 }
 

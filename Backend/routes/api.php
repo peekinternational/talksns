@@ -32,3 +32,5 @@ Route::post("/comment", "FrontendConnectorController@comments");
 Route::post("/reply", "FrontendConnectorController@replies");
 
 Route::post("/profilepic", "FrontendConnectorController@profilePic");
+Route::post("/setfriendrequest", "FrontendConnectorController@friendRequest");
+Route::post("/friendrequestUpdate", "FrontendConnectorController@getAddFriendsData");

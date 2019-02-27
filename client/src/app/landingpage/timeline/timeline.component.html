@@ -231,6 +231,10 @@
                                             <span *ngIf="loggedInUserProfilePic != '' ">
                                                 <img [src]="loggedInUserProfilePic" alt="">
                                             </span>
+
+                                            <span *ngIf="loggedInUserProfilePic == '' ">
+                                                 <img src="/assets/pics/noProfile.png" alt="">
+                                            </span>
                                          
                                         <!-- </span> -->
 

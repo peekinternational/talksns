@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { BackendConnector } from './../services/backendconnector.service';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { BackendConnector } from '../services/backendconnector.service';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { LoginStatusService } from '../services/loginstatus.service';
 import { CookieService } from 'ngx-cookie-service';
+import { Subscription } from 'rxjs';
+import { ChatService } from '../services/chat.service';
 
 @Component({
   selector: 'app-header',
@@ -12,18 +14,31 @@ import { CookieService } from 'ngx-cookie-service';
 })
 export class HeaderComponent implements OnInit {
 
+  addFriendSubscription: Subscription;
   signinForm: FormGroup;
   isUserLoggedIn: boolean; // is user in logIn state or not 
   showLoginForm: boolean; // loginForm on Header is visible or not
 
+  //usernames: any;
+  friendSuggestion: any;
+  friendRequest: any;
+  sentRequest: any;
+  userId: number = 0;
+  sentRequestFoundStatus: boolean = false;
+
   constructor(private connectorService: BackendConnector, private loginService: LoginStatusService,
-    private formBuilder: FormBuilder, private router: Router, private cookie: CookieService) {
+    private formBuilder: FormBuilder, private router: Router, private cookie: CookieService,
+    private chatService: ChatService) {
+
+    this.userId = parseInt(this.cookie.get('authUserId'));
 
     //Initialize formGroup with initial values and validators
     this.signinForm = this.formBuilder.group({
       EmailUsername: ['', [Validators.required]],
       password: ['', [Validators.required]]
     });
+
+    //this.connectorService.getFriendRequestData();
   }
 
   ngOnInit() {
@@ -50,6 +65,20 @@ export class HeaderComponent implements OnInit {
         this.isUserLoggedIn = userLoginStatus;
       }
     );
+
+    this.updateFriendList();
+  }
+
+  updateFriendList() {
+    this.addFriendSubscription = this.chatService.getRequest().subscribe(
+      (friendsData: any) => {
+        this.friendSuggestion = friendsData.friendSuggestions;
+        this.friendRequest = friendsData.friendRequestData;
+        this.sentRequest = friendsData.requestSentData;
+        console.log(this.friendSuggestion);
+        console.log(this.friendRequest);
+        console.log(this.sentRequest);
+      });
   }
 
   onSignIn() {   // if user SignIn
@@ -93,7 +122,7 @@ export class HeaderComponent implements OnInit {
             this.loginService.setUserPassword(password);  // store password
             this.router.navigate(['/signin']);
           }
-          else { 
+          else {
             this.loginService.activateLogin(); // update LoggedIn status
             this.loginService.deActivateLoginForm(); // deActivate loginForm in headers
             this.cookie.set("email", EmailorUsername); // store user data in cookie service
@@ -103,7 +132,18 @@ export class HeaderComponent implements OnInit {
         }
       );
     }
+  }
 
+  sendFriendRequest(receiverId: number) {
+    this.connectorService.setFriendRequest(receiverId, 'sent');
+  }
+
+  acceptFriendRequest(senderId: number) {
+    this.connectorService.FriendRequestUpdate(senderId, 'accept');
+  }
+
+  rejectFriendRequest(senderId: number) {
+    this.connectorService.FriendRequestUpdate(senderId, 'reject');
   }
 
   // Show main-page (i.e. Register Component)
@@ -118,6 +158,7 @@ export class HeaderComponent implements OnInit {
   // SignOut, clear cookie and navigate to main-page
   Signout() {
     this.cookie.delete("email");
+    this.cookie.delete("authUserId");
     this.loginService.deActivateLogin();
     this.loginService.activateLoginForm();
     this.signinForm.reset();
@@ -128,7 +169,16 @@ export class HeaderComponent implements OnInit {
 
   goToRoute(nextRoute: string) {
     this.loginService.setNextRouteName(nextRoute);
-    //this.route.navigate(['landingpage/timeline']);
   }
 
+  sentRequestFound() {
+    this.sentRequestFoundStatus = true;
+  }
+  sentRequestUnfound() {
+    this.sentRequestFoundStatus = false;
+  }
+
+  ngOnDestroy() {
+    this.addFriendSubscription.unsubscribe();
+  }
 }

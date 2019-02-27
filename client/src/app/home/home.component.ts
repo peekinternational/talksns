@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { LoginStatusService } from '../services/loginstatus.service';
@@ -6,7 +6,7 @@ import { BackendConnector } from '../services/backendconnector.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { ChatService } from '../services/chat.service';
 import { CookieService } from 'ngx-cookie-service';
-import { jitExpression } from '@angular/compiler';
+import { HeaderComponent } from '../header/header.component';
 
 @Component({
   selector: 'app-home',
@@ -44,11 +44,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   commentReplyStatus: boolean = false;
   replyCommentStatus: boolean = false;
   selectedUploadFile: File = null;
-  // setUserProfilePic: any;
 
   constructor(private route: Router, private loginService: LoginStatusService, private cookie: CookieService,
     private backendService: BackendConnector, private formbuilder: FormBuilder, private chatService: ChatService) {
-  }
+    }
 
   ngOnInit() {
     this.userId = parseInt(this.cookie.get('authUserId'));
@@ -57,6 +56,9 @@ export class HomeComponent implements OnInit, OnDestroy {
       'desc': [''],
     });
 
+    this.backendService.getPost();
+    this.backendService.getFriendRequestData();
+
     this.getPostSubscription = this.chatService.getPost().subscribe(
       (newpost: any) => {
         this.createpost = newpost.posts;
@@ -64,9 +66,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.createcomments = newpost.comments;
         this.usernames = newpost.usernames;
         this.createreplies = newpost.replies;
-        this.profilePics = newpost.profilepicsName;
+        this.profilePics = newpost.profilepics;
         this.loggedInUserProfilePic = newpost.loggedInUserProfilepic;
-       
       });
 
     this.postSubscription = this.backendService.quickLike.subscribe(
@@ -134,12 +135,9 @@ export class HomeComponent implements OnInit, OnDestroy {
             break;
           }
         }
-
-
       });
 
-    this.backendService.getPost();
-
+  
   } // *** OnInit Ends *************
 
   public addMyPost(desc: string) {

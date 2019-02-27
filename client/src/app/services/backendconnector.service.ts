@@ -80,12 +80,9 @@ export class BackendConnector {
         return this.http.post("http://192.168.100.18:8000/api/profilepic", fd).subscribe(
             (response: any) => {
                 this.chatService.sendPost(response);
-                //console.log(response);
             }
         );
     }
-
-
 
     public getPost() {
         return this.http.post("http://192.168.100.18:8000/api/retrievepost", { 'userId': this.cookie.get('authUserId') }).subscribe(
@@ -101,7 +98,8 @@ export class BackendConnector {
 
         return this.http.post("http://192.168.100.18:8000/api/postlike", postLikeData).subscribe(
             (response: any) => {
-                //this.chatService.sendPost(response);
+                this.chatService.sendPost(response);
+                console.log(response);
             }
         );
     }
@@ -122,6 +120,36 @@ export class BackendConnector {
         return this.http.post("http://192.168.100.18:8000/api/reply", replyData).subscribe(
             (response: any) => {
                 this.chatService.sendPost(response);
+            }
+        );
+    }
+    
+    public setFriendRequest(receiverId: number, requestStatus: string){
+        const friendRequestData = { 'userId': this.cookie.get('authUserId'), 'receiverId': receiverId, 'requestStatus': requestStatus}
+      
+        return this.http.post("http://192.168.100.18:8000/api/setfriendrequest", friendRequestData).subscribe(
+            (response: any) => {
+                this.chatService.sendFriendRequest(response);
+            }
+        );
+    }
+
+    public FriendRequestUpdate(senderId: number, requestStatus: string){
+        const friendRequestData = {'userId': this.cookie.get('authUserId'), 'senderId': senderId, 'requestStatus': requestStatus}
+      
+        return this.http.post("http://192.168.100.18:8000/api/friendrequestUpdate", friendRequestData).subscribe(
+            (response: any) => {
+                this.chatService.sendFriendRequest(response);
+            }
+        );
+    }
+
+    public getFriendRequestData(){
+        const friendRequestData = {'userId': this.cookie.get('authUserId')};
+      
+        return this.http.post("http://192.168.100.18:8000/api/friendrequestUpdate", friendRequestData).subscribe(
+            (response: any) => {
+                this.chatService.sendFriendRequest(response);
             }
         );
     }

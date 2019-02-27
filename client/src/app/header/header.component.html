@@ -44,65 +44,127 @@
             </li>
             <li>
                 <div class="dropdown">
-                    <a title="Messages" class="dropdown-toggle dropDownOveride removeDropdownArrow"
-                        data-toggle="dropdown">
+                    <a title="users" class="dropdown-toggle dropDownOveride removeDropdownArrow" data-toggle="dropdown">
                         <i class="fa fa-users"></i>
                         <span>12</span>
                     </a>
 
                     <div class="dropdown-menu dropDownUserOveride">
 
-                    </div>
-                </div>
+            <li class="nav-item dropdown">
+                <span class="d-lg-none">
+                    <span class="badge badge-pill badge-warning">5 new</span>
+                </span>
+                <span class="indicator text-warning d-none d-lg-block">
+                    <i class="fa fa-fw fa-circle"></i>
+                </span>
 
+                <span>
+                    <h6 style="text-align: center"> Friend Requests </h6>
+                    <span class="dropdown-item" *ngFor="let request of friendRequest">
+                        <span *ngIf="request.ProfilePic != ''; else dummyPicR">
+                            <img class="rounded-circle" style="width: 50px; height: 50px;" [src]="request.ProfilePic">
+                        </span>
+                        <ng-template #dummyPicR>
+                            <img style="width: 20%" src="/assets/pics/noProfile.png">
+                        </ng-template>
+                        <div class="text-left user-itemC"
+                            style="display: inline-block; margin-left: 10px; width: 100px;">
+                            {{request.username}}
+                        </div>
+                        <span class="text-right">
+                            <input type="button" class="btn btn-primary btn-sm" (click)="acceptFriendRequest(request.user_id)" value="Accept">
+                            <input type="button" class="btn btn-danger btn-sm" (click)="rejectFriendRequest(request.user_id)" value="Reject">
+                        </span>
+                    </span>
+                </span>
+                <hr>
+                <span>
+                    <h6 style="text-align: center"> Friend Suggestions</h6>
+                    <span class="dropdown-item" *ngFor="let user of friendSuggestion">
+                        <span *ngIf="user.ProfilePic != null; else dummyPic">
+                            <img class="rounded-circle" style="width: 50px; height: 50px;" [src]="user.ProfilePic">
+                        </span>
+                        <ng-template #dummyPic>
+                            <img style="width: 20%" src="assets/pics/noProfile.png">
+                        </ng-template>
+
+                        <div class="text-left user-itemC"
+                            style="display: inline-block; margin-left: 10px; width: 100px;">
+                            {{user.username}}
+                        </div>
+                        <span class="text-right" *ngIf="sentRequest != null">
+                            <span *ngIf="sentRequestUnfound()"></span>
+
+                            <span *ngFor="let sentrequest of sentRequest; let s = index">
+                                <span *ngIf="sentrequest.user_id == user.user_id ; else showSendButtons">
+                                    <span *ngIf="sentRequestFound()"></span>
+                                    <span> Request Sent </span>
+                                </span>
+                                <ng-template #showSendButtons>
+                                   <span *ngIf="s == (sentRequest.length-1) && !sentRequestFoundStatus">
+                                     <input type="button" class="btn btn-primary btn-sm" (click)="sendFriendRequest(user.user_id)" value="Send Request">
+                                   </span>
+                                </ng-template>
+                            </span>
+
+                        </span>
+                        <span class="text-right" *ngIf="sentRequest == null || sentRequest == ''">
+                            <input type="button" class="btn btn-primary btn-sm" (click)="sendFriendRequest(user.user_id)" value="Send Request">
+                        </span>
+                    </span>
+                </span>
             </li>
-
-
-
-        </ul>
-
-
-    </div> <!-- TOP Area End -->
-
-    <!-- ***************** LOGIN FORM ************************************************* -->
-    <div class="top-area">
-
-        <!-- Header Buttons -->
-        <!-- If loginForm is invisible then show singUp button -->
-        <div *ngIf="!showLoginForm" class="col-xs-6 col-sm-6 col-md-4 col-lg-3 col-xl-3 alignCenter">
-            <button *ngIf="!isUserLoggedIn" class="btn btn-success" (click)="LoadSignUp()" style="cursor: pointer;">
-                Signup </button>
-        </div>
-        <!-- If loginForm is visible then show singIn button on small screens -->
-        <div *ngIf="showLoginForm" class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-3 ">
-            <button class="btn btn-success displayMe" routerLink="/signin" style="cursor: pointer;"> Signin
-            </button>
-        </div>
-
-        <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9 col-xl-9 HideMe" style="float:right" *ngIf="showLoginForm">
-            <form [formGroup]="signinForm" (ngSubmit)="onSignIn()">
-                <div class="row" style="float:right;">
-
-                    <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-xl-5">
-                        <label class="textColor" style=" margin: 0;">email or username</label>
-                        <input type="text" style="width:90%" placeholder="enter email or username"
-                            formControlName="EmailUsername">
-                    </div>
-
-                    <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-xl-5">
-                        <label class="textColor" style="margin: 0;">password</label>
-                        <input type="password" style="width:90%" placeholder="enter password"
-                            formControlName="password">
-                    </div>
-
-                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2" style="margin-top: 25px">
-                        <button type="submit" class="btn btn-primary"
-                            style="background-color:rgb(135, 162, 243)">Login</button>
-                    </div>
-
-                </div>
-            </form>
-        </div>
-        <!-- ***************************************************************************** -->
     </div>
+</div>
+
+</li>
+
+
+
+</ul>
+
+
+</div> <!-- TOP Area End -->
+
+<!-- ***************** LOGIN FORM ************************************************* -->
+<div class="top-area">
+
+    <!-- Header Buttons -->
+    <!-- If loginForm is invisible then show singUp button -->
+    <div *ngIf="!showLoginForm" class="col-xs-6 col-sm-6 col-md-4 col-lg-3 col-xl-3 alignCenter">
+        <button *ngIf="!isUserLoggedIn" class="btn btn-success" (click)="LoadSignUp()" style="cursor: pointer;">
+            Signup </button>
+    </div>
+    <!-- If loginForm is visible then show singIn button on small screens -->
+    <div *ngIf="showLoginForm" class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-3 ">
+        <button class="btn btn-success displayMe" routerLink="/signin" style="cursor: pointer;"> Signin
+        </button>
+    </div>
+
+    <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9 col-xl-9 HideMe" style="float:right" *ngIf="showLoginForm">
+        <form [formGroup]="signinForm" (ngSubmit)="onSignIn()">
+            <div class="row" style="float:right;">
+
+                <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-xl-5">
+                    <label class="textColor" style=" margin: 0;">email or username</label>
+                    <input type="text" style="width:90%" placeholder="enter email or username"
+                        formControlName="EmailUsername">
+                </div>
+
+                <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-xl-5">
+                    <label class="textColor" style="margin: 0;">password</label>
+                    <input type="password" style="width:90%" placeholder="enter password" formControlName="password">
+                </div>
+
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2" style="margin-top: 25px">
+                    <button type="submit" class="btn btn-primary"
+                        style="background-color:rgb(135, 162, 243)">Login</button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+    <!-- ***************************************************************************** -->
+</div>
 </div><!-- topbar -->

@@ -1,11 +1,11 @@
-import {share} from 'rxjs/operators';
+import { share } from 'rxjs/operators';
 import * as io from 'socket.io-client';
-import { Observable} from 'rxjs';
+import { Observable } from 'rxjs';
 
 export class ChatService {
 
-   // private url = 'http://localhost:3000';
-   private url = 'http://192.168.100.18:3000';
+    // private url = 'http://localhost:3000';
+    private url = 'http://192.168.100.18:3000';
     private socket;
 
     constructor() {
@@ -15,42 +15,30 @@ export class ChatService {
     // ************************ EMITTERS ***********************************
 
     public sendPost(post) {
-        this.socket.emit('new-post', post)
+        this.socket.emit('new-post', post);
     }
 
-    public sendLike(like) {
-        this.socket.emit('new-like', like);
-    }
-
-    public sendComment(comment) {
-        this.socket.emit('new-comment', comment);
+    public sendFriendRequest(friendrequest) {
+        this.socket.emit('add-friend', friendrequest);
     }
 
     // ************************ OBSERVERS *********************************
+    public getRequest = () => {
+        return Observable.create(
+            (observer) => {
+                this.socket.on('addfriend', (friendrequest) => {
+                    observer.next(friendrequest);
+                });
+            });
+    }
 
     public getPost = () => {
         return Observable.create(
             (observer) => {
-            this.socket.on('new-post', (post) => {
-                observer.next(post);
-            });
-        }).pipe(share());
-    }
-
-    public getLikes = () => {
-        return Observable.create((observer) => {
-            this.socket.on('new-like', (like) => {
-                observer.next(like);
-            });
-        });
-    }
-
-    public getComments = () => {
-        return Observable.create((observer) => {
-            this.socket.on('new-comment', (comment) => {
-                observer.next(comment);
-            });
-        });
+                this.socket.on('new-post', (post) => {       
+                    observer.next(post);
+                });
+            }).pipe(share());
     }
 
 } //*** Class Ends */

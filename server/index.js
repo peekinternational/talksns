@@ -11,14 +11,12 @@ const port = process.env.PORT || 3000;
 const ip = '';
 
 io.on('connection', (socket) => {
-    console.log('user connected');
-
     socket.on('new-post', (post) => {
         io.emit('new-post', post)
     });
 
-    socket.on('new-like', (like) => {
-        io.emit('new-like', like);
+    socket.on('add-friend', (friendrequest) => {
+        io.emit('addfriend', friendrequest);
     });
 });
 

@@ -61,7 +61,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         this.createcomments = newpost.comments;
         this.usernames = newpost.usernames;
         this.createreplies = newpost.replies;
-        this.profilePics = newpost.profilepicsName;
+        this.profilePics = newpost.profilepics;
         this.loggedInUserProfilePic = newpost.loggedInUserProfilepic;
       });
 
@@ -131,7 +131,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         }
       });
 
-    this.backendService.getPost();
+   this.backendService.getPost();
   }
 
 
