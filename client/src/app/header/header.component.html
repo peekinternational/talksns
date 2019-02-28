@@ -61,56 +61,119 @@
 
                 <span>
                     <h6 style="text-align: center"> Friend Requests </h6>
-                    <span class="dropdown-item" *ngFor="let request of friendRequest">
-                        <span *ngIf="request.ProfilePic != ''; else dummyPicR">
-                            <img class="rounded-circle" style="width: 50px; height: 50px;" [src]="request.ProfilePic">
-                        </span>
-                        <ng-template #dummyPicR>
-                            <img style="width: 20%" src="/assets/pics/noProfile.png">
-                        </ng-template>
-                        <div class="text-left user-itemC"
-                            style="display: inline-block; margin-left: 10px; width: 100px;">
-                            {{request.username}}
-                        </div>
-                        <span class="text-right">
-                            <input type="button" class="btn btn-primary btn-sm" (click)="acceptFriendRequest(request.user_id)" value="Accept">
-                            <input type="button" class="btn btn-danger btn-sm" (click)="rejectFriendRequest(request.user_id)" value="Reject">
+
+                    <span class="dropdown-item" *ngFor="let friendrequest of allFriendsRequest">
+                        <span
+                            *ngIf="this.cookie.get('authUserId') == friendrequest.receiver_id && friendrequest.requeststatus == 'sent'">
+
+                            <span *ngIf="friendrequest.ProfilePic != ''; else dummyPicR">
+                                <img class="rounded-circle" style="width: 50px; height: 50px;"
+                                    [src]="friendrequest.ProfilePic">
+                            </span>
+                            <ng-template #dummyPicR>
+                                <img style="width: 20%" src="/assets/pics/noProfile.png">
+                            </ng-template>
+                            <div class="text-left user-itemC"
+                                style="display: inline-block; margin-left: 10px; width: 100px;">
+                                {{friendrequest.username[0].username}}
+                            </div>
+
+                            <span class="text-right">
+                                <span *ngIf="friendrequest.requeststatus == 'accept'; else reqRejected">
+                                    <span> Request Accepted </span>
+                                </span>
+                                <ng-template #reqRejected>
+                                    <span *ngIf="friendrequest.requeststatus == 'reject'">
+                                        Request Rejected
+                                    </span>
+                                </ng-template>
+
+                                <span *ngIf="friendrequest.requeststatus == 'sent'">
+                                    <input type="button" class="btn btn-primary btn-sm"
+                                        (click)="acceptFriendRequest(friendrequest.sender_id)" value="Accept">
+                                    <input type="button" class="btn btn-danger btn-sm"
+                                        (click)="rejectFriendRequest(friendrequest.sender_id)" value="Reject">
+                                </span>
+                            </span>
                         </span>
                     </span>
                 </span>
                 <hr>
                 <span>
                     <h6 style="text-align: center"> Friend Suggestions</h6>
-                    <span class="dropdown-item" *ngFor="let user of friendSuggestion">
-                        <span *ngIf="user.ProfilePic != null; else dummyPic">
-                            <img class="rounded-circle" style="width: 50px; height: 50px;" [src]="user.ProfilePic">
-                        </span>
-                        <ng-template #dummyPic>
-                            <img style="width: 20%" src="assets/pics/noProfile.png">
-                        </ng-template>
 
-                        <div class="text-left user-itemC"
-                            style="display: inline-block; margin-left: 10px; width: 100px;">
-                            {{user.username}}
-                        </div>
-                        <span class="text-right" *ngIf="sentRequest != null">
-                            <span *ngIf="sentRequestUnfound()"></span>
+                    <span class="dropdown-item" *ngFor="let user of allUserdata">
+                        <span *ngIf="this.cookie.get('authUserId') != user.user_id">
 
-                            <span *ngFor="let sentrequest of sentRequest; let s = index">
-                                <span *ngIf="sentrequest.user_id == user.user_id ; else showSendButtons">
-                                    <span *ngIf="sentRequestFound()"></span>
-                                    <span> Request Sent </span>
+
+                            <span *ngIf="allRequestReceived.length != 0">
+                                <span *ngFor="let requestReceived of allRequestReceived">
+                                    <span *ngIf="requestReceived.user_id != user.user_id">
+                                        <span *ngIf="user.ProfilePic != null; else dummyPic">
+                                            <img class="rounded-circle" style="width: 50px; height: 50px;"
+                                                [src]="user.ProfilePic">
+                                        </span>
+                                        <ng-template #dummyPic>
+                                            <img style="width: 20%" src="assets/pics/noProfile.png">
+                                        </ng-template>
+
+                                        <div class="text-left user-itemC"
+                                            style="display: inline-block; margin-left: 10px; width: 100px;">
+                                            {{user.username}}
+                                        </div>
+
+                                        <span *ngIf="sentRequestUnfound()"></span>
+                                        <span *ngFor="let sentrequest of allFriendsRequest; let s = index">
+                                            <span
+                                                *ngIf="sentrequest.sender_id == this.cookie.get('authUserId') && user.user_id == sentrequest.receiver_id  ; else showSendButtons">
+                                                <span *ngIf="sentRequestFound()"></span>
+                                                <span> Request Sent </span>
+                                            </span>
+
+                                            <ng-template #showSendButtons>
+                                                <span
+                                                    *ngIf="s == (allFriendsRequest.length -1) && !sentRequestFoundStatus">
+                                                    <input type="button" class="btn btn-primary btn-sm"
+                                                        (click)="sendFriendRequest(user.user_id)" value="Send Request">
+                                                </span>
+                                            </ng-template>
+                                        </span>
+                                    </span>
                                 </span>
-                                <ng-template #showSendButtons>
-                                   <span *ngIf="s == (sentRequest.length-1) && !sentRequestFoundStatus">
-                                     <input type="button" class="btn btn-primary btn-sm" (click)="sendFriendRequest(user.user_id)" value="Send Request">
-                                   </span>
-                                </ng-template>
                             </span>
+                            <!-- ************* IF RECEIVED-REQUEST LENGTH IS ZEROO ***************** -->
+                            <span *ngIf="allRequestReceived.length == 0">
+                                <span *ngIf="user.ProfilePic != null; else dummyPic">
+                                    <img class="rounded-circle" style="width: 50px; height: 50px;"
+                                        [src]="user.ProfilePic">
+                                </span>
+                                <ng-template #dummyPic>
+                                    <img style="width: 20%" src="assets/pics/noProfile.png">
+                                </ng-template>
 
-                        </span>
-                        <span class="text-right" *ngIf="sentRequest == null || sentRequest == ''">
-                            <input type="button" class="btn btn-primary btn-sm" (click)="sendFriendRequest(user.user_id)" value="Send Request">
+                                <div class="text-left user-itemC"
+                                    style="display: inline-block; margin-left: 10px; width: 100px;">
+                                    {{user.username}}
+                                </div>
+
+                                <span *ngIf="sentRequestUnfound()"></span>
+                                <span *ngFor="let sentrequest of allFriendsRequest; let s = index">
+                                    <span
+                                        *ngIf="sentrequest.sender_id == this.cookie.get('authUserId') && user.user_id == sentrequest.receiver_id  ; else showSendButtons">
+                                        <span *ngIf="sentRequestFound()"></span>
+                                        <span> Request Sent </span>
+                                    </span>
+
+                                    <ng-template #showSendButtons>
+                                        <span *ngIf="s == (allFriendsRequest.length -1) && !sentRequestFoundStatus">
+                                            <input type="button" class="btn btn-primary btn-sm"
+                                                (click)="sendFriendRequest(user.user_id)" value="Send Request">
+                                        </span>
+                                    </ng-template>
+                                </span>
+
+                            </span> <!--  allRequestReceived-length condition ends-->
+
                         </span>
                     </span>
                 </span>

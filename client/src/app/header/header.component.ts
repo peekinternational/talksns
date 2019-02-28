@@ -19,18 +19,17 @@ export class HeaderComponent implements OnInit {
   isUserLoggedIn: boolean; // is user in logIn state or not 
   showLoginForm: boolean; // loginForm on Header is visible or not
 
-  //usernames: any;
-  friendSuggestion: any;
-  friendRequest: any;
-  sentRequest: any;
-  userId: number = 0;
+  allUserdata: any;
+  allFriendsRequest: any;
+  // friendSuggestion: any;
+  allRequestReceived: any;
+  // sentRequest: any;
+ // userId: number = 0;
   sentRequestFoundStatus: boolean = false;
 
   constructor(private connectorService: BackendConnector, private loginService: LoginStatusService,
     private formBuilder: FormBuilder, private router: Router, private cookie: CookieService,
     private chatService: ChatService) {
-
-    this.userId = parseInt(this.cookie.get('authUserId'));
 
     //Initialize formGroup with initial values and validators
     this.signinForm = this.formBuilder.group({
@@ -38,10 +37,11 @@ export class HeaderComponent implements OnInit {
       password: ['', [Validators.required]]
     });
 
-    //this.connectorService.getFriendRequestData();
+   
   }
 
-  ngOnInit() {
+  ngOnInit() { 
+
     // If user is logged-In, then navigate it to 'home' page
     if (this.loginService.isUserLoggedIn()) {
       this.loginService.deActivateLoginForm();
@@ -72,13 +72,16 @@ export class HeaderComponent implements OnInit {
   updateFriendList() {
     this.addFriendSubscription = this.chatService.getRequest().subscribe(
       (friendsData: any) => {
-        this.friendSuggestion = friendsData.friendSuggestions;
-        this.friendRequest = friendsData.friendRequestData;
-        this.sentRequest = friendsData.requestSentData;
-        console.log(this.friendSuggestion);
-        console.log(this.friendRequest);
-        console.log(this.sentRequest);
+        this.allFriendsRequest = friendsData.allFriendRequests;
+        this.allUserdata = friendsData.allUserdata;
+        this.allRequestReceived = friendsData.friendRequestReceived;
+        console.log(this.allFriendsRequest);
+        console.log(this.allUserdata);
+        console.log(this.allRequestReceived);
+
       });
+
+      this.connectorService.getFriendRequestData();
   }
 
   onSignIn() {   // if user SignIn
@@ -126,7 +129,7 @@ export class HeaderComponent implements OnInit {
             this.loginService.activateLogin(); // update LoggedIn status
             this.loginService.deActivateLoginForm(); // deActivate loginForm in headers
             this.cookie.set("email", EmailorUsername); // store user data in cookie service
-            this.cookie.set("authUserId", signInStatus.data.user_id)
+            this.cookie.set("authUserId", signInStatus.data.user_id);
             this.router.navigate(['landingpage/home']);
           }
         }
@@ -139,6 +142,7 @@ export class HeaderComponent implements OnInit {
   }
 
   acceptFriendRequest(senderId: number) {
+    console.log(senderId);
     this.connectorService.FriendRequestUpdate(senderId, 'accept');
   }
 

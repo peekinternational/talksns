@@ -56,8 +56,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       'desc': [''],
     });
 
-    this.backendService.getPost();
-    this.backendService.getFriendRequestData();
+   
 
     this.getPostSubscription = this.chatService.getPost().subscribe(
       (newpost: any) => {
@@ -137,7 +136,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         }
       });
 
-  
+      this.backendService.getPost();
+      this.backendService.getFriendRequestData();
   } // *** OnInit Ends *************
 
   public addMyPost(desc: string) {

@@ -66,7 +66,7 @@ export class BackendConnector {
         );
     }
 
-    public uploadProfilePic(imageFile: File){
+    public uploadProfilePic(imageFile: File) {
         const userid = this.cookie.get('authUserId');
         const fd = new FormData();
 
@@ -104,9 +104,9 @@ export class BackendConnector {
         );
     }
 
-    public setComment(postId: number, comment: string){
-        const commentData = { 'userId': this.cookie.get('authUserId'), 'postId': postId, 'comment': comment}
-   
+    public setComment(postId: number, comment: string) {
+        const commentData = { 'userId': this.cookie.get('authUserId'), 'postId': postId, 'comment': comment }
+
         return this.http.post("http://192.168.100.18:8000/api/comment", commentData).subscribe(
             (response: any) => {
                 this.chatService.sendPost(response);
@@ -114,19 +114,19 @@ export class BackendConnector {
         );
     }
 
-    public setReply(postId: number, commentId: number, commentReply: string){
-        const replyData = { 'userId': this.cookie.get('authUserId'), 'postId': postId, 'commentId': commentId , 'commentReply': commentReply}
-   
+    public setReply(postId: number, commentId: number, commentReply: string) {
+        const replyData = { 'userId': this.cookie.get('authUserId'), 'postId': postId, 'commentId': commentId, 'commentReply': commentReply }
+
         return this.http.post("http://192.168.100.18:8000/api/reply", replyData).subscribe(
             (response: any) => {
                 this.chatService.sendPost(response);
             }
         );
     }
-    
-    public setFriendRequest(receiverId: number, requestStatus: string){
-        const friendRequestData = { 'userId': this.cookie.get('authUserId'), 'receiverId': receiverId, 'requestStatus': requestStatus}
-      
+
+    public setFriendRequest(receiverId: number, requestStatus: string) {
+        const friendRequestData = { 'userId': this.cookie.get('authUserId'), 'receiverId': receiverId, 'requestStatus': requestStatus }
+
         return this.http.post("http://192.168.100.18:8000/api/setfriendrequest", friendRequestData).subscribe(
             (response: any) => {
                 this.chatService.sendFriendRequest(response);
@@ -134,20 +134,19 @@ export class BackendConnector {
         );
     }
 
-    public FriendRequestUpdate(senderId: number, requestStatus: string){
-        const friendRequestData = {'userId': this.cookie.get('authUserId'), 'senderId': senderId, 'requestStatus': requestStatus}
-      
-        return this.http.post("http://192.168.100.18:8000/api/friendrequestUpdate", friendRequestData).subscribe(
+    public FriendRequestUpdate(senderId: number, requestStatus: string) {
+        const friendRequestData = { 'userId': this.cookie.get('authUserId'), 'senderId': senderId, 'requestStatus': requestStatus }
+        return this.http.post("http://192.168.100.18:8000/api/friendrequestStatus", friendRequestData).subscribe(
             (response: any) => {
                 this.chatService.sendFriendRequest(response);
             }
         );
     }
 
-    public getFriendRequestData(){
-        const friendRequestData = {'userId': this.cookie.get('authUserId')};
-      
-        return this.http.post("http://192.168.100.18:8000/api/friendrequestUpdate", friendRequestData).subscribe(
+    public getFriendRequestData() {
+        const friendRequestData = { 'userId': this.cookie.get('authUserId') };
+
+        return this.http.post("http://192.168.100.18:8000/api/getAddFriendData", friendRequestData).subscribe(
             (response: any) => {
                 this.chatService.sendFriendRequest(response);
             }
