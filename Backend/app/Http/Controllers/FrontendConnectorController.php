@@ -58,7 +58,7 @@ class FrontendConnectorController extends Controller
         $user = DB::table('users')->where('email', $emailOrusername)->first();
 
         if ($user == null) // if email not exist then check username
-        $user = DB::table('users')->where('username', $emailOrusername)->first();
+            $user = DB::table('users')->where('username', $emailOrusername)->first();
 
         // if user data is received from DB
         if ($user != null) {
@@ -206,10 +206,9 @@ class FrontendConnectorController extends Controller
         $userId = $request->userId;
         $senderId = $request->senderId;
         $requestStatus = $request->requestStatus;
-    
+
         DB::table('friends')->where('sender_id', '=', $senderId)->update(['requeststatus' => $requestStatus]);
         return response()->json($this->setFriendsData($userId));
-   
     }
 
     public function getAddFriendsData(Request $request)
@@ -221,80 +220,57 @@ class FrontendConnectorController extends Controller
 
     public function setFriendsData($userId)
     {
-         // ****************************************************************************************
-          // ****************************************************************************************
+        // ****************************************************************************************
+        // ****************************************************************************************
         // ************** THIS CODE WILL BE REMOVED LATER *********************************************
-         // ****************************************************************************************
-          // **************************************************************************************
-        $friendsData = DB::table("friends")->where("friends.receiver_id", '!=', null)->where("friends.receiver_id", '=', $userId)->get();
+        // ****************************************************************************************
+        // **************************************************************************************
+        $sentfriendsData = DB::table("friends")->where("friends.sender_id", '!=', null)->where("friends.sender_id", '=', $userId)->get();
+        $receivedfriendsData = DB::table("friends")->where("friends.receiver_id", '!=', null)->where("friends.receiver_id", '=', $userId)->get();
+        $friendRequestSent = null;
         $friendRequestReceived = null;
 
-        if (count($friendsData) != 0) {
+        if (count($sentfriendsData) != 0) {
+            $friendRequestSent = DB::table('users')
+                ->where("friends.sender_id", '=', $userId)
+                ->join('friends', 'friends.receiver_id', '=', 'users.user_id')
+                ->select('users.user_id', 'users.username', 'users.ProfilePic', 'friends.*')
+                ->get();
+        }
+
+        if (count($receivedfriendsData) != 0) {
             $friendRequestReceived = DB::table('users')
-                ->where("friends.receiver_id", '=', $userId)->where("friends.requeststatus", "=", 'sent')
+                ->where("friends.receiver_id", '=', $userId)
                 ->join('friends', 'friends.sender_id', '=', 'users.user_id')
                 ->select('users.user_id', 'users.username', 'users.ProfilePic', 'friends.*')
                 ->get();
         }
 
         $y = 0;
-        while ($y < count($friendRequestReceived)) {
-            if ($friendRequestReceived[$y]->ProfilePic != null || $friendRequestReceived[$y]->ProfilePic != "")
-            $friendRequestReceived[$y]->ProfilePic = url("profilepics/" . $friendRequestReceived[$y]->ProfilePic);
+        while ($y < count($friendRequestSent)) {
+            if ($friendRequestSent[$y]->ProfilePic != null || $friendRequestSent[$y]->ProfilePic != "")
+                $friendRequestSent[$y]->ProfilePic = url("profilepics/" . $friendRequestSent[$y]->ProfilePic);
             else
-            $friendRequestReceived[$y]->ProfilePic = '';
+                $friendRequestSent[$y]->ProfilePic = '';
             $y++;
         }
 
-        $friendSuggestionData = DB::table('users')->select('user_id', 'username', 'ProfilePic')->get();
         $z = 0;
-        while ($z <= (count($friendSuggestionData) - 1)) {
-            for ($x = 0; $x < count($friendRequestReceived); $x++) {
-
-                if ($friendRequestReceived[$x]->sender_id == $friendSuggestionData[$z]->user_id) {
-                    $friendSuggestionData->forget($z);
-                    $friendSuggestionData = $friendSuggestionData->values();
-                    break;
-                }
-            }
-
-            if (count($friendRequestReceived) == 0) {
-                for ($x = 0; $x < count($friendsData); $x++) {
-                    if ($friendSuggestionData[$z]->user_id == $friendsData[$x]->sender_id && $friendsData[$x]->requeststatus != 'sent') {
-                        $friendSuggestionData->forget($z);
-                        $friendSuggestionData = $friendSuggestionData->values();
-                    }
-                }
-            }
-
-            if ($userId == $friendSuggestionData[$z]->user_id) {
-                $friendSuggestionData->forget($z);
-                $friendSuggestionData = $friendSuggestionData->values();
-            }
+        while ($z < count($friendRequestReceived)) {
+            if ($friendRequestReceived[$z]->ProfilePic != null || $friendRequestReceived[$z]->ProfilePic != "")
+                $friendRequestReceived[$z]->ProfilePic = url("profilepics/" . $friendRequestReceived[$z]->ProfilePic);
+            else
+                $friendRequestReceived[$z]->ProfilePic = '';
             $z++;
         }
 
-        $sentRequestData = DB::table('users')
-            ->where("friends.sender_id", '=', $userId)->where("friends.receiver_id", '!=', null)->where("friends.requeststatus", "!=", 'accept')
-            ->join('friends', 'friends.receiver_id', '=', 'users.user_id')
-            ->select('users.user_id', 'users.username', 'users.ProfilePic', 'friends.*')
-            ->get();
-
-        $profilepicFileNames = DB::table('users')->select('user_id', 'ProfilePic')->where('ProfilePic', '!=', null)->get();
-        foreach ($profilepicFileNames as $profilepic) {
-            foreach ($friendSuggestionData as $user_Id) {
-                if ($user_Id->user_id == $profilepic->user_id) {
-                    $user_Id->ProfilePic = url("profilepics/" . $profilepic->ProfilePic);
-                }
-            }
-        }
-         // ****************************************************************************************
-         // ****************************************************************************************
+        // ****************************************************************************************
+        // ****************************************************************************************
         // ****************************************************************************************
 
         $allFriendRequestData = DB::table('friends')->get();
         $profilePicName = DB::table('users')->select('user_id', 'ProfilePic')->where('ProfilePic', '!=', null)->get();
-        $allUserdata = DB::table('users')->select('user_id', 'username' ,'ProfilePic')->get();
+        $allUserdata = DB::table('users')->select('user_id', 'username', 'ProfilePic')->get();
 
         foreach ($allFriendRequestData as &$friendRequest) {
             $friendRequest->ProfilePic = '';
@@ -308,16 +284,13 @@ class FrontendConnectorController extends Controller
             }
 
             foreach ($allUserdata as &$userdata) {
-              if ($userdata->user_id == $profilepic->user_id){
-                $userdata->ProfilePic = url("profilepics/" . $userdata->ProfilePic);
-              }
+                if ($userdata->user_id == $profilepic->user_id) {
+                    $userdata->ProfilePic = url("profilepics/" . $userdata->ProfilePic);
+                }
             }
         }
 
-        return [
-            'friendRequestReceived' => $friendRequestReceived, 'requestSentData' => $sentRequestData, 
-            'allFriendRequests' =>  $allFriendRequestData, 'allUserdata' => $allUserdata
-        ];
+        return ['allFriendRequests' =>  $allFriendRequestData, 'allUserdata' => $allUserdata];
     }
 
     //*********************************************************************************************************************8 */
@@ -348,9 +321,9 @@ class FrontendConnectorController extends Controller
             $imageFileName = DB::table('posts')->select('imageFile')->where('imageFile', '=', $post->imageFile)->get();
 
             if ($post->imageFile != '')
-            $post->imageFile = url("images/" . $imageFileName[0]->imageFile);
+                $post->imageFile = url("images/" . $imageFileName[0]->imageFile);
             else
-            $post->imageFile = '';
+                $post->imageFile = '';
 
             foreach ($profilepicFileNames as $profilepic) {
                 if ($post->user_id == $profilepic->user_id) {
@@ -392,21 +365,6 @@ class FrontendConnectorController extends Controller
     public function test()
     {
         $allFriendRequestData = DB::table('friends')->get();
-        $profilepicFileNames = DB::table('users')->select('user_id', 'ProfilePic')->where('ProfilePic', '!=', null)->get();
-        
-        foreach ($allFriendRequestData as &$friendRequest) {
-            $friendRequest->ProfilePic = '';
-        }
-        foreach ($profilepicFileNames as $profilepic) {
-            foreach ($allFriendRequestData as &$friendRequest) {
-                if ($friendRequest->sender_id == $profilepic->user_id) {
-                    $friendRequest->ProfilePic = url("profilepics/" . $profilepic->ProfilePic);
-                }
-                $friendRequest->username = DB::table('users')->select('username')->where('user_id', '=', $friendRequest->sender_id)->get();
-            }
-        }
-
         dd($allFriendRequestData);
-
     }
 }

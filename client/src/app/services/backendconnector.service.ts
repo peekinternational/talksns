@@ -17,7 +17,7 @@ export class BackendConnector {
     // Connect and Send Registration Data to laravel-Backend function
     signUpRequest(signupData: any) {
         var promise = new Promise((resolve, reject) => {
-            return this.http.post("http://192.168.100.18:8000/api/signup", signupData).subscribe(
+            return this.http.post("http://192.168.100.2:8000/api/signup", signupData).subscribe(
                 (response: any) => {
                     this.responseStatus = response;
                     resolve(this.responseStatus);
@@ -30,7 +30,7 @@ export class BackendConnector {
     // Connect and Sends SignIn Data to laravel-Backend function
     signInRequest(signinData: any) {
         var promise = new Promise((resolve, reject) => {
-            return this.http.post("http://192.168.100.18:8000/api/signin", signinData).subscribe(
+            return this.http.post("http://192.168.100.2:8000/api/signin", signinData).subscribe(
                 (response: any) => {
                     this.responseStatus = response;
                     resolve(this.responseStatus);
@@ -59,7 +59,7 @@ export class BackendConnector {
 
         fd.append('description', desc);
 
-        return this.http.post("http://192.168.100.18:8000/api/uploadpost", fd).subscribe(
+        return this.http.post("http://192.168.100.2:8000/api/uploadpost", fd).subscribe(
             (response: any) => {
                 this.chatService.sendPost(response);
             }
@@ -77,7 +77,7 @@ export class BackendConnector {
         else
             fd.append('profilePic', imageFile, "");
 
-        return this.http.post("http://192.168.100.18:8000/api/profilepic", fd).subscribe(
+        return this.http.post("http://192.168.100.2:8000/api/profilepic", fd).subscribe(
             (response: any) => {
                 this.chatService.sendPost(response);
             }
@@ -85,7 +85,7 @@ export class BackendConnector {
     }
 
     public getPost() {
-        return this.http.post("http://192.168.100.18:8000/api/retrievepost", { 'userId': this.cookie.get('authUserId') }).subscribe(
+        return this.http.post("http://192.168.100.2:8000/api/retrievepost", { 'userId': this.cookie.get('authUserId') }).subscribe(
             (response: any) => {
                 this.chatService.sendPost(response);
             }
@@ -96,7 +96,7 @@ export class BackendConnector {
     public setLike(isLiked: boolean, isDisliked: boolean, postId: number) {
         const postLikeData = { 'userId': this.cookie.get('authUserId'), 'postId': postId, 'isLiked': isLiked, 'isDisliked': isDisliked }
 
-        return this.http.post("http://192.168.100.18:8000/api/postlike", postLikeData).subscribe(
+        return this.http.post("http://192.168.100.2:8000/api/postlike", postLikeData).subscribe(
             (response: any) => {
                 this.chatService.sendPost(response);
                 console.log(response);
@@ -107,7 +107,7 @@ export class BackendConnector {
     public setComment(postId: number, comment: string) {
         const commentData = { 'userId': this.cookie.get('authUserId'), 'postId': postId, 'comment': comment }
 
-        return this.http.post("http://192.168.100.18:8000/api/comment", commentData).subscribe(
+        return this.http.post("http://192.168.100.2:8000/api/comment", commentData).subscribe(
             (response: any) => {
                 this.chatService.sendPost(response);
             }
@@ -117,7 +117,7 @@ export class BackendConnector {
     public setReply(postId: number, commentId: number, commentReply: string) {
         const replyData = { 'userId': this.cookie.get('authUserId'), 'postId': postId, 'commentId': commentId, 'commentReply': commentReply }
 
-        return this.http.post("http://192.168.100.18:8000/api/reply", replyData).subscribe(
+        return this.http.post("http://192.168.100.2:8000/api/reply", replyData).subscribe(
             (response: any) => {
                 this.chatService.sendPost(response);
             }
@@ -127,7 +127,7 @@ export class BackendConnector {
     public setFriendRequest(receiverId: number, requestStatus: string) {
         const friendRequestData = { 'userId': this.cookie.get('authUserId'), 'receiverId': receiverId, 'requestStatus': requestStatus }
 
-        return this.http.post("http://192.168.100.18:8000/api/setfriendrequest", friendRequestData).subscribe(
+        return this.http.post("http://192.168.100.2:8000/api/setfriendrequest", friendRequestData).subscribe(
             (response: any) => {
                 this.chatService.sendFriendRequest(response);
             }
@@ -136,7 +136,7 @@ export class BackendConnector {
 
     public FriendRequestUpdate(senderId: number, requestStatus: string) {
         const friendRequestData = { 'userId': this.cookie.get('authUserId'), 'senderId': senderId, 'requestStatus': requestStatus }
-        return this.http.post("http://192.168.100.18:8000/api/friendrequestStatus", friendRequestData).subscribe(
+        return this.http.post("http://192.168.100.2:8000/api/friendrequestStatus", friendRequestData).subscribe(
             (response: any) => {
                 this.chatService.sendFriendRequest(response);
             }
@@ -146,7 +146,7 @@ export class BackendConnector {
     public getFriendRequestData() {
         const friendRequestData = { 'userId': this.cookie.get('authUserId') };
 
-        return this.http.post("http://192.168.100.18:8000/api/getAddFriendData", friendRequestData).subscribe(
+        return this.http.post("http://192.168.100.2:8000/api/getAddFriendData", friendRequestData).subscribe(
             (response: any) => {
                 this.chatService.sendFriendRequest(response);
             }

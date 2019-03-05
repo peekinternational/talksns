@@ -16,8 +16,28 @@
 
     <div class="top-area" *ngIf="isUserLoggedIn">
         <div class="dropdown" style="float: right">
-            <img src="/assets/winkuLandingPage/images/resources/admin.jpg" alt=""
-                class="dropdown-toggle dropDownOveride" data-toggle="dropdown" style="margin-top: 6px">
+
+            <!--  ******************** SETTING PROFILE PIC IN HEADER ***************************************************** -->
+            <span data-toggle="dropdown" *ngFor="let userPics of usersProfilePic; let p = index">
+                <span *ngIf="userPics.user_id == this.cookie.get('authUserId'); else noPicFound">
+                    <span *ngIf="profilePicFound()"></span>
+                    <img [src]="userPics.picFile" class="dropdown-toggle dropDownOveride"
+                        style="margin-top: 6px; width: 50px; height: 50px;">
+                </span>
+
+                <ng-template #noPicFound>
+                    <span *ngIf="p == (usersProfilePic.length- 1) && !isProfilePicFound">
+                        <span 
+                            *ngIf="loggedInUserProfilePic == null || loggedInUserProfilePic == ''">
+                            <img src="/assets/pics/noProfile.png" class="dropdown-toggle dropDownOveride"
+                                style="margin-top: 6px; width: 50px; height: 50px;">
+                        </span>
+                    </span>
+
+                </ng-template>
+            </span>
+            <!--  ***************************************************************************************************** -->
+
             <div class="dropdown-menu dropDownMenuOveride">
                 <a class="dropdown-item dropdownItemOveride" style="cursor: pointer"
                     (click)="goToRoute('landingpage/timeline')" routerLink="landingpage/timeline">MyProfile</a>
@@ -33,7 +53,6 @@
         </div>
 
         <ul class="settingsOveride" style="float: right">
-
             <li>
                 <a href="#" title="Notification" data-ripple="">
                     <i class="fa fa-bell"></i><span>20</span>
@@ -98,17 +117,28 @@
                         </span>
                     </span>
                 </span>
+                <!-- ********************************************************************************************************************* -->
                 <hr>
+
                 <span>
                     <h6 style="text-align: center"> Friend Suggestions</h6>
 
-                    <span class="dropdown-item" *ngFor="let user of allUserdata">
-                        <span *ngIf="this.cookie.get('authUserId') != user.user_id">
+                    <span *ngFor="let user of allUserdata; let u = index">
+                        <span *ngIf="sentRequestUnfound()"></span>
+                        <span *ngIf="receiveRequestUnfound()"></span>
+                        <span *ngFor="let request of allFriendsRequest; let r = index">
+                            <span
+                                *ngIf="(this.cookie.get('authUserId') == request.receiver_id && user.user_id == request.sender_id)">
+                                <span *ngIf="receiveRequestFound()"></span>
+                            </span>
 
+                            <span
+                                *ngIf="(this.cookie.get('authUserId') == request.sender_id && user.user_id == request.receiver_id); else showSentMsg">
+                                <span *ngIf="sentRequestFound()"></span>
 
-                            <span *ngIf="allRequestReceived.length != 0">
-                                <span *ngFor="let requestReceived of allRequestReceived">
-                                    <span *ngIf="requestReceived.user_id != user.user_id">
+                                <span
+                                    *ngIf="request.requeststatus == 'sent' && this.cookie.get('authUserId') != user.user_id">
+                                    <span class="dropdown-item">
                                         <span *ngIf="user.ProfilePic != null; else dummyPic">
                                             <img class="rounded-circle" style="width: 50px; height: 50px;"
                                                 [src]="user.ProfilePic">
@@ -121,28 +151,35 @@
                                             style="display: inline-block; margin-left: 10px; width: 100px;">
                                             {{user.username}}
                                         </div>
-
-                                        <span *ngIf="sentRequestUnfound()"></span>
-                                        <span *ngFor="let sentrequest of allFriendsRequest; let s = index">
-                                            <span
-                                                *ngIf="sentrequest.sender_id == this.cookie.get('authUserId') && user.user_id == sentrequest.receiver_id  ; else showSendButtons">
-                                                <span *ngIf="sentRequestFound()"></span>
-                                                <span> Request Sent </span>
-                                            </span>
-
-                                            <ng-template #showSendButtons>
-                                                <span
-                                                    *ngIf="s == (allFriendsRequest.length -1) && !sentRequestFoundStatus">
-                                                    <input type="button" class="btn btn-primary btn-sm"
-                                                        (click)="sendFriendRequest(user.user_id)" value="Send Request">
-                                                </span>
-                                            </ng-template>
-                                        </span>
+                                        <span> Request Sent </span>
                                     </span>
                                 </span>
                             </span>
-                            <!-- ************* IF RECEIVED-REQUEST LENGTH IS ZEROO ***************** -->
-                            <span *ngIf="allRequestReceived.length == 0">
+
+                            <ng-template #showSentMsg>
+                                <span class="dropdown-item"
+                                    *ngIf="r == (allFriendsRequest.length-1) && this.cookie.get('authUserId') != user.user_id && !sentRequestFoundStatus && !receiveRequestFoundStatus">
+
+                                    <span *ngIf="user.ProfilePic != null; else dummyPic">
+                                        <img class="rounded-circle" style="width: 50px; height: 50px;"
+                                            [src]="user.ProfilePic">
+                                    </span>
+                                    <ng-template #dummyPic>
+                                        <img style="width: 20%" src="assets/pics/noProfile.png">
+                                    </ng-template>
+
+                                    <div class="text-left user-itemC"
+                                        style="display: inline-block; margin-left: 10px; width: 100px;">
+                                        {{user.username}}
+                                    </div>
+                                    <input type="button" class="btn btn-primary btn-sm"
+                                        (click)="sendFriendRequest(user.user_id)" value="Send Request">
+                                </span>
+                            </ng-template>
+                        </span>
+
+                        <span *ngIf="allFriendsRequest == null || allFriendsRequest.length == 0">
+                            <span class="dropdown-item" *ngIf="this.cookie.get('authUserId') != user.user_id">
                                 <span *ngIf="user.ProfilePic != null; else dummyPic">
                                     <img class="rounded-circle" style="width: 50px; height: 50px;"
                                         [src]="user.ProfilePic">
@@ -155,25 +192,9 @@
                                     style="display: inline-block; margin-left: 10px; width: 100px;">
                                     {{user.username}}
                                 </div>
-
-                                <span *ngIf="sentRequestUnfound()"></span>
-                                <span *ngFor="let sentrequest of allFriendsRequest; let s = index">
-                                    <span
-                                        *ngIf="sentrequest.sender_id == this.cookie.get('authUserId') && user.user_id == sentrequest.receiver_id  ; else showSendButtons">
-                                        <span *ngIf="sentRequestFound()"></span>
-                                        <span> Request Sent </span>
-                                    </span>
-
-                                    <ng-template #showSendButtons>
-                                        <span *ngIf="s == (allFriendsRequest.length -1) && !sentRequestFoundStatus">
-                                            <input type="button" class="btn btn-primary btn-sm"
-                                                (click)="sendFriendRequest(user.user_id)" value="Send Request">
-                                        </span>
-                                    </ng-template>
-                                </span>
-
-                            </span> <!--  allRequestReceived-length condition ends-->
-
+                                <input type="button" class="btn btn-primary btn-sm"
+                                    (click)="sendFriendRequest(user.user_id)" value="Send Request">
+                            </span>
                         </span>
                     </span>
                 </span>

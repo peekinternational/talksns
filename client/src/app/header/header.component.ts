@@ -14,6 +14,7 @@ import { ChatService } from '../services/chat.service';
 })
 export class HeaderComponent implements OnInit {
 
+  getPostSubscription: Subscription;
   addFriendSubscription: Subscription;
   signinForm: FormGroup;
   isUserLoggedIn: boolean; // is user in logIn state or not 
@@ -21,11 +22,11 @@ export class HeaderComponent implements OnInit {
 
   allUserdata: any;
   allFriendsRequest: any;
-  // friendSuggestion: any;
-  allRequestReceived: any;
-  // sentRequest: any;
- // userId: number = 0;
+  usersProfilePic: any = "";
+
   sentRequestFoundStatus: boolean = false;
+  receiveRequestFoundStatus: boolean = false;
+  isProfilePicFound: boolean = false;
 
   constructor(private connectorService: BackendConnector, private loginService: LoginStatusService,
     private formBuilder: FormBuilder, private router: Router, private cookie: CookieService,
@@ -37,10 +38,9 @@ export class HeaderComponent implements OnInit {
       password: ['', [Validators.required]]
     });
 
-   
   }
 
-  ngOnInit() { 
+  ngOnInit() {
 
     // If user is logged-In, then navigate it to 'home' page
     if (this.loginService.isUserLoggedIn()) {
@@ -65,6 +65,11 @@ export class HeaderComponent implements OnInit {
         this.isUserLoggedIn = userLoginStatus;
       }
     );
+   
+    this.getPostSubscription = this.chatService.getPost().subscribe(
+      (newpost: any) => {
+        this.usersProfilePic = newpost.profilepics;
+      });
 
     this.updateFriendList();
   }
@@ -74,14 +79,9 @@ export class HeaderComponent implements OnInit {
       (friendsData: any) => {
         this.allFriendsRequest = friendsData.allFriendRequests;
         this.allUserdata = friendsData.allUserdata;
-        this.allRequestReceived = friendsData.friendRequestReceived;
-        console.log(this.allFriendsRequest);
-        console.log(this.allUserdata);
-        console.log(this.allRequestReceived);
-
       });
 
-      this.connectorService.getFriendRequestData();
+    this.connectorService.getFriendRequestData();
   }
 
   onSignIn() {   // if user SignIn
@@ -142,7 +142,6 @@ export class HeaderComponent implements OnInit {
   }
 
   acceptFriendRequest(senderId: number) {
-    console.log(senderId);
     this.connectorService.FriendRequestUpdate(senderId, 'accept');
   }
 
@@ -175,6 +174,7 @@ export class HeaderComponent implements OnInit {
     this.loginService.setNextRouteName(nextRoute);
   }
 
+  // ********************* Called in ngIF in HTML *****************************************************
   sentRequestFound() {
     this.sentRequestFoundStatus = true;
   }
@@ -182,7 +182,23 @@ export class HeaderComponent implements OnInit {
     this.sentRequestFoundStatus = false;
   }
 
+  receiveRequestFound() {
+    this.receiveRequestFoundStatus = true;
+  }
+  receiveRequestUnfound() {
+    this.receiveRequestFoundStatus = false;
+  }
+
+  profilePicFound() {
+    this.isProfilePicFound = true;
+  }
+  profilePicNotfound() {
+    this.isProfilePicFound = false;
+  }
+   // ************************************************************************************************
+
   ngOnDestroy() {
     this.addFriendSubscription.unsubscribe();
+    this.getPostSubscription.unsubscribe();
   }
 }
