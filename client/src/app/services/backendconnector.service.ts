@@ -99,7 +99,6 @@ export class BackendConnector {
         return this.http.post("http://192.168.100.2:8000/api/postlike", postLikeData).subscribe(
             (response: any) => {
                 this.chatService.sendPost(response);
-                console.log(response);
             }
         );
     }

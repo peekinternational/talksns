@@ -27,6 +27,7 @@ export class HeaderComponent implements OnInit {
   sentRequestFoundStatus: boolean = false;
   receiveRequestFoundStatus: boolean = false;
   isProfilePicFound: boolean = false;
+  isTotalRequestFound: boolean = false;
 
   constructor(private connectorService: BackendConnector, private loginService: LoginStatusService,
     private formBuilder: FormBuilder, private router: Router, private cookie: CookieService,
@@ -162,6 +163,7 @@ export class HeaderComponent implements OnInit {
   Signout() {
     this.cookie.delete("email");
     this.cookie.delete("authUserId");
+    
     this.loginService.deActivateLogin();
     this.loginService.activateLoginForm();
     this.signinForm.reset();
@@ -195,7 +197,15 @@ export class HeaderComponent implements OnInit {
   profilePicNotfound() {
     this.isProfilePicFound = false;
   }
-   // ************************************************************************************************
+
+  RequestCountFound(){
+    this.isTotalRequestFound = true;
+  }
+
+  RequestCountNotFound(){
+    this.isTotalRequestFound = false;
+  }
+  // ************************************************************************************************
 
   ngOnDestroy() {
     this.addFriendSubscription.unsubscribe();

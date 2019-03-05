@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="/assets/FontAwesome/css/font-awesome.min.css">
 </head>
 
-<div class="topbar stick">
+<div class="topbar sticky-header">
     <div class="logo">
         <a routerLink="landingpage/home"><img src="/assets/winkuLandingPage/images/logo.png" alt=""></a>
     </div>
@@ -55,7 +55,7 @@
         <ul class="settingsOveride" style="float: right">
             <li>
                 <a href="#" title="Notification" data-ripple="">
-                    <i class="fa fa-bell"></i><span>20</span>
+                    <i class="fa fa-bell"></i>
                 </a>
             </li>
             <li>
@@ -65,18 +65,27 @@
                 <div class="dropdown">
                     <a title="users" class="dropdown-toggle dropDownOveride removeDropdownArrow" data-toggle="dropdown">
                         <i class="fa fa-users"></i>
-                        <span>12</span>
+                        <span *ngIf="RequestCountNotFound()"></span>
+                        <span *ngFor="let request of allFriendsRequest; let c = index">
+                             <span *ngIf="this.cookie.get('authUserId') == request.receiver_id">
+                                    <span *ngIf="!isTotalRequestFound" class="badge badge-pill badge-warning">
+                                        <span *ngIf="RequestCountFound()"></span>
+                                        {{request.requestCount}}
+                                    </span>
+                             </span>
+                        </span>
+                        
                     </a>
 
                     <div class="dropdown-menu dropDownUserOveride">
 
             <li class="nav-item dropdown">
-                <span class="d-lg-none">
+                <!-- <span class="d-lg-none">
                     <span class="badge badge-pill badge-warning">5 new</span>
-                </span>
-                <span class="indicator text-warning d-none d-lg-block">
+                </span> -->
+                <!-- <span class="indicator text-warning d-none d-lg-block">
                     <i class="fa fa-fw fa-circle"></i>
-                </span>
+                </span> -->
 
                 <span>
                     <h6 style="text-align: center"> Friend Requests </h6>

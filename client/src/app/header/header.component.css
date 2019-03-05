@@ -2,6 +2,12 @@
 background-color: rgba(36, 119, 196, 0.918);
 }
 
+.sticky-header {
+    width: 100%;
+    z-index: 1;
+    position: fixed !important;
+}
+
 .textColor{
     color:rgb(37, 36, 36);
 }
@@ -501,12 +507,12 @@ iframe {
 
 /*--- sticky header ---*/
 
-header.stick {
+/* header.stick {
     z-index: 99;
     position: absolute;
     top: 0;
     left: 0;
-}
+} */
 
 header.sticky {
     position: fixed;
