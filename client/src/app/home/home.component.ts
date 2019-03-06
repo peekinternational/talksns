@@ -6,12 +6,11 @@ import { BackendConnector } from '../services/backendconnector.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { ChatService } from '../services/chat.service';
 import { CookieService } from 'ngx-cookie-service';
-import { HeaderComponent } from '../header/header.component';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css', './responsivehome.component.css']
+  styleUrls: ['./home.component.css']
 })
 
 export class HomeComponent implements OnInit, OnDestroy {
