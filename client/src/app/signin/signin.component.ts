@@ -90,6 +90,7 @@ export class SigninComponent implements OnInit, CanComponentDeactivate {
             this.loginService.deActivateLoginForm(); // deActivate loginForm in headers
             this.cookie.set("email", email_username); // store user data in cookie service
             this.cookie.set("authUserId", signInStatusResponse.data.user_id);
+            this.loginService.setNextRouteName("landingpage/home");
             this.router.navigate(['landingpage/home']);
           }
         }

@@ -1,5 +1,6 @@
 import { Injectable, EventEmitter } from "@angular/core";
 import { CookieService } from "ngx-cookie-service";
+import { Router } from "@angular/router";
 
 @Injectable()
 export class LoginStatusService {
@@ -17,7 +18,8 @@ export class LoginStatusService {
     loginFormStatus = new EventEmitter<boolean>();
     
 
-    constructor(private cookie: CookieService) { }
+    constructor(private cookie: CookieService) { 
+    }
 
     // *** Related to loginForm in Header ***********************
     public activateLoginForm() { // Used to Activate loginForm in Header 
@@ -91,8 +93,15 @@ export class LoginStatusService {
 
     public setNextRouteName(nextRoute: string){
         this.nextRouteName = nextRoute;
+        localStorage.setItem("routerUrl", this.nextRouteName);
     }
+
     public getNextRouteName(){
         return this.nextRouteName;
+    }
+
+    public removeRouteData(){
+        this.nextRouteName = '/';
+        localStorage.setItem("routerUrl", this.nextRouteName);
     }
 }

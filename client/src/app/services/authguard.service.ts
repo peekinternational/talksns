@@ -1,4 +1,4 @@
-import { CanActivate, Router, CanActivateChild } from "@angular/router";
+import { CanActivate, Router, CanActivateChild, RouterStateSnapshot, ActivatedRouteSnapshot } from "@angular/router";
 import { Observable } from "rxjs";
 import { Injectable } from "@angular/core";
 import { LoginStatusService } from "./loginstatus.service";
@@ -14,11 +14,10 @@ export class AuthGuardService implements CanActivate, CanActivateChild {
         if (this.loginService.isUserLoggedIn()) {// if user is logged in
             return true;
         }
-        else {
-            // navigate and abort further normal operations by returning false
-            this.router.navigate(['/']);
-            return false;
-        }
+        
+        // navigate and abort further normal operations by returning false
+        this.router.navigate(['/']);
+        return false;
     }
 
     canActivateChild(): Observable<boolean> | Promise<boolean> | boolean {

@@ -16,18 +16,23 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   postSubscription: Subscription;
   getPostSubscription: Subscription;
+  addFriendSubscription: Subscription;
+
   postingFormGroup: FormGroup;
   createpost: any;
   createlike: any;
   createcomments: any;
   createreplies: any;
   usernames: any;
+  allUserdata: any;
+  allFriendsRequest: any;
   profilePics: any;
   loggedInUserProfilePic: any = "";
 
   isPostLiked: boolean = false;
   isPostdisLiked: boolean = false;
   isProfileFound: boolean = false;
+  activatedTab: string = 'timeline';
 
   userId: number = 0;
   imageSrc: string = "";
@@ -53,6 +58,12 @@ export class TimelineComponent implements OnInit, OnDestroy {
     this.postingFormGroup = this.formbuilder.group({
       'desc': [''],
     });
+
+    this.addFriendSubscription = this.chatService.getRequest().subscribe(
+      (friendsData: any) => {
+        this.allFriendsRequest = friendsData.allFriendRequests;
+        this.allUserdata = friendsData.allUserdata;
+      });
 
     this.getPostSubscription = this.chatService.getPost().subscribe(
       (newpost: any) => {
@@ -130,10 +141,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
           }
         }
       });
-
-   this.backendService.getPost();
+    this.backendService.getFriendRequestData();
+    this.backendService.getPost();
   }
-
 
   public addMyPost(desc: string) {
     this.backendService.uploadPost(this.selectedUploadFile, desc);
@@ -263,8 +273,17 @@ export class TimelineComponent implements OnInit, OnDestroy {
     this.isProfileFound = false;
   }
 
-  ngOnDestroy(){
+  activateSelectedTab(tabname: string) {
+    this.activatedTab = tabname;
+  }
+
+  unfriend(){
+    
+  }
+
+  ngOnDestroy() {
     this.postSubscription.unsubscribe();
     this.getPostSubscription.unsubscribe();
+    this.addFriendSubscription.unsubscribe();
   }
 }

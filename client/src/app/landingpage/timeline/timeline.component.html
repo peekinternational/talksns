@@ -14,76 +14,8 @@
 
 <body>
     <div class="theme-layout">
-        <!-- <section>
-            <div class="feature-photo">
-                <figure class="profileTimelinePic">
-                    <img src="/assets/winkuLandingPage/images/resources/timeline-1.jpg" alt="">
-                </figure>
-
-              
-                <form class="edit-phto">
-                    <i class="fa fa-camera-retro"></i>
-                    <label class="fileContainer">
-                        Edit Cover Photo
-                    </label>
-                </form>
-                <div class="container-fluid">
-                    <div class="row merged">
-                    <div class="col-xs-2 col-sm-3 col-md-2 col-lg-2 ">
-                        <div class="user-avatar">
-                          
-                                <span *ngIf="loggedInUserProfilePic != '' ">
-                                    <img [src]="loggedInUserProfilePic" alt="">
-                                </span>
-
-                                <span *ngIf="loggedInUserProfilePic == '' ">
-                                    <img src="/assets/pics/noProfile.png" alt="">
-                                </span>
-
-                                <form class="edit-phto">
-                                    <i class="fa fa-camera-retro"></i>
-                                    <label class="fileContainer">
-                                        Edit Display Photo
-                                        <input id="profileUpload" name="profileUpload" type="file"
-                                            (change)="onProfilePicUpload($event)" #uploadedProfileImage>
-                                    </label>
-                                </form>
-                           
-                        </div>
-                        <span class="admin-name">
-                                <span *ngFor="let names of usernames">
-                                    <a href="" title="" *ngIf="this.cookie.get('authUserId')==names.user_id">
-                                        {{ names.username }}
-                                    </a>
-                                </span>
-                            </span>
-                    </div>
-
-                    <div class="col-lg-10 col-sm-9">
-                        <div class="timeline-info">
-                            <ul>
-
-                                <li>
-                                    <a class="active" href="time-line.html" title="" data-ripple="">time line</a>
-                                    <a class="" href="timeline-photos.html" title="" data-ripple="">Photos</a>
-                                    <a class="" href="timeline-videos.html" title="" data-ripple="">Videos</a>
-                                    <a class="" href="timeline-friends.html" title="" data-ripple="">Friends</a>
-                                    <a class="" href="timeline-groups.html" title="" data-ripple="">Groups</a>
-                                    <a class="" href="about.html" title="" data-ripple="">about</a>
-
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-            </div>
-        </section> -->
-        <!-- top area -->
-
         <!-- ************************ testing profile header ************************************** -->
         <div class="wrapper">
-            <!-- <div class="container"> -->
             <div class="row">
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                     <header id="header">
@@ -96,47 +28,23 @@
                         <nav class="navbar navbar-default" style="margin-top: -9%">
                             <div class="navbar-header">
 
-                                <!-- <nav class="navbar navbar-expand-sm bg-light navbar-light">
-                                            <div class="container">
-                                              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#menuBar" aria-controls="navbarTogglerDemo01"
-                                                aria-expanded="false" aria-label="Toggle navigation">
-                                                <span class="navbar-toggler-icon"></span>
-                                              </button>
-                                          
-                                              <ul class="navbar-nav">
-                                                <li>
-                                                  <a class="upperFixedBarColor" routerLink="/registeration">Login/Register</a> &nbsp;
-                                                </li>
-                                              </ul>
-                                          
-                                              <div class="collapse navbar-collapse" id="menuBar">
-                                                <ul class="nav navbar-nav ml-auto">
-                                                  <li>
-                                                    &nbsp; <a class="borderRight" routerLink="/"> Home &nbsp; </a>
-                                                  </li>
-                                                  <li>
-                                                    &nbsp; <a class="borderRight" routerLink="/"> Wishlist &nbsp; </a>
-                                                  </li>
-                                                  <li>
-                                                    &nbsp; <a class="borderRight" routerLink="/"> Checkout &nbsp; </a>
-                                                  </li>
-                                                  <li>
-                                                    &nbsp; <a class="borderRight" routerLink="/"> Cart &nbsp; </a>
-                                                  </li>
-                                                </ul>
-                                              </div>
-                                          
-                                            </div>
-                                          </nav> -->
+
 
                                 <div class="navbar-brand user-avatar setProfilePicSize">
 
-                                    <span *ngIf="loggedInUserProfilePic != '' ">
-                                        <img [src]="loggedInUserProfilePic" alt="">
-                                    </span>
+                                    <span *ngIf="ProfilePicNotFound() "> </span>
+                                    <span *ngFor="let pic of profilePics; let p = index">
+                                        <span class="comet-avatar"
+                                            *ngIf="this.cookie.get('authUserId') == pic.user_id; else picNotFound4">
+                                            <span *ngIf="ProfilePicFound()"> </span>
+                                            <img [src]="pic.picFile" alt="">
+                                        </span>
+                                        <ng-template #picNotFound4>
+                                            <span *ngIf="!isProfileFound && p == (profilePics.length-1)">
+                                                <img src="/assets/pics/noProfile.png" alt="">
 
-                                    <span *ngIf="loggedInUserProfilePic == '' ">
-                                        <img src="/assets/pics/noProfile.png" alt="">
+                                            </span>
+                                        </ng-template>
                                     </span>
 
                                     <form class="edit-phto">
@@ -160,10 +68,45 @@
                             </div>
                         </nav>
                     </header>
-                    <!--/#HEADER-->
+
+                    <nav class="navbar navbar-expand-sm bg-light navbar-light">
+                        <div class="container">
+                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#menuBar"
+                                aria-controls="navbarTogglerDemo01" aria-expanded="false"
+                                aria-label="Toggle navigation">
+                                <span class="navbar-toggler-icon"></span>
+                            </button>
+
+                            <div class="collapse navbar-collapse" id="menuBar">
+                                <ul class="nav navbar-nav">
+                                    <li>
+                                        &nbsp; <a class="borderRight" style="cursor: pointer"
+                                            (click)="activateSelectedTab('timeline')"><i class="fa fa-home"></i>
+                                            Timeline
+                                            &nbsp; </a>
+                                    </li>
+                                    <li>
+                                        &nbsp; <a class="borderRight" style="cursor: pointer"
+                                            (click)="activateSelectedTab('groups')"><i class="fa fa-object-group"></i>
+                                            Groups &nbsp; </a>
+                                    </li>
+                                    <li>
+                                        &nbsp; <a class="borderRight" style="cursor: pointer"
+                                            (click)="activateSelectedTab('likes')"><i class="fa fa-thumbs-up"></i>
+                                            Likes &nbsp; </a>
+                                    </li>
+                                    <li>
+                                        &nbsp; <a class="borderRight" style="cursor: pointer"
+                                            (click)="activateSelectedTab('friends')"><i class="fa fa-users"></i> Friends
+                                            &nbsp; </a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                        </div>
+                    </nav>
                 </div>
             </div>
-            <!-- </div> -->
         </div>
 
 
@@ -176,18 +119,26 @@
                         <div class="col-lg-12">
                             <div class="row" id="page-contents">
 
-                                <!-- ******************* CREATE POST ********************************* -->
-                                <div class="col-sm-6 col-md-6 col-lg-6 middleContentsNormal middleContentsCustomSet">
+                                <!-- ******************* CREATE POST ************************************************ -->
+                                <div *ngIf="activatedTab == 'timeline'"
+                                    class="col-sm-6 col-md-6 col-lg-6 middleContentsNormal middleContentsCustomSet">
                                     <div class="central-meta">
                                         <div class="new-postbox">
-                                            <figure>
-                                                <span class="comet-avatar" *ngIf="loggedInUserProfilePic != ''">
-                                                    <img [src]="loggedInUserProfilePic" alt="">
+                                            <span *ngIf="ProfilePicNotFound() "> </span>
+                                            <span *ngFor="let pic of profilePics; let p = index">
+                                                <span class="comet-avatar"
+                                                    *ngIf="this.cookie.get('authUserId') == pic.user_id; else picNotFound4">
+                                                    <span *ngIf="ProfilePicFound()"> </span>
+                                                    <img [src]="pic.picFile" alt="" style=" width: 12%; float: left">
                                                 </span>
-                                                <span class="comet-avatar" *ngIf="loggedInUserProfilePic == ''">
-                                                    <img src="/assets/pics/noProfile.png" alt="">
-                                                </span>
-                                            </figure>
+                                                <ng-template #picNotFound4>
+                                                    <span *ngIf="!isProfileFound && p == (profilePics.length-1)">
+                                                        <img src="/assets/pics/noProfile.png" alt=""
+                                                            style=" width: 12%; float: left">
+                                                    </span>
+                                                </ng-template>
+                                            </span>
+
                                             <div class="newpst-input">
                                                 <form [formGroup]="postingFormGroup">
                                                     <textarea class="postTextarea" rows="2"
@@ -223,16 +174,25 @@
                                             <div class="central-meta item" *ngIf="posts.user_id == this.userId">
                                                 <div class="user-post">
                                                     <div class="friend-info">
-                                                        <figure>
+
+                                                        <span *ngIf="ProfilePicNotFound() "> </span>
+                                                        <span *ngFor="let pic of profilePics; let p = index">
                                                             <span class="comet-avatar"
-                                                                *ngIf="loggedInUserProfilePic != ''">
-                                                                <img [src]="loggedInUserProfilePic" alt="">
+                                                                *ngIf="this.cookie.get('authUserId') == pic.user_id; else picNotFound4">
+                                                                <span *ngIf="ProfilePicFound()"> </span>
+                                                                <img [src]="pic.picFile" alt=""
+                                                                    style=" width: 10%; float: left">
                                                             </span>
-                                                            <span class="comet-avatar"
-                                                                *ngIf="loggedInUserProfilePic == ''">
-                                                                <img src="/assets/pics/noProfile.png" alt="">
-                                                            </span>
-                                                        </figure>
+                                                            <ng-template #picNotFound4>
+                                                                <span
+                                                                    *ngIf="!isProfileFound && p == (profilePics.length-1)">
+                                                                    <img src="/assets/pics/noProfile.png" alt=""
+                                                                        style=" width: 10%; float: left">
+
+                                                                </span>
+                                                            </ng-template>
+                                                        </span>
+
                                                         <div class="friend-name">
                                                             <ins>
                                                                 <a href="time-line.html" title="">
@@ -330,25 +290,30 @@
                                                                 <br>
 
                                                                 <div class="post-comment">
-                                                                    <!-- <span class="comet-avatar">            
-																			<img src="/assets/winkuLandingPage/images/resources/admin2.jpg" alt="" style="float:left">
-																	</span>  -->
                                                                     <div class="post-comt-box">
                                                                         <span class="comet-avatar">
-                                                                            <!-- <img [src]="setUserProfilePic"
-                                                                                alt="" style="float:left; width: 15%"> -->
-                                                                            <span class="comet-avatar"
-                                                                                *ngIf="loggedInUserProfilePic != ''">
-                                                                                <img [src]="loggedInUserProfilePic"
-                                                                                    alt=""
-                                                                                    style="width:15%; float:left">
+                                                                            <span *ngIf="ProfilePicNotFound() "> </span>
+                                                                            <span
+                                                                                *ngFor="let pic of profilePics; let p = index">
+                                                                                <span class="comet-avatar"
+                                                                                    *ngIf="this.cookie.get('authUserId') == pic.user_id; else picNotFound4">
+                                                                                    <span *ngIf="ProfilePicFound()">
+                                                                                    </span>
+                                                                                    <img [src]="pic.picFile" alt=""
+                                                                                        style=" width: 12%; float: left">
+                                                                                </span>
+                                                                                <ng-template #picNotFound4>
+                                                                                    <span
+                                                                                        *ngIf="!isProfileFound && p == (profilePics.length-1)">
+                                                                                        <img src="/assets/pics/noProfile.png"
+                                                                                            alt=""
+                                                                                            style=" width: 12%; float: left">
+
+                                                                                    </span>
+                                                                                </ng-template>
                                                                             </span>
-                                                                            <span class="comet-avatar"
-                                                                                *ngIf="loggedInUserProfilePic == ''">
-                                                                                <img src="/assets/pics/noProfile.png"
-                                                                                    alt=""
-                                                                                    style="width:15%; float:left">
-                                                                            </span>
+
+
 
                                                                             <textarea class="commentTextarea"
                                                                                 [(ngModel)]="commentValue"
@@ -366,8 +331,6 @@
 
                                                                                     <div class="we-comment">
                                                                                         <div class="coment-head">
-
-                                                                                            <!-- Commented User Profile Pic set  -->
                                                                                             <span
                                                                                                 *ngIf="ProfilePicNotFound() ">
                                                                                             </span>
@@ -418,18 +381,33 @@
                                                                                     *ngIf="commentReplyStatus && comment.post_id == posts.post_id && comment.comment_id == currentReplyId">
                                                                                     <div style="margin-top: 9px">
                                                                                         <span class="comet-avatar">
-                                                                                            <span class="comet-avatar"
-                                                                                                *ngIf="loggedInUserProfilePic != ''">
-                                                                                                <img [src]="loggedInUserProfilePic"
-                                                                                                    alt=""
-                                                                                                    style="width:15%; float:left">
+                                                                                            <span
+                                                                                                *ngIf="ProfilePicNotFound() ">
                                                                                             </span>
-                                                                                            <span class="comet-avatar"
-                                                                                                *ngIf="loggedInUserProfilePic == ''">
-                                                                                                <img src="/assets/pics/noProfile.png"
-                                                                                                    alt=""
-                                                                                                    style="width:15%; float:left">
+                                                                                            <span
+                                                                                                *ngFor="let pic of profilePics; let p = index">
+                                                                                                <span
+                                                                                                    class="comet-avatar"
+                                                                                                    *ngIf="this.cookie.get('authUserId') == pic.user_id; else picNotFound4">
+                                                                                                    <span
+                                                                                                        *ngIf="ProfilePicFound()">
+                                                                                                    </span>
+                                                                                                    <img [src]="pic.picFile"
+                                                                                                        alt=""
+                                                                                                        style=" width: 12%; float: left">
+                                                                                                </span>
+                                                                                                <ng-template
+                                                                                                    #picNotFound4>
+                                                                                                    <span
+                                                                                                        *ngIf="!isProfileFound && p == (profilePics.length-1)">
+                                                                                                        <img src="/assets/pics/noProfile.png"
+                                                                                                            alt=""
+                                                                                                            style=" width: 12%; float: left">
+
+                                                                                                    </span>
+                                                                                                </ng-template>
                                                                                             </span>
+
                                                                                             <textarea
                                                                                                 class="replyComment"
                                                                                                 style="vertical-align: middle"
@@ -455,8 +433,6 @@
                                                                                                     class="we-reply-comment">
                                                                                                     <div
                                                                                                         class="coment-head">
-
-                                                                                                        <!-- Replied User Profile Pic set  -->
                                                                                                         <span
                                                                                                             *ngIf="ProfilePicNotFound() ">
                                                                                                         </span>
@@ -512,19 +488,32 @@
                                                                                                     <span
                                                                                                         class="comet-avatar">
                                                                                                         <span
-                                                                                                            class="comet-avatar"
-                                                                                                            *ngIf="loggedInUserProfilePic != ''">
-                                                                                                            <img [src]="loggedInUserProfilePic"
-                                                                                                                alt=""
-                                                                                                                style="width:15%; float:left">
+                                                                                                            *ngIf="ProfilePicNotFound() ">
                                                                                                         </span>
                                                                                                         <span
-                                                                                                            class="comet-avatar"
-                                                                                                            *ngIf="loggedInUserProfilePic == ''">
-                                                                                                            <img src="/assets/pics/noProfile.png"
-                                                                                                                alt=""
-                                                                                                                style="width:15%; float:left">
+                                                                                                            *ngFor="let pic of profilePics; let p = index">
+                                                                                                            <span
+                                                                                                                class="comet-avatar"
+                                                                                                                *ngIf="this.cookie.get('authUserId') == pic.user_id; else picNotFound4">
+                                                                                                                <span
+                                                                                                                    *ngIf="ProfilePicFound()">
+                                                                                                                </span>
+                                                                                                                <img [src]="pic.picFile"
+                                                                                                                    alt=""
+                                                                                                                    style=" width: 12%; float: left">
+                                                                                                            </span>
+                                                                                                            <ng-template
+                                                                                                                #picNotFound4>
+                                                                                                                <span
+                                                                                                                    *ngIf="!isProfileFound && p == (profilePics.length-1)">
+                                                                                                                    <img src="/assets/pics/noProfile.png"
+                                                                                                                        alt=""
+                                                                                                                        style=" width: 12%; float: left">
+
+                                                                                                                </span>
+                                                                                                            </ng-template>
                                                                                                         </span>
+
                                                                                                         <textarea
                                                                                                             class="replyComment"
                                                                                                             style="vertical-align: middle"
@@ -533,8 +522,6 @@
                                                                                                             placeholder="Post your comment"
                                                                                                             #inlineCommentReply></textarea>
                                                                                                     </span>
-
-
                                                                                                 </div>
                                                                                             </li>
                                                                                         </ul>
@@ -557,8 +544,85 @@
                                             </div>
                                         </div>
                                     </div>
-
                                 </div>
+                                <!-- *************************** POSTS ENDS ************************************************************** -->
+
+                                <div *ngIf="activatedTab == 'friends'"
+                                    class="col-sm-6 col-md-6 col-lg-6 middleContentsNormal middleContentsCustomSet">
+                                    <div class="central-meta">
+                                        <div class="row">
+
+                                            <!-- FRIENDS -->
+                                            <span *ngFor="let friend of allFriendsRequest; let f= index">
+                                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="width: 12rem;"
+                                                    *ngIf="(this.cookie.get('authUserId') == friend.receiver_id) && friend.requeststatus == 'accept'">
+                                                    <div class="card h-100 friendsCardBox">
+                                                        <h5 class="card-title" style="text-align:center">
+                                                            {{ friend.username[0].username }} </h5>
+
+                                                        <span style="text-align:center"
+                                                            *ngIf="friend.ProfilePic != '' ; else showDummyPic">
+                                                            <img class="card-img-top"
+                                                                style="border-radius: 50%; width: 50%; height: 50%"
+                                                                [src]="friend.ProfilePic" alt="">
+                                                        </span>
+
+                                                        <ng-template #showDummyPic>
+                                                            <span style="text-align:center">
+                                                                <img class="card-img-top"
+                                                                    style="border-radius: 50%; width: 50%"
+                                                                    src="/assets/pics/noProfile.png" alt="">
+                                                            </span>
+                                                        </ng-template>
+
+                                                        <div class="card-footer" style="text-align: center">
+                                                            <button class="btn btn-danger" (click)="unfriend()"
+                                                                type="button"> Unfriend </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <span *ngFor="let user of allUserdata; let u= index">
+                                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="width: 12rem;"
+                                                        *ngIf="(this.cookie.get('authUserId') == friend.sender_id && user.user_id == friend.receiver_id) && friend.requeststatus == 'accept'">
+                                                        <div class="card h-100 friendsCardBox">
+                                                            <h5 class="card-title" style="text-align:center">
+                                                                {{ user.username }} </h5>
+        
+                                                            <span style="text-align:center"
+                                                                *ngIf="user.ProfilePic != '' ; else showDummyPic">
+                                                                <img class="card-img-top"
+                                                                    style="border-radius: 50%; width: 50%; height: 50%"
+                                                                    [src]="user.ProfilePic" alt="">
+                                                            </span>
+        
+                                                            <ng-template #showDummyPic>
+                                                                <span style="text-align:center">
+                                                                    <img class="card-img-top"
+                                                                        style="border-radius: 50%; width: 50%"
+                                                                        src="/assets/pics/noProfile.png" alt="">
+                                                                </span>
+                                                            </ng-template>
+        
+                                                            <div class="card-footer" style="text-align: center">
+                                                                <button class="btn btn-danger" (click)="unfriend()"
+                                                                    type="button"> Unfriend </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </span>
+
+                                            </span>
+                                            <!-- ENDS -->
+                                        </div>
+                                        <!-- /.ngFor Span Ends -->
+                                    </div>
+                                </div>
+
+
+
+
+
 
                                 <div class="col-lg-3 sidebarContentsCustomSet hideMeRightPanel">
                                     <aside class="sidebar static">

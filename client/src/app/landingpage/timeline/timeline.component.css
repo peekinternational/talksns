@@ -10226,6 +10226,10 @@ display: inline-block;
 	margin-left:0;
 	}	
     }
+
+    .friendsCardBox{
+        background-color: #c7c3c3 !important;
+    }
     
 
 

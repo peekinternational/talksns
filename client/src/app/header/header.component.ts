@@ -46,7 +46,9 @@ export class HeaderComponent implements OnInit {
     // If user is logged-In, then navigate it to 'home' page
     if (this.loginService.isUserLoggedIn()) {
       this.loginService.deActivateLoginForm();
-      this.router.navigate(["landingpage/home"]);
+      if (localStorage.getItem('routerUrl') != null)
+        this.router.navigate(["/"+localStorage.getItem('routerUrl')]);
+  
     }
     else {
       // get loginForm visibilty status from LoginService
@@ -124,6 +126,7 @@ export class HeaderComponent implements OnInit {
             this.loginService.setSigninErrorStatus("incorrectData"); // store error msg, to show it in signIn page
             this.loginService.setUserEmail(EmailorUsername); // store username or email
             this.loginService.setUserPassword(password);  // store password
+            this.loginService.setNextRouteName("/signin");
             this.router.navigate(['/signin']);
           }
           else {
@@ -131,6 +134,7 @@ export class HeaderComponent implements OnInit {
             this.loginService.deActivateLoginForm(); // deActivate loginForm in headers
             this.cookie.set("email", EmailorUsername); // store user data in cookie service
             this.cookie.set("authUserId", signInStatus.data.user_id);
+       
             this.router.navigate(['landingpage/home']);
           }
         }
@@ -161,14 +165,14 @@ export class HeaderComponent implements OnInit {
 
   // SignOut, clear cookie and navigate to main-page
   Signout() {
-    this.cookie.delete("email");
     this.cookie.delete("authUserId");
-    
+    this.cookie.delete("email");
     this.loginService.deActivateLogin();
     this.loginService.activateLoginForm();
     this.signinForm.reset();
     this.loginService.clearInputData();
     this.loginService.setSigninErrorStatus("");
+    this.loginService.removeRouteData();
     this.router.navigate(['/']);
   }
 
@@ -208,7 +212,7 @@ export class HeaderComponent implements OnInit {
   // ************************************************************************************************
 
   ngOnDestroy() {
-    this.addFriendSubscription.unsubscribe();
+    //this.addFriendSubscription.unsubscribe();
     this.getPostSubscription.unsubscribe();
   }
 }

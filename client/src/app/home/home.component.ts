@@ -30,7 +30,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   isPostLiked: boolean = false;
   isPostdisLiked: boolean = false;
   isProfileFound: boolean = false;
-
+ 
   userId: number = 0;
   index: number = 0;
   imageSrc: string = "";
@@ -50,12 +50,11 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.userId = parseInt(this.cookie.get('authUserId'));
+    localStorage.setItem('routerUrl', '/landingpage/home');
 
     this.postingFormGroup = this.formbuilder.group({
       'desc': [''],
     });
-
-   
 
     this.getPostSubscription = this.chatService.getPost().subscribe(
       (newpost: any) => {
@@ -253,7 +252,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
-
     if (this.loginService.getNextRouteName() != "")
       return true;
     if (!this.loginService.getuserLogedinStatus())

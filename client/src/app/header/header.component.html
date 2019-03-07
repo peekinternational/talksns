@@ -12,6 +12,66 @@
 <div class="topbar sticky-header">
     <div class="logo">
         <a routerLink="landingpage/home"><img src="/assets/winkuLandingPage/images/logo.png" alt=""></a>
+        <!-- <span class="dropdown showDropButton">
+                <span data-toggle="dropdown">
+                 <img src="/assets/pics/mobileMenuButton.png" style="width:25%; height:20%; margin-left: 7px" class="dropdown-toggle dropDownOveride">
+                </span>
+
+                <div class="dropdown-menu dropDownMenuOveride">
+                    <a class="dropdown-item dropdownItemOveride" style="cursor: pointer"
+                        (click)="goToRoute('landingpage/timeline')" routerLink="landingpage/timeline">MyProfile</a>
+                    <hr>
+                    <a class="dropdown-item dropdownItemOveride" style="cursor: pointer">Create New Page</a>
+                    <a class="dropdown-item dropdownItemOveride" style="cursor: pointer">Create New Group</a>
+                    <a class="dropdown-item dropdownItemOveride" style="cursor: pointer">Advertising</a>
+                    <a class="dropdown-item dropdownItemOveride" style="cursor: pointer">Edit</a>
+                    <a class="dropdown-item dropdownItemOveride" style="cursor: pointer">General Setting</a>
+                    <hr>
+                    <a class="dropdown-item dropdownItemOveride" style="cursor: pointer" (click)="Signout()">Logout</a>
+                </div> 
+        </span> -->
+
+        <!-- <nav class="navbar navbar-expand-sm navbar-light showDropButton">
+                <div class="container">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#menuBar"
+                        aria-controls="navbarTogglerDemo01" aria-expanded="false"
+                        aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="menuBar"  style="background-color:darkgrey">
+                        <ul class="nav navbar-nav">
+                            <li>
+                                &nbsp; <a class="borderRight" style="cursor: pointer"
+                                    (click)="activateSelectedTab('timeline')">
+                                    News Feed
+                                    &nbsp; </a>
+                            </li>
+                            <li>
+                                &nbsp; <a class="borderRight" style="cursor: pointer"
+                                    (click)="activateSelectedTab('groups')">
+                                    Inbox &nbsp; </a>
+                            </li>
+                            <li>
+                                &nbsp; <a class="borderRight" style="cursor: pointer"
+                                    (click)="activateSelectedTab('likes')">
+                                    My pages &nbsp; </a>
+                            </li>
+                            <li>
+                                &nbsp; <a class="borderRight" style="cursor: pointer"
+                                    (click)="activateSelectedTab('friends')">
+                                    Friends &nbsp; </a>
+                            </li>
+                            <li>
+                                    &nbsp; <a class="borderRight" style="cursor: pointer"
+                                        (click)="activateSelectedTab('messages')">
+                                        Messages &nbsp; </a>
+                                </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav> -->
+
     </div>
 
     <div class="top-area" *ngIf="isUserLoggedIn">
@@ -27,8 +87,7 @@
 
                 <ng-template #noPicFound>
                     <span *ngIf="p == (usersProfilePic.length- 1) && !isProfilePicFound">
-                        <span 
-                            *ngIf="loggedInUserProfilePic == null || loggedInUserProfilePic == ''">
+                        <span *ngIf="loggedInUserProfilePic == null || loggedInUserProfilePic == ''">
                             <img src="/assets/pics/noProfile.png" class="dropdown-toggle dropDownOveride"
                                 style="margin-top: 6px; width: 50px; height: 50px;">
                         </span>
@@ -42,6 +101,15 @@
                 <a class="dropdown-item dropdownItemOveride" style="cursor: pointer"
                     (click)="goToRoute('landingpage/timeline')" routerLink="landingpage/timeline">MyProfile</a>
                 <hr>
+                <span class="showDropButton">
+                    <a class="dropdown-item dropdownItemOveride" style="cursor: pointer">NewsFeed</a>
+                    <a class="dropdown-item dropdownItemOveride" style="cursor: pointer">Friends</a>
+                    <a class="dropdown-item dropdownItemOveride" style="cursor: pointer">Images</a>
+                    <a class="dropdown-item dropdownItemOveride" style="cursor: pointer">Videos</a>
+                    <a class="dropdown-item dropdownItemOveride" style="cursor: pointer">MyPages</a>
+                    <a class="dropdown-item dropdownItemOveride" style="cursor: pointer">Messages</a>
+                    <hr>
+                </span>
                 <a class="dropdown-item dropdownItemOveride" style="cursor: pointer">Create New Page</a>
                 <a class="dropdown-item dropdownItemOveride" style="cursor: pointer">Create New Group</a>
                 <a class="dropdown-item dropdownItemOveride" style="cursor: pointer">Advertising</a>
@@ -67,14 +135,14 @@
                         <i class="fa fa-users"></i>
                         <span *ngIf="RequestCountNotFound()"></span>
                         <span *ngFor="let request of allFriendsRequest; let c = index">
-                             <span *ngIf="this.cookie.get('authUserId') == request.receiver_id">
-                                    <span *ngIf="!isTotalRequestFound" class="badge badge-pill badge-warning">
-                                        <span *ngIf="RequestCountFound()"></span>
-                                        {{request.requestCount}}
-                                    </span>
-                             </span>
+                            <span *ngIf="this.cookie.get('authUserId') == request.receiver_id">
+                                <span *ngIf="!isTotalRequestFound" class="badge badge-pill badge-warning">
+                                    <span *ngIf="RequestCountFound()"></span>
+                                    {{request.requestCount}}
+                                </span>
+                            </span>
                         </span>
-                        
+
                     </a>
 
                     <div class="dropdown-menu dropDownUserOveride">
