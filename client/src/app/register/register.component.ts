@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { BackendConnector } from '../services/backendconnector.service';
 import { Router } from '@angular/router';
+import { SessionStorageService } from 'angular-web-storage';
 
 @Component({
   selector: 'app-register',
@@ -39,7 +40,8 @@ export class RegisterComponent implements OnInit {
   breakLineStatus: boolean = false;
   message: string = "";
 
-  constructor(private formBuilder: FormBuilder, private connectorService: BackendConnector, private router: Router) {
+  constructor(private formBuilder: FormBuilder, private connectorService: BackendConnector, 
+    private router: Router, private session: SessionStorageService) {
 
     // calculate years and store it in array
     for (var i = this.minimumYear; i < this.currentYear; i++) {

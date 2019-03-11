@@ -1,6 +1,5 @@
 import { Injectable, EventEmitter } from "@angular/core";
-import { CookieService } from "ngx-cookie-service";
-import { Router } from "@angular/router";
+import { SessionStorageService } from "angular-web-storage";
 
 @Injectable()
 export class LoginStatusService {
@@ -18,7 +17,7 @@ export class LoginStatusService {
     loginFormStatus = new EventEmitter<boolean>();
     
 
-    constructor(private cookie: CookieService) { 
+    constructor(private session: SessionStorageService) { 
     }
 
     // *** Related to loginForm in Header ***********************
@@ -47,8 +46,8 @@ export class LoginStatusService {
         this.userLoginStatus.emit(this.isLoggedIn);
     }
 
-    public isUserLoggedIn() {  // Checks if is user logged in or not using cookies
-        if (this.cookie.check('email')) {
+    public isUserLoggedIn() {  // Checks if is user logged in or not using session
+        if (this.session.get('email') != null && this.session.get('email') != '') {
             this.activateLogin();
         }
         else {

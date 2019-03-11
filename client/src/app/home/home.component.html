@@ -67,7 +67,7 @@
 											<span *ngIf="ProfilePicNotFound() "> </span>
                                             <span *ngFor="let pic of profilePics; let p = index">
 													<span class="comet-avatar"
-														*ngIf="this.cookie.get('authUserId') == pic.user_id; else picNotFound1">
+														*ngIf="this.session.get('authUserId') == pic.user_id; else picNotFound1">
 														<span *ngIf="ProfilePicFound()"> </span>
 														<img [src]="pic.picFile" alt="" style=" width: 11%">
 													</span>
@@ -108,11 +108,14 @@
 
 									<!-- **************** POSTS ******************************** -->
 									<div class="loadMore">
-										<div class="central-meta item" *ngFor="let posts of createpost | reverse; let i = index">
+										<span *ngFor="let posts of createpost | reverse; let i = index">
 											<span *ngIf="resetShow()"></span>
-											<div>
-												<div class="user-post">
-													<div class="friend-info">
+											<span *ngIf="friendsPostNotFound()"></span>
+
+											<span *ngFor="let friend of allFriendsRequest">
+												<span class="user-post central-meta item" *ngIf="(((this.session.get('authUserId') == friend.sender_id && posts.user_id == friend.receiver_id && friend.requeststatus == 'accept') || (this.session.get('authUserId') == friend.receiver_id && posts.user_id == friend.sender_id && friend.requeststatus == 'accept')) || (this.session.get('authUserId') == posts.user_id)) && !isPostFound">
+													<span *ngIf="friendsPostFound()"></span>
+													<span class="friend-info">
 														<figure>
 															<!-- <span *ngFor="let pic of profilePics; let j = index"> -->
 															<span *ngIf="posts.postUserpic != ''">
@@ -218,7 +221,7 @@
 																			<span *ngIf="ProfilePicNotFound() "> </span>
 																			<span *ngFor="let pic of profilePics; let p = index">
 																					<span class="comet-avatar"
-																						*ngIf="this.cookie.get('authUserId') == pic.user_id; else picNotFound2">
+																						*ngIf="this.session.get('authUserId') == pic.user_id; else picNotFound2">
 																						<span *ngIf="ProfilePicFound()"> </span>
 																						<img [src]="pic.picFile" alt="" style=" width: 15%; float: left">
 																					</span>
@@ -280,7 +283,7 @@
 																							<span *ngIf="ProfilePicNotFound() "> </span>
 																							<span *ngFor="let pic of profilePics; let p = index">
 																									<span class="comet-avatar"
-																										*ngIf="this.cookie.get('authUserId') == pic.user_id; else picNotFound3">
+																										*ngIf="this.session.get('authUserId') == pic.user_id; else picNotFound3">
 																										<span *ngIf="ProfilePicFound()"> </span>
 																										<img [src]="pic.picFile" alt="" style=" width: 15%; float: left">
 																									</span>
@@ -354,7 +357,7 @@
 																										<span *ngIf="ProfilePicNotFound() "> </span>
 																										<span *ngFor="let pic of profilePics; let p = index">
 																												<span class="comet-avatar"
-																													*ngIf="this.cookie.get('authUserId') == pic.user_id; else picNotFound4">
+																													*ngIf="this.session.get('authUserId') == pic.user_id; else picNotFound4">
 																													<span *ngIf="ProfilePicFound()"> </span>
 																													<img [src]="pic.picFile" alt="" style=" width: 15%; float: left">
 																												</span>
@@ -372,8 +375,6 @@
 																											placeholder="Post your comment" #inlineCommentReply></textarea>
 																									</span>
 
-																									<!-- <div class="post-comt-box">
-																											</div> -->
 																								</div>
 																							</li>
 																						</ul>
@@ -391,10 +392,10 @@
 															</div>
 
 														</div>
-													</div>
-												</div>
-											</div>
-										</div>
+													</span> <!-- friendInfo class ends -->
+												</span> <!-- userPost class ends -->
+											</span> <!-- ngFor_FriendsRequest ends -->
+										</span>
 									</div>
 
 								</div><!-- centerl meta -->

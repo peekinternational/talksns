@@ -35,4 +35,4 @@ Route::post("/profilepic", "FrontendConnectorController@profilePic");
 Route::post("/setfriendrequest", "FrontendConnectorController@friendRequest");
 Route::post("/getAddFriendData", "FrontendConnectorController@getAddFriendsData");
 Route::post("/friendrequestStatus", "FrontendConnectorController@friendRequestStatusUpdate");
-
+Route::post("/unfriendrequestStatus", "FrontendConnectorController@unfriend");

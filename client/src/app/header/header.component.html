@@ -10,6 +10,7 @@
 </head>
 
 <div class="topbar sticky-header">
+    <!-- <h1>{{this.session.get('authUserId')}}</h1> -->
     <div class="logo">
         <a routerLink="landingpage/home"><img src="/assets/winkuLandingPage/images/logo.png" alt=""></a>
         <!-- <span class="dropdown showDropButton">
@@ -78,8 +79,9 @@
         <div class="dropdown" style="float: right">
 
             <!--  ******************** SETTING PROFILE PIC IN HEADER ***************************************************** -->
+            <span *ngIf="profilePicNotfound()"></span>
             <span data-toggle="dropdown" *ngFor="let userPics of usersProfilePic; let p = index">
-                <span *ngIf="userPics.user_id == this.cookie.get('authUserId'); else noPicFound">
+                <span *ngIf="userPics.user_id == this.session.get('authUserId'); else noPicFound">
                     <span *ngIf="profilePicFound()"></span>
                     <img [src]="userPics.picFile" class="dropdown-toggle dropDownOveride"
                         style="margin-top: 6px; width: 50px; height: 50px;">
@@ -135,7 +137,7 @@
                         <i class="fa fa-users"></i>
                         <span *ngIf="RequestCountNotFound()"></span>
                         <span *ngFor="let request of allFriendsRequest; let c = index">
-                            <span *ngIf="this.cookie.get('authUserId') == request.receiver_id">
+                            <span *ngIf="this.session.get('authUserId') == request.receiver_id">
                                 <span *ngIf="!isTotalRequestFound" class="badge badge-pill badge-warning">
                                     <span *ngIf="RequestCountFound()"></span>
                                     {{request.requestCount}}
@@ -160,7 +162,7 @@
 
                     <span class="dropdown-item" *ngFor="let friendrequest of allFriendsRequest">
                         <span
-                            *ngIf="this.cookie.get('authUserId') == friendrequest.receiver_id && friendrequest.requeststatus == 'sent'">
+                            *ngIf="this.session.get('authUserId') == friendrequest.receiver_id && friendrequest.requeststatus == 'sent'">
 
                             <span *ngIf="friendrequest.ProfilePic != ''; else dummyPicR">
                                 <img class="rounded-circle" style="width: 50px; height: 50px;"
@@ -205,16 +207,16 @@
                         <span *ngIf="receiveRequestUnfound()"></span>
                         <span *ngFor="let request of allFriendsRequest; let r = index">
                             <span
-                                *ngIf="(this.cookie.get('authUserId') == request.receiver_id && user.user_id == request.sender_id)">
+                                *ngIf="(this.session.get('authUserId') == request.receiver_id && user.user_id == request.sender_id)">
                                 <span *ngIf="receiveRequestFound()"></span>
                             </span>
 
                             <span
-                                *ngIf="(this.cookie.get('authUserId') == request.sender_id && user.user_id == request.receiver_id); else showSentMsg">
+                                *ngIf="(this.session.get('authUserId') == request.sender_id && user.user_id == request.receiver_id); else showSentMsg">
                                 <span *ngIf="sentRequestFound()"></span>
 
                                 <span
-                                    *ngIf="request.requeststatus == 'sent' && this.cookie.get('authUserId') != user.user_id">
+                                    *ngIf="request.requeststatus == 'sent' && this.session.get('authUserId') != user.user_id">
                                     <span class="dropdown-item">
                                         <span *ngIf="user.ProfilePic != null; else dummyPic">
                                             <img class="rounded-circle" style="width: 50px; height: 50px;"
@@ -235,7 +237,7 @@
 
                             <ng-template #showSentMsg>
                                 <span class="dropdown-item"
-                                    *ngIf="r == (allFriendsRequest.length-1) && this.cookie.get('authUserId') != user.user_id && !sentRequestFoundStatus && !receiveRequestFoundStatus">
+                                    *ngIf="r == (allFriendsRequest.length-1) && this.session.get('authUserId') != user.user_id && !sentRequestFoundStatus && !receiveRequestFoundStatus">
 
                                     <span *ngIf="user.ProfilePic != null; else dummyPic">
                                         <img class="rounded-circle" style="width: 50px; height: 50px;"
@@ -256,7 +258,7 @@
                         </span>
 
                         <span *ngIf="allFriendsRequest == null || allFriendsRequest.length == 0">
-                            <span class="dropdown-item" *ngIf="this.cookie.get('authUserId') != user.user_id">
+                            <span class="dropdown-item" *ngIf="this.session.get('authUserId') != user.user_id">
                                 <span *ngIf="user.ProfilePic != null; else dummyPic">
                                     <img class="rounded-circle" style="width: 50px; height: 50px;"
                                         [src]="user.ProfilePic">

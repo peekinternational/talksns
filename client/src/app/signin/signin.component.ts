@@ -1,3 +1,4 @@
+import { SessionStorageService } from 'angular-web-storage';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { BackendConnector } from '../services/backendconnector.service';
@@ -5,7 +6,6 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { LoginStatusService } from '../services/loginstatus.service';
 import { Observable } from 'rxjs';
 import { CanComponentDeactivate } from '../services/deactivateguard.service';
-import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-signin',
@@ -29,7 +29,7 @@ export class SigninComponent implements OnInit, CanComponentDeactivate {
   signinForm: FormGroup;
 
   constructor(private connectorService: BackendConnector, private loginService: LoginStatusService,
-    private router: Router, private formBuilder: FormBuilder, private cookie: CookieService) { }
+    private router: Router, private formBuilder: FormBuilder, private session: SessionStorageService) { }
 
   ngOnInit() {
     // if current page is 'signin' then deActivate loginForm in Header
@@ -88,8 +88,8 @@ export class SigninComponent implements OnInit, CanComponentDeactivate {
             this.loginService.setSigninErrorStatus("");
             this.loginService.activateLogin(); // update LoggedIn status
             this.loginService.deActivateLoginForm(); // deActivate loginForm in headers
-            this.cookie.set("email", email_username); // store user data in cookie service
-            this.cookie.set("authUserId", signInStatusResponse.data.user_id);
+            this.session.set("email", email_username); // store user data in session service
+            this.session.set("authUserId", signInStatusResponse.data.user_id);
             this.loginService.setNextRouteName("landingpage/home");
             this.router.navigate(['landingpage/home']);
           }

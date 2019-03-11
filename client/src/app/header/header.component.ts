@@ -1,11 +1,11 @@
 import { BackendConnector } from './../services/backendconnector.service';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { LoginStatusService } from '../services/loginstatus.service';
-import { CookieService } from 'ngx-cookie-service';
 import { Subscription } from 'rxjs';
 import { ChatService } from '../services/chat.service';
+import { SessionStorageService } from 'angular-web-storage';
 
 @Component({
   selector: 'app-header',
@@ -30,7 +30,7 @@ export class HeaderComponent implements OnInit {
   isTotalRequestFound: boolean = false;
 
   constructor(private connectorService: BackendConnector, private loginService: LoginStatusService,
-    private formBuilder: FormBuilder, private router: Router, private cookie: CookieService,
+    private formBuilder: FormBuilder, private router: Router, private session: SessionStorageService,
     private chatService: ChatService) {
 
     //Initialize formGroup with initial values and validators
@@ -74,17 +74,13 @@ export class HeaderComponent implements OnInit {
         this.usersProfilePic = newpost.profilepics;
       });
 
-    this.updateFriendList();
-  }
-
-  updateFriendList() {
-    this.addFriendSubscription = this.chatService.getRequest().subscribe(
-      (friendsData: any) => {
-        this.allFriendsRequest = friendsData.allFriendRequests;
-        this.allUserdata = friendsData.allUserdata;
-      });
-
-    this.connectorService.getFriendRequestData();
+      this.addFriendSubscription = this.chatService.getRequest().subscribe(
+        (friendsData: any) => {
+          this.allFriendsRequest = friendsData.allFriendRequests;
+          this.allUserdata = friendsData.allUserdata;
+        });
+  
+      this.connectorService.getFriendRequestData();
   }
 
   onSignIn() {   // if user SignIn
@@ -132,9 +128,8 @@ export class HeaderComponent implements OnInit {
           else {
             this.loginService.activateLogin(); // update LoggedIn status
             this.loginService.deActivateLoginForm(); // deActivate loginForm in headers
-            this.cookie.set("email", EmailorUsername); // store user data in cookie service
-            this.cookie.set("authUserId", signInStatus.data.user_id);
-       
+            this.session.set("email", EmailorUsername); // store user data in session service
+            this.session.set("authUserId", signInStatus.data.user_id);
             this.router.navigate(['landingpage/home']);
           }
         }
@@ -161,12 +156,12 @@ export class HeaderComponent implements OnInit {
     this.signinForm.value.password = "";
     this.loginService.clearInputData();
     this.router.navigate(['/']);
-  }
+ }
 
-  // SignOut, clear cookie and navigate to main-page
+  // SignOut, clear session and navigate to main-page
   Signout() {
-    this.cookie.delete("authUserId");
-    this.cookie.delete("email");
+    this.session.remove("authUserId");     
+    this.session.remove("email");
     this.loginService.deActivateLogin();
     this.loginService.activateLoginForm();
     this.signinForm.reset();
@@ -212,7 +207,7 @@ export class HeaderComponent implements OnInit {
   // ************************************************************************************************
 
   ngOnDestroy() {
-    //this.addFriendSubscription.unsubscribe();
+    this.addFriendSubscription.unsubscribe();
     this.getPostSubscription.unsubscribe();
   }
 }

@@ -5,7 +5,7 @@ import { LoginStatusService } from '../services/loginstatus.service';
 import { BackendConnector } from '../services/backendconnector.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { ChatService } from '../services/chat.service';
-import { CookieService } from 'ngx-cookie-service';
+import { SessionStorageService } from 'angular-web-storage';
 
 @Component({
   selector: 'app-home',
@@ -18,7 +18,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   postSubscription: Subscription;
   getPostSubscription: Subscription;
 
-  postingFormGroup: FormGroup
+  postingFormGroup: FormGroup;
   createpost: any;
   createlike: any;
   createcomments: any;
@@ -26,10 +26,12 @@ export class HomeComponent implements OnInit, OnDestroy {
   usernames: any;
   profilePics: any;
   loggedInUserProfilePic: any = "";
+  allFriendsRequest: any = "";
 
   isPostLiked: boolean = false;
   isPostdisLiked: boolean = false;
   isProfileFound: boolean = false;
+  isPostFound: boolean = false;
  
   userId: number = 0;
   index: number = 0;
@@ -44,12 +46,12 @@ export class HomeComponent implements OnInit, OnDestroy {
   replyCommentStatus: boolean = false;
   selectedUploadFile: File = null;
 
-  constructor(private route: Router, private loginService: LoginStatusService, private cookie: CookieService,
+  constructor(private route: Router, private loginService: LoginStatusService, private session: SessionStorageService,
     private backendService: BackendConnector, private formbuilder: FormBuilder, private chatService: ChatService) {
     }
 
   ngOnInit() {
-    this.userId = parseInt(this.cookie.get('authUserId'));
+    this.userId = parseInt(this.session.get('authUserId'));
     localStorage.setItem('routerUrl', '/landingpage/home');
 
     this.postingFormGroup = this.formbuilder.group({
@@ -57,7 +59,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
 
     this.getPostSubscription = this.chatService.getPost().subscribe(
-      (newpost: any) => {
+      (newpost: any) => { 
         this.createpost = newpost.posts;
         this.createlike = newpost.postlikes;
         this.createcomments = newpost.comments;
@@ -65,13 +67,14 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.createreplies = newpost.replies;
         this.profilePics = newpost.profilepics;
         this.loggedInUserProfilePic = newpost.loggedInUserProfilepic;
+        this.allFriendsRequest = newpost.allFriendRequest;
       });
 
     this.postSubscription = this.backendService.quickLike.subscribe(
       (postLikeData: any) => {
   
         for (var i = 0; i < this.createlike.length; i++) {
-          if (this.createlike[i].user_id == this.cookie.get('authUserId') && postLikeData.postId == this.createlike[i].post_id) {
+          if (this.createlike[i].user_id == this.session.get('authUserId') && postLikeData.postId == this.createlike[i].post_id) {
 
             for (var j = 0; j < this.createpost.length; j++) {
 
@@ -135,7 +138,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       });
 
       this.backendService.getPost();
-      this.backendService.getFriendRequestData();
   } // *** OnInit Ends *************
 
   public addMyPost(desc: string) {
@@ -249,6 +251,14 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
   ProfilePicNotFound() {
     this.isProfileFound = false;
+  }
+
+  friendsPostFound(){
+    this.isPostFound = true;
+  }
+
+  friendsPostNotFound(){
+    this.isPostFound = false;
   }
 
   canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {

@@ -1,4 +1,4 @@
-import { CanActivate, Router, CanActivateChild, RouterStateSnapshot, ActivatedRouteSnapshot } from "@angular/router";
+import { CanActivate, Router, CanActivateChild } from "@angular/router";
 import { Observable } from "rxjs";
 import { Injectable } from "@angular/core";
 import { LoginStatusService } from "./loginstatus.service";

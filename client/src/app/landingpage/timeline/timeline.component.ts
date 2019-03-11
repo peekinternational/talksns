@@ -2,10 +2,10 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { LoginStatusService } from 'src/app/services/loginstatus.service';
 import { BackendConnector } from 'src/app/services/backendconnector.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
-import { CookieService } from 'ngx-cookie-service';
 import { ChatService } from 'src/app/services/chat.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { SessionStorageService } from 'angular-web-storage';
 
 @Component({
   selector: 'app-timeline',
@@ -48,12 +48,12 @@ export class TimelineComponent implements OnInit, OnDestroy {
   selectedUploadFile: File = null;
   setUserProfilePic: any;
 
-  constructor(private route: Router, private loginService: LoginStatusService, private cookie: CookieService,
+  constructor(private route: Router, private loginService: LoginStatusService, private session: SessionStorageService,
     private backendService: BackendConnector, private formbuilder: FormBuilder, private chatService: ChatService) { }
 
   ngOnInit() {
 
-    this.userId = parseInt(this.cookie.get('authUserId'));
+    this.userId = parseInt(this.session.get('authUserId'));
 
     this.postingFormGroup = this.formbuilder.group({
       'desc': [''],
@@ -66,7 +66,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       });
 
     this.getPostSubscription = this.chatService.getPost().subscribe(
-      (newpost: any) => {
+      (newpost: any) => {    console.log("timeline");
         this.createpost = newpost.posts;
         this.createlike = newpost.postlikes;
         this.createcomments = newpost.comments;
@@ -79,7 +79,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     this.postSubscription = this.backendService.quickLike.subscribe(
       (postLikeData: any) => {
         for (var i = 0; i < this.createlike.length; i++) {
-          if (this.createlike[i].user_id == this.cookie.get('authUserId') && postLikeData.postId == this.createlike[i].post_id) {
+          if (this.createlike[i].user_id == this.session.get('authUserId') && postLikeData.postId == this.createlike[i].post_id) {
 
             for (var j = 0; j < this.createpost.length; j++) {
 
@@ -143,6 +143,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       });
     this.backendService.getFriendRequestData();
     this.backendService.getPost();
+
   }
 
   public addMyPost(desc: string) {
@@ -277,8 +278,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
     this.activatedTab = tabname;
   }
 
-  unfriend(){
-    
+  unfriend(friendId: number){
+    this.backendService.UnFriendRequest(friendId, 'reject');
   }
 
   ngOnDestroy() {

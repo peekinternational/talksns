@@ -211,6 +211,15 @@ class FrontendConnectorController extends Controller
         return response()->json($this->setFriendsData());
     }
 
+    public function unfriend(Request $request){
+        $userId = $request->userId;
+        $friendId = $request->friendUserId;
+        $requestStatus = $request->requestStatus;
+
+        DB::table('friends')->where('friend_id', '=', $friendId)->update(['requeststatus' => $requestStatus]);
+        return response()->json($this->setFriendsData());
+    }
+
     public function getAddFriendsData(Request $request)
     {
         $userId = $request->userId;
@@ -262,6 +271,7 @@ class FrontendConnectorController extends Controller
         $allPosts = DB::table('posts')->get();
         $allPostLikes = DB::table('postlikes')->get();
         $allPostComments = DB::table('comments')->get();
+
         $usersName = DB::table('users')->select('user_id', 'username')->get();
         $replies = DB::table('replycomments')->get();
         $profilepicFileNames = DB::table('users')->select('user_id', 'ProfilePic')->where('ProfilePic', '!=', null)->get();
@@ -312,10 +322,12 @@ class FrontendConnectorController extends Controller
             }
         }
 
+        $allFriendRequestData = DB::table('friends')->get();
         return [
             'posts' => $allPosts, 'postlikes' => $allPostLikes, 'comments' => $allPostComments,
             'usernames' => $usersName, 'replies' => $replies, 'profilepics' => $profilepicFileNames,
             'loggedUserData' => $loggedInUserData, 'loggedInUserProfilepic' => $loggedInUserProfilePic,
+            'allFriendRequest' => $allFriendRequestData
         ];
     }
 
@@ -323,19 +335,31 @@ class FrontendConnectorController extends Controller
     // **********************************************************************************************************************************************************************************************
     public function test()
     {
-        $allUserdata = DB::table('users')->select('user_id', 'username', 'ProfilePic')->get();
-        $allFriendRequestData = DB::table('friends')->get();
+        // $users = DB::table('friends')
+        //     ->select('posts.*')
+        //     ->leftJoin('posts', 'friends.sender_id', '=', 'posts.user_id')
+        //     ->where('friends.requeststatus' ,'=', 'accept')
+        //     ->get();
 
-        foreach ($allFriendRequestData as &$friendRequest) {
-            $friendRequest->ProfilePic = '';
+        // $userId= 1;
 
-            foreach($allUserdata as $user){
-                if ($friendRequest->receiver_id == $user->user_id){
-                   $friendRequest->requestCount = DB::table("friends")->where('receiver_id' ,'=', $friendRequest->receiver_id)->where("friends.requeststatus", '=', 'sent')->count();
-                }
-           }
-        }
+        // $myFriends = DB::table('friends')->where('sender_id' ,'=', $userId)->orWhere('receiver_id' ,'=', $userId)->where('friends.requeststatus' ,'=', 'accept') ->get();
+        // $friendsPost = null;
 
-        dd($allFriendRequestData);
+        // $fp = 0;
+        // $allPosts = DB::table('posts')->get();
+        // foreach($allPosts as $post){
+        //     foreach($myFriends as $friend){
+        //      //if($friend->sender_id != $userId && $friend->receiver_id != $userId){
+        //         if ($post->user_id == $friend->sender_id || $post->user_id == $friend->receiver_id){
+        //             $friendsPost[$fp] = $post;
+        //           }
+        //     // }
+        //     }
+        //     $fp++;
+        // }
+        
+            
+      //  dd($friendsPost);
     }
 }

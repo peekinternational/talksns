@@ -35,7 +35,7 @@
                                     <span *ngIf="ProfilePicNotFound() "> </span>
                                     <span *ngFor="let pic of profilePics; let p = index">
                                         <span class="comet-avatar"
-                                            *ngIf="this.cookie.get('authUserId') == pic.user_id; else picNotFound4">
+                                            *ngIf="this.session.get('authUserId') == pic.user_id; else picNotFound4">
                                             <span *ngIf="ProfilePicFound()"> </span>
                                             <img [src]="pic.picFile" alt="">
                                         </span>
@@ -60,7 +60,7 @@
 
                                 <span class="site-name admin-name setUserNameFontSize">
                                     <span *ngFor="let names of usernames">
-                                        <a href="" title="" *ngIf="this.cookie.get('authUserId')==names.user_id">
+                                        <a href="" title="" *ngIf="this.session.get('authUserId')==names.user_id">
                                             {{ names.username }}
                                         </a>
                                     </span>
@@ -127,7 +127,7 @@
                                             <span *ngIf="ProfilePicNotFound() "> </span>
                                             <span *ngFor="let pic of profilePics; let p = index">
                                                 <span class="comet-avatar"
-                                                    *ngIf="this.cookie.get('authUserId') == pic.user_id; else picNotFound4">
+                                                    *ngIf="this.session.get('authUserId') == pic.user_id; else picNotFound4">
                                                     <span *ngIf="ProfilePicFound()"> </span>
                                                     <img [src]="pic.picFile" alt="" style=" width: 12%; float: left">
                                                 </span>
@@ -178,7 +178,7 @@
                                                         <span *ngIf="ProfilePicNotFound() "> </span>
                                                         <span *ngFor="let pic of profilePics; let p = index">
                                                             <span class="comet-avatar"
-                                                                *ngIf="this.cookie.get('authUserId') == pic.user_id; else picNotFound4">
+                                                                *ngIf="this.session.get('authUserId') == pic.user_id; else picNotFound4">
                                                                 <span *ngIf="ProfilePicFound()"> </span>
                                                                 <img [src]="pic.picFile" alt=""
                                                                     style=" width: 10%; float: left">
@@ -296,7 +296,7 @@
                                                                             <span
                                                                                 *ngFor="let pic of profilePics; let p = index">
                                                                                 <span class="comet-avatar"
-                                                                                    *ngIf="this.cookie.get('authUserId') == pic.user_id; else picNotFound4">
+                                                                                    *ngIf="this.session.get('authUserId') == pic.user_id; else picNotFound4">
                                                                                     <span *ngIf="ProfilePicFound()">
                                                                                     </span>
                                                                                     <img [src]="pic.picFile" alt=""
@@ -388,7 +388,7 @@
                                                                                                 *ngFor="let pic of profilePics; let p = index">
                                                                                                 <span
                                                                                                     class="comet-avatar"
-                                                                                                    *ngIf="this.cookie.get('authUserId') == pic.user_id; else picNotFound4">
+                                                                                                    *ngIf="this.session.get('authUserId') == pic.user_id; else picNotFound4">
                                                                                                     <span
                                                                                                         *ngIf="ProfilePicFound()">
                                                                                                     </span>
@@ -494,7 +494,7 @@
                                                                                                             *ngFor="let pic of profilePics; let p = index">
                                                                                                             <span
                                                                                                                 class="comet-avatar"
-                                                                                                                *ngIf="this.cookie.get('authUserId') == pic.user_id; else picNotFound4">
+                                                                                                                *ngIf="this.session.get('authUserId') == pic.user_id; else picNotFound4">
                                                                                                                 <span
                                                                                                                     *ngIf="ProfilePicFound()">
                                                                                                                 </span>
@@ -555,7 +555,7 @@
                                             <!-- FRIENDS -->
                                             <span *ngFor="let friend of allFriendsRequest; let f= index">
                                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="width: 12rem;"
-                                                    *ngIf="(this.cookie.get('authUserId') == friend.receiver_id) && friend.requeststatus == 'accept'">
+                                                    *ngIf="(this.session.get('authUserId') == friend.receiver_id) && friend.requeststatus == 'accept'">
                                                     <div class="card h-100 friendsCardBox">
                                                         <h5 class="card-title" style="text-align:center">
                                                             {{ friend.username[0].username }} </h5>
@@ -576,7 +576,7 @@
                                                         </ng-template>
 
                                                         <div class="card-footer" style="text-align: center">
-                                                            <button class="btn btn-danger" (click)="unfriend()"
+                                                            <button class="btn btn-danger" (click)="unfriend(friend.friend_Id)"
                                                                 type="button"> Unfriend </button>
                                                         </div>
                                                     </div>
@@ -584,7 +584,7 @@
 
                                                 <span *ngFor="let user of allUserdata; let u= index">
                                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="width: 12rem;"
-                                                        *ngIf="(this.cookie.get('authUserId') == friend.sender_id && user.user_id == friend.receiver_id) && friend.requeststatus == 'accept'">
+                                                        *ngIf="(this.session.get('authUserId') == friend.sender_id && user.user_id == friend.receiver_id) && friend.requeststatus == 'accept'">
                                                         <div class="card h-100 friendsCardBox">
                                                             <h5 class="card-title" style="text-align:center">
                                                                 {{ user.username }} </h5>
@@ -605,7 +605,7 @@
                                                             </ng-template>
         
                                                             <div class="card-footer" style="text-align: center">
-                                                                <button class="btn btn-danger" (click)="unfriend()"
+                                                                <button class="btn btn-danger" (click)="unfriend(friend.friend_Id)"
                                                                     type="button"> Unfriend </button>
                                                             </div>
                                                         </div>
