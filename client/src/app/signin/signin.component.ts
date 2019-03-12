@@ -29,7 +29,7 @@ export class SigninComponent implements OnInit, CanComponentDeactivate {
   signinForm: FormGroup;
 
   constructor(private connectorService: BackendConnector, private loginService: LoginStatusService,
-    private router: Router, private formBuilder: FormBuilder, private session: SessionStorageService) { }
+    private router: Router, private formBuilder: FormBuilder, public session: SessionStorageService) { }
 
   ngOnInit() {
     // if current page is 'signin' then deActivate loginForm in Header

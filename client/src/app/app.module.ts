@@ -26,6 +26,7 @@ import { DeactivateGuardService } from './services/deactivateguard.service';
 //import { LandingpageComponent } from './landingpage/landingpage.component';
 //import { DropdownDirective } from './shared/dropdown.directive';
 import { AppRoutingModule } from './app-routing.module';
+import { CreatepageComponent } from './createpage/createpage.component';
 
 
 //const appRoutes : Routes = []
@@ -37,7 +38,8 @@ import { AppRoutingModule } from './app-routing.module';
     SigninComponent,
     //HomeComponent,
     HeaderComponent,
-    FooterComponent
+    FooterComponent,
+    CreatepageComponent
  //   ReversePipe, ClearspaceDirective, DropdownDirective,
     
   ],

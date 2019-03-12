@@ -1,78 +1,8 @@
-<!-- ***************************************************************************** -->
 
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="" />
-    <meta name="keywords" content="" />
-    <title>HEADER</title>
-    <link rel="stylesheet" href="/assets/FontAwesome/css/font-awesome.min.css">
-</head>
 
 <div class="topbar sticky-header">
-    <!-- <h1>{{this.session.get('authUserId')}}</h1> -->
     <div class="logo">
         <a routerLink="landingpage/home"><img src="/assets/winkuLandingPage/images/logo.png" alt=""></a>
-        <!-- <span class="dropdown showDropButton">
-                <span data-toggle="dropdown">
-                 <img src="/assets/pics/mobileMenuButton.png" style="width:25%; height:20%; margin-left: 7px" class="dropdown-toggle dropDownOveride">
-                </span>
-
-                <div class="dropdown-menu dropDownMenuOveride">
-                    <a class="dropdown-item dropdownItemOveride" style="cursor: pointer"
-                        (click)="goToRoute('landingpage/timeline')" routerLink="landingpage/timeline">MyProfile</a>
-                    <hr>
-                    <a class="dropdown-item dropdownItemOveride" style="cursor: pointer">Create New Page</a>
-                    <a class="dropdown-item dropdownItemOveride" style="cursor: pointer">Create New Group</a>
-                    <a class="dropdown-item dropdownItemOveride" style="cursor: pointer">Advertising</a>
-                    <a class="dropdown-item dropdownItemOveride" style="cursor: pointer">Edit</a>
-                    <a class="dropdown-item dropdownItemOveride" style="cursor: pointer">General Setting</a>
-                    <hr>
-                    <a class="dropdown-item dropdownItemOveride" style="cursor: pointer" (click)="Signout()">Logout</a>
-                </div> 
-        </span> -->
-
-        <!-- <nav class="navbar navbar-expand-sm navbar-light showDropButton">
-                <div class="container">
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#menuBar"
-                        aria-controls="navbarTogglerDemo01" aria-expanded="false"
-                        aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-
-                    <div class="collapse navbar-collapse" id="menuBar"  style="background-color:darkgrey">
-                        <ul class="nav navbar-nav">
-                            <li>
-                                &nbsp; <a class="borderRight" style="cursor: pointer"
-                                    (click)="activateSelectedTab('timeline')">
-                                    News Feed
-                                    &nbsp; </a>
-                            </li>
-                            <li>
-                                &nbsp; <a class="borderRight" style="cursor: pointer"
-                                    (click)="activateSelectedTab('groups')">
-                                    Inbox &nbsp; </a>
-                            </li>
-                            <li>
-                                &nbsp; <a class="borderRight" style="cursor: pointer"
-                                    (click)="activateSelectedTab('likes')">
-                                    My pages &nbsp; </a>
-                            </li>
-                            <li>
-                                &nbsp; <a class="borderRight" style="cursor: pointer"
-                                    (click)="activateSelectedTab('friends')">
-                                    Friends &nbsp; </a>
-                            </li>
-                            <li>
-                                    &nbsp; <a class="borderRight" style="cursor: pointer"
-                                        (click)="activateSelectedTab('messages')">
-                                        Messages &nbsp; </a>
-                                </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav> -->
-
     </div>
 
     <div class="top-area" *ngIf="isUserLoggedIn">
@@ -89,10 +19,10 @@
 
                 <ng-template #noPicFound>
                     <span *ngIf="p == (usersProfilePic.length- 1) && !isProfilePicFound">
-                        <span *ngIf="loggedInUserProfilePic == null || loggedInUserProfilePic == ''">
+                        <!-- <span *ngIf="userPics.picFile == null || userPics.picFile == ''"> -->
                             <img src="/assets/pics/noProfile.png" class="dropdown-toggle dropDownOveride"
                                 style="margin-top: 6px; width: 50px; height: 50px;">
-                        </span>
+                        <!-- </span> -->
                     </span>
 
                 </ng-template>
@@ -150,20 +80,12 @@
                     <div class="dropdown-menu dropDownUserOveride">
 
             <li class="nav-item dropdown">
-                <!-- <span class="d-lg-none">
-                    <span class="badge badge-pill badge-warning">5 new</span>
-                </span> -->
-                <!-- <span class="indicator text-warning d-none d-lg-block">
-                    <i class="fa fa-fw fa-circle"></i>
-                </span> -->
-
                 <span>
                     <h6 style="text-align: center"> Friend Requests </h6>
-
-                    <span class="dropdown-item" *ngFor="let friendrequest of allFriendsRequest">
-                        <span
-                            *ngIf="this.session.get('authUserId') == friendrequest.receiver_id && friendrequest.requeststatus == 'sent'">
-
+                    <span *ngIf="receiveRequestUnfound()"></span>
+                    <span *ngFor="let friendrequest of allFriendsRequest; let fr = index">
+                        <span  class="dropdown-item" *ngIf="(this.session.get('authUserId') == friendrequest.receiver_id && friendrequest.requeststatus == 'sent') ;else noRequestMessage">
+                            <span *ngIf="receiveRequestFound()"></span>
                             <span *ngIf="friendrequest.ProfilePic != ''; else dummyPicR">
                                 <img class="rounded-circle" style="width: 50px; height: 50px;"
                                     [src]="friendrequest.ProfilePic">
@@ -194,14 +116,20 @@
                                 </span>
                             </span>
                         </span>
+                        <ng-template #noRequestMessage>
+                                <p style="text-align: center" *ngIf= "fr == (allFriendsRequest.length-1) && !receiveRequestFoundStatus">
+                                  No Friend Request Found
+                                </p>
+                            </ng-template>
                     </span>
+                  
                 </span>
                 <!-- ********************************************************************************************************************* -->
                 <hr>
 
                 <span>
                     <h6 style="text-align: center"> Friend Suggestions</h6>
-
+                    <span *ngIf="friendSuggestionNotFound()"></span>
                     <span *ngFor="let user of allUserdata; let u = index">
                         <span *ngIf="sentRequestUnfound()"></span>
                         <span *ngIf="receiveRequestUnfound()"></span>
@@ -217,6 +145,8 @@
 
                                 <span
                                     *ngIf="request.requeststatus == 'sent' && this.session.get('authUserId') != user.user_id">
+                         
+                                    <span *ngIf="friendSuggestionFound()"></span>
                                     <span class="dropdown-item">
                                         <span *ngIf="user.ProfilePic != null; else dummyPic">
                                             <img class="rounded-circle" style="width: 50px; height: 50px;"
@@ -238,7 +168,7 @@
                             <ng-template #showSentMsg>
                                 <span class="dropdown-item"
                                     *ngIf="r == (allFriendsRequest.length-1) && this.session.get('authUserId') != user.user_id && !sentRequestFoundStatus && !receiveRequestFoundStatus">
-
+                                    <span *ngIf="friendSuggestionFound()"></span>
                                     <span *ngIf="user.ProfilePic != null; else dummyPic">
                                         <img class="rounded-circle" style="width: 50px; height: 50px;"
                                             [src]="user.ProfilePic">
@@ -256,6 +186,11 @@
                                 </span>
                             </ng-template>
                         </span>
+                
+                   
+                        <span *ngIf = "u == (allUserdata.length-1) && !isFriendSuggestionFound">
+                                <p style="text-align: center"> No Friend Suggestions Found</p>
+                            </span>
 
                         <span *ngIf="allFriendsRequest == null || allFriendsRequest.length == 0">
                             <span class="dropdown-item" *ngIf="this.session.get('authUserId') != user.user_id">
@@ -275,6 +210,7 @@
                                     (click)="sendFriendRequest(user.user_id)" value="Send Request">
                             </span>
                         </span>
+
                     </span>
                 </span>
             </li>
@@ -320,7 +256,7 @@
                     <input type="password" style="width:90%" placeholder="enter password" formControlName="password">
                 </div>
 
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2" style="margin-top: 25px">
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2" style="margin-top: 15px">
                     <button type="submit" class="btn btn-primary"
                         style="background-color:rgb(135, 162, 243)">Login</button>
                 </div>

@@ -28,9 +28,10 @@ export class HeaderComponent implements OnInit {
   receiveRequestFoundStatus: boolean = false;
   isProfilePicFound: boolean = false;
   isTotalRequestFound: boolean = false;
+  isFriendSuggestionFound: boolean = false;
 
   constructor(private connectorService: BackendConnector, private loginService: LoginStatusService,
-    private formBuilder: FormBuilder, private router: Router, private session: SessionStorageService,
+    private formBuilder: FormBuilder, private router: Router, public session: SessionStorageService,
     private chatService: ChatService) {
 
     //Initialize formGroup with initial values and validators
@@ -176,6 +177,13 @@ export class HeaderComponent implements OnInit {
   }
 
   // ********************* Called in ngIF in HTML *****************************************************
+  friendSuggestionFound(){
+    this.isFriendSuggestionFound = true;
+  }
+  friendSuggestionNotFound(){
+    this.isFriendSuggestionFound = false;
+  }
+  
   sentRequestFound() {
     this.sentRequestFoundStatus = true;
   }

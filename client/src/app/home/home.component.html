@@ -1,12 +1,3 @@
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="description" content="" />
-	<meta name="keywords" content="" />
-	<title>HOME</title>
-	<link rel="stylesheet" href="/assets/FontAwesome/css/font-awesome.min.css">
-</head>
-
 <body>
 	<div class="theme-layout">
 		<section>
@@ -69,11 +60,11 @@
 													<span class="comet-avatar"
 														*ngIf="this.session.get('authUserId') == pic.user_id; else picNotFound1">
 														<span *ngIf="ProfilePicFound()"> </span>
-														<img [src]="pic.picFile" alt="" style=" width: 11%">
+														<img [src]="pic.picFile" alt="" style=" width: 11%" class="createImageCircle">
 													</span>
 													<ng-template #picNotFound1>
 														<span *ngIf="!isProfileFound && p == (profilePics.length-1)">
-															<img src="/assets/pics/noProfile.png" alt="" style=" width: 11%">
+															<img src="/assets/pics/noProfile.png" alt="" style=" width: 11%" class="createImageCircle">
 
 														</span>
 													</ng-template>
@@ -119,10 +110,10 @@
 														<figure>
 															<!-- <span *ngFor="let pic of profilePics; let j = index"> -->
 															<span *ngIf="posts.postUserpic != ''">
-																<img [src]="posts.postUserpic" alt="">
+																<img [src]="posts.postUserpic" alt="" class="createImageCircle">
 															</span>
 															<span *ngIf="posts.postUserpic == ''">
-																<img src="/assets/pics/noProfile.png" alt="">
+																<img src="/assets/pics/noProfile.png" alt="" class="createImageCircle">
 															</span>
 															<!-- </span> -->
 														</figure>
@@ -223,11 +214,11 @@
 																					<span class="comet-avatar"
 																						*ngIf="this.session.get('authUserId') == pic.user_id; else picNotFound2">
 																						<span *ngIf="ProfilePicFound()"> </span>
-																						<img [src]="pic.picFile" alt="" style=" width: 15%; float: left">
+																						<img [src]="pic.picFile" alt="" style=" width: 15%; float: left" class="createImageCircle">
 																					</span>
 																					<ng-template #picNotFound2>
 																						<span *ngIf="!isProfileFound && p == (profilePics.length-1)">
-																							<img src="/assets/pics/noProfile.png" alt="" style=" width: 15%; float: left">
+																							<img src="/assets/pics/noProfile.png" alt="" style=" width: 15%; float: left" class="createImageCircle">
 								
 																						</span>
 																					</ng-template>
@@ -253,11 +244,11 @@
 																								<span class="comet-avatar"
 																									*ngIf="comment.user_id == pic.user_id; else picNotFound">
 																									<span *ngIf="ProfilePicFound()"> </span>
-																									<img [src]="pic.picFile" alt="" style=" width: 15px">
+																									<img [src]="pic.picFile" alt="" style=" width: 15px" class="createImageCircle">
 																								</span>
 																								<ng-template #picNotFound>
 																									<span *ngIf="!isProfileFound && p == (profilePics.length-1)">
-																										<img src="/assets/pics/noProfile.png" alt="" style=" width: 15px">
+																										<img src="/assets/pics/noProfile.png" alt="" style=" width: 15px" class="createImageCircle">
 
 																									</span>
 																								</ng-template>
@@ -285,11 +276,11 @@
 																									<span class="comet-avatar"
 																										*ngIf="this.session.get('authUserId') == pic.user_id; else picNotFound3">
 																										<span *ngIf="ProfilePicFound()"> </span>
-																										<img [src]="pic.picFile" alt="" style=" width: 15%; float: left">
+																										<img [src]="pic.picFile" alt="" style=" width: 15%; float: left" class="createImageCircle">
 																									</span>
 																									<ng-template #picNotFound3>
 																										<span *ngIf="!isProfileFound && p == (profilePics.length-1)">
-																											<img src="/assets/pics/noProfile.png" alt="" style=" width: 15%; float: left">
+																											<img src="/assets/pics/noProfile.png" alt="" style=" width: 15%; float: left" class="createImageCircle">
 												
 																										</span>
 																									</ng-template>
@@ -325,12 +316,12 @@
 																											<span class="comet-avatar"
 																												*ngIf="reply.user_id == pic.user_id; else replypicNotFound">
 																												<span *ngIf="ProfilePicFound()"> </span>
-																												<img [src]="pic.picFile" alt="" style=" width: 15px">
+																												<img [src]="pic.picFile" alt="" style=" width: 15px" class="createImageCircle">
 																											</span>
 																											<ng-template #replypicNotFound>
 																												<span *ngIf="!isProfileFound && pr == (profilePics.length-1)">
 																													<img src="/assets/pics/noProfile.png" alt=""
-																														style=" width: 15px">
+																														style=" width: 15px" class="createImageCircle">
 																												</span>
 																											</ng-template>
 																										</span>
@@ -359,11 +350,11 @@
 																												<span class="comet-avatar"
 																													*ngIf="this.session.get('authUserId') == pic.user_id; else picNotFound4">
 																													<span *ngIf="ProfilePicFound()"> </span>
-																													<img [src]="pic.picFile" alt="" style=" width: 15%; float: left">
+																													<img [src]="pic.picFile" alt="" style=" width: 15%; float: left" class="createImageCircle">
 																												</span>
 																												<ng-template #picNotFound4>
 																													<span *ngIf="!isProfileFound && p == (profilePics.length-1)">
-																														<img src="/assets/pics/noProfile.png" alt="" style=" width: 15%; float: left">
+																														<img src="/assets/pics/noProfile.png" alt="" style=" width: 15%; float: left" class="createImageCircle">
 															
 																													</span>
 																												</ng-template>
@@ -406,7 +397,7 @@
 											<h4 class="widget-title">Your page</h4>
 											<div class="your-page">
 												<figure>
-													<a href="#" title=""><img src="/assets/winkuLandingPage/images/resources/friend-avatar9.jpg"
+													<a href="#" title=""><img src=""
 															alt=""></a>
 												</figure>
 												<div class="page-meta">
@@ -427,25 +418,25 @@
 															<a href="#" title="weekly-likes">35 new likes this week</a>
 															<div class="users-thumb-list">
 																<a href="#" title="Anderw" data-toggle="tooltip">
-																	<img src="/assets/winkuLandingPage/images/resources/userlist-1.jpg" alt="">
+																	<img src="" alt="">
 																</a>
 																<a href="#" title="frank" data-toggle="tooltip">
-																	<img src="/assets/winkuLandingPage/images/resources/userlist-2.jpg" alt="">
+																	<img src="" alt="">
 																</a>
 																<a href="#" title="Sara" data-toggle="tooltip">
-																	<img src="/assets/winkuLandingPage/images/resources/userlist-3.jpg" alt="">
+																	<img src="" alt="">
 																</a>
 																<a href="#" title="Amy" data-toggle="tooltip">
-																	<img src="/assets/winkuLandingPage/images/resources/userlist-4.jpg" alt="">
+																	<img src="" alt="">
 																</a>
 																<a href="#" title="Ema" data-toggle="tooltip">
-																	<img src="/assets/winkuLandingPage/images/resources/userlist-5.jpg" alt="">
+																	<img src="" alt="">
 																</a>
 																<a href="#" title="Sophie" data-toggle="tooltip">
-																	<img src="/assets/winkuLandingPage/images/resources/userlist-6.jpg" alt="">
+																	<img src="" alt="">
 																</a>
 																<a href="#" title="Maria" data-toggle="tooltip">
-																	<img src="/assets/winkuLandingPage/images/resources/userlist-7.jpg" alt="">
+																	<img src="" alt="">
 																</a>
 															</div>
 														</div>
@@ -454,25 +445,25 @@
 															<a href="#" title="weekly-likes">440 new views this week</a>
 															<div class="users-thumb-list">
 																<a href="#" title="Anderw" data-toggle="tooltip">
-																	<img src="/assets/winkuLandingPage/images/resources/userlist-1.jpg" alt="">
+																	<img src="" alt="">
 																</a>
 																<a href="#" title="frank" data-toggle="tooltip">
-																	<img src="/assets/winkuLandingPage/images/resources/userlist-2.jpg" alt="">
+																	<img src="" alt="">
 																</a>
 																<a href="#" title="Sara" data-toggle="tooltip">
-																	<img src="/assets/winkuLandingPage/images/resources/userlist-3.jpg" alt="">
+																	<img src="" alt="">
 																</a>
 																<a href="#" title="Amy" data-toggle="tooltip">
-																	<img src="/assets/winkuLandingPage/images/resources/userlist-4.jpg" alt="">
+																	<img src="" alt="">
 																</a>
 																<a href="#" title="Ema" data-toggle="tooltip">
-																	<img src="/assets/winkuLandingPage/images/resources/userlist-5.jpg" alt="">
+																	<img src="" alt="">
 																</a>
 																<a href="#" title="Sophie" data-toggle="tooltip">
-																	<img src="/assets/winkuLandingPage/images/resources/userlist-6.jpg" alt="">
+																	<img src="" alt="">
 																</a>
 																<a href="#" title="Maria" data-toggle="tooltip">
-																	<img src="/assets/winkuLandingPage/images/resources/userlist-7.jpg" alt="">
+																	<img src="" alt="">
 																</a>
 															</div>
 														</div>

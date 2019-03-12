@@ -46,7 +46,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   replyCommentStatus: boolean = false;
   selectedUploadFile: File = null;
 
-  constructor(private route: Router, private loginService: LoginStatusService, private session: SessionStorageService,
+  constructor(private route: Router, private loginService: LoginStatusService, public session: SessionStorageService,
     private backendService: BackendConnector, private formbuilder: FormBuilder, private chatService: ChatService) {
     }
 

@@ -41,7 +41,7 @@ export class RegisterComponent implements OnInit {
   message: string = "";
 
   constructor(private formBuilder: FormBuilder, private connectorService: BackendConnector, 
-    private router: Router, private session: SessionStorageService) {
+    private router: Router, public session: SessionStorageService) {
 
     // calculate years and store it in array
     for (var i = this.minimumYear; i < this.currentYear; i++) {

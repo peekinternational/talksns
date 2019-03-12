@@ -48,7 +48,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   selectedUploadFile: File = null;
   setUserProfilePic: any;
 
-  constructor(private route: Router, private loginService: LoginStatusService, private session: SessionStorageService,
+  constructor(private route: Router, private loginService: LoginStatusService, public session: SessionStorageService,
     private backendService: BackendConnector, private formbuilder: FormBuilder, private chatService: ChatService) { }
 
   ngOnInit() {
@@ -66,7 +66,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       });
 
     this.getPostSubscription = this.chatService.getPost().subscribe(
-      (newpost: any) => {    console.log("timeline");
+      (newpost: any) => {   
         this.createpost = newpost.posts;
         this.createlike = newpost.postlikes;
         this.createcomments = newpost.comments;

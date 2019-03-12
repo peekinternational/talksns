@@ -1,34 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="" />
-    <meta name="keywords" content="" />
-    <title></title>
-    <link rel="icon" href="/assets/winkuLandingPage/images/fav.png" type="image/png" sizes="16x16">
-    <link rel="stylesheet" href="/assets/FontAwesome/css/font-awesome.min.css">
-    <!-- <link rel="stylesheet" href="/assets/winkuLandingPage/css/responsive.css"> -->
-</head>
-
 <body>
     <div class="theme-layout">
         <!-- ************************ testing profile header ************************************** -->
         <div class="wrapper">
             <div class="row">
-                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
                     <header id="header">
 
                         <figure class="profileTimelinePic ">
                             <img class="img-responsive setMargins"
-                                src="/assets/winkuLandingPage/images/resources/timeline-1.jpg" alt="">
+                                src="/assets/pics/a12.png" alt="">
                         </figure>
 
                         <nav class="navbar navbar-default" style="margin-top: -9%">
                             <div class="navbar-header">
-
-
 
                                 <div class="navbar-brand user-avatar setProfilePicSize">
 
@@ -129,12 +113,12 @@
                                                 <span class="comet-avatar"
                                                     *ngIf="this.session.get('authUserId') == pic.user_id; else picNotFound4">
                                                     <span *ngIf="ProfilePicFound()"> </span>
-                                                    <img [src]="pic.picFile" alt="" style=" width: 12%; float: left">
+                                                    <img [src]="pic.picFile" alt="" style=" width: 12%; float: left"  class="createImageCircle">
                                                 </span>
                                                 <ng-template #picNotFound4>
                                                     <span *ngIf="!isProfileFound && p == (profilePics.length-1)">
                                                         <img src="/assets/pics/noProfile.png" alt=""
-                                                            style=" width: 12%; float: left">
+                                                            style=" width: 12%; float: left"  class="createImageCircle">
                                                     </span>
                                                 </ng-template>
                                             </span>
@@ -181,13 +165,13 @@
                                                                 *ngIf="this.session.get('authUserId') == pic.user_id; else picNotFound4">
                                                                 <span *ngIf="ProfilePicFound()"> </span>
                                                                 <img [src]="pic.picFile" alt=""
-                                                                    style=" width: 10%; float: left">
+                                                                    style=" width: 10%; float: left"  class="createImageCircle">
                                                             </span>
                                                             <ng-template #picNotFound4>
                                                                 <span
                                                                     *ngIf="!isProfileFound && p == (profilePics.length-1)">
                                                                     <img src="/assets/pics/noProfile.png" alt=""
-                                                                        style=" width: 10%; float: left">
+                                                                        style=" width: 10%; float: left"  class="createImageCircle">
 
                                                                 </span>
                                                             </ng-template>
@@ -300,14 +284,14 @@
                                                                                     <span *ngIf="ProfilePicFound()">
                                                                                     </span>
                                                                                     <img [src]="pic.picFile" alt=""
-                                                                                        style=" width: 12%; float: left">
+                                                                                        style=" width: 12%; float: left"  class="createImageCircle">
                                                                                 </span>
                                                                                 <ng-template #picNotFound4>
                                                                                     <span
                                                                                         *ngIf="!isProfileFound && p == (profilePics.length-1)">
                                                                                         <img src="/assets/pics/noProfile.png"
                                                                                             alt=""
-                                                                                            style=" width: 12%; float: left">
+                                                                                            style=" width: 12%; float: left"  class="createImageCircle">
 
                                                                                     </span>
                                                                                 </ng-template>
@@ -345,7 +329,7 @@
                                                                                                     </span>
                                                                                                     <img [src]="pic.picFile"
                                                                                                         alt=""
-                                                                                                        style=" width: 15px">
+                                                                                                        style=" width: 15px"  class="createImageCircle">
                                                                                                 </span>
                                                                                                 <ng-template
                                                                                                     #picNotFound>
@@ -353,7 +337,7 @@
                                                                                                         *ngIf="!isProfileFound && p == (profilePics.length-1)">
                                                                                                         <img src="/assets/pics/noProfile.png"
                                                                                                             alt=""
-                                                                                                            style=" width: 15px">
+                                                                                                            style=" width: 15px"  class="createImageCircle">
 
                                                                                                     </span>
                                                                                                 </ng-template>
@@ -394,7 +378,7 @@
                                                                                                     </span>
                                                                                                     <img [src]="pic.picFile"
                                                                                                         alt=""
-                                                                                                        style=" width: 12%; float: left">
+                                                                                                        style=" width: 12%; float: left"  class="createImageCircle">
                                                                                                 </span>
                                                                                                 <ng-template
                                                                                                     #picNotFound4>
@@ -402,7 +386,7 @@
                                                                                                         *ngIf="!isProfileFound && p == (profilePics.length-1)">
                                                                                                         <img src="/assets/pics/noProfile.png"
                                                                                                             alt=""
-                                                                                                            style=" width: 12%; float: left">
+                                                                                                            style=" width: 12%; float: left"  class="createImageCircle">
 
                                                                                                     </span>
                                                                                                 </ng-template>
@@ -447,7 +431,7 @@
                                                                                                                 </span>
                                                                                                                 <img [src]="pic.picFile"
                                                                                                                     alt=""
-                                                                                                                    style=" width: 15px">
+                                                                                                                    style=" width: 15px"  class="createImageCircle">
                                                                                                             </span>
                                                                                                             <ng-template
                                                                                                                 #replypicNotFound>
@@ -455,7 +439,7 @@
                                                                                                                     *ngIf="!isProfileFound && pr == (profilePics.length-1)">
                                                                                                                     <img src="/assets/pics/noProfile.png"
                                                                                                                         alt=""
-                                                                                                                        style=" width: 15px">
+                                                                                                                        style=" width: 15px"  class="createImageCircle">
                                                                                                                 </span>
                                                                                                             </ng-template>
                                                                                                         </span>
@@ -500,7 +484,7 @@
                                                                                                                 </span>
                                                                                                                 <img [src]="pic.picFile"
                                                                                                                     alt=""
-                                                                                                                    style=" width: 12%; float: left">
+                                                                                                                    style=" width: 12%; float: left"  class="createImageCircle">
                                                                                                             </span>
                                                                                                             <ng-template
                                                                                                                 #picNotFound4>
@@ -508,7 +492,7 @@
                                                                                                                     *ngIf="!isProfileFound && p == (profilePics.length-1)">
                                                                                                                     <img src="/assets/pics/noProfile.png"
                                                                                                                         alt=""
-                                                                                                                        style=" width: 12%; float: left">
+                                                                                                                        style=" width: 12%; float: left"  class="createImageCircle">
 
                                                                                                                 </span>
                                                                                                             </ng-template>
@@ -564,14 +548,14 @@
                                                             *ngIf="friend.ProfilePic != '' ; else showDummyPic">
                                                             <img class="card-img-top"
                                                                 style="border-radius: 50%; width: 50%; height: 50%"
-                                                                [src]="friend.ProfilePic" alt="">
+                                                                [src]="friend.ProfilePic" alt=""  class="createImageCircle">
                                                         </span>
 
                                                         <ng-template #showDummyPic>
                                                             <span style="text-align:center">
                                                                 <img class="card-img-top"
                                                                     style="border-radius: 50%; width: 50%"
-                                                                    src="/assets/pics/noProfile.png" alt="">
+                                                                    src="/assets/pics/noProfile.png" alt=""  class="createImageCircle">
                                                             </span>
                                                         </ng-template>
 
@@ -593,14 +577,14 @@
                                                                 *ngIf="user.ProfilePic != '' ; else showDummyPic">
                                                                 <img class="card-img-top"
                                                                     style="border-radius: 50%; width: 50%; height: 50%"
-                                                                    [src]="user.ProfilePic" alt="">
+                                                                    [src]="user.ProfilePic" alt=""  class="createImageCircle">
                                                             </span>
         
                                                             <ng-template #showDummyPic>
                                                                 <span style="text-align:center">
                                                                     <img class="card-img-top"
                                                                         style="border-radius: 50%; width: 50%"
-                                                                        src="/assets/pics/noProfile.png" alt="">
+                                                                        src="/assets/pics/noProfile.png" alt=""  class="createImageCircle">
                                                                 </span>
                                                             </ng-template>
         
@@ -633,96 +617,82 @@
                                             <ul id="people-list" class="friendz-list">
                                                 <li>
                                                     <figure>
-                                                        <img src="/assets/winkuLandingPage/images/resources/friend-avatar.jpg"
+                                                        <img src=""
                                                             alt="">
                                                         <span class="status f-online"></span>
                                                     </figure>
                                                     <div class="friendz-meta">
                                                         <a href="time-line.html">bucky barnes</a>
-                                                        <i><a href="http://www.wpkixx.com/cdn-cgi/l/email-protection"
-                                                                class="__cf_email__"
-                                                                data-cfemail="47302e2933223534282b23223507202a262e2b6924282a">[email&#160;protected]</a></i>
+                                                        <i></i>
                                                     </div>
                                                 </li>
                                                 <li>
                                                     <figure>
-                                                        <img src="/assets/winkuLandingPage/images/resources/friend-avatar2.jpg"
+                                                        <img src=""
                                                             alt="">
                                                         <span class="status f-away"></span>
                                                     </figure>
                                                     <div class="friendz-meta">
                                                         <a href="time-line.html">Sarah Loren</a>
-                                                        <i><a href="http://www.wpkixx.com/cdn-cgi/l/email-protection"
-                                                                class="__cf_email__"
-                                                                data-cfemail="3755564559524477505a565e5b1954585a">[email&#160;protected]</a></i>
+                                                        <i></i>
                                                     </div>
                                                 </li>
                                                 <li>
                                                     <figure>
-                                                        <img src="/assets/winkuLandingPage/images/resources/friend-avatar3.jpg"
+                                                        <img src=""
                                                             alt="">
                                                         <span class="status f-off"></span>
                                                     </figure>
                                                     <div class="friendz-meta">
                                                         <a href="time-line.html">jason borne</a>
-                                                        <i><a href="http://www.wpkixx.com/cdn-cgi/l/email-protection"
-                                                                class="__cf_email__"
-                                                                data-cfemail="ee848f9d81808cae89838f8782c08d8183">[email&#160;protected]</a></i>
+                                                        <i></i>
                                                     </div>
                                                 </li>
                                                 <li>
                                                     <figure>
-                                                        <img src="/assets/winkuLandingPage/images/resources/friend-avatar4.jpg"
+                                                        <img src=""
                                                             alt="">
                                                         <span class="status f-off"></span>
                                                     </figure>
                                                     <div class="friendz-meta">
                                                         <a href="time-line.html">Cameron diaz</a>
-                                                        <i><a href="http://www.wpkixx.com/cdn-cgi/l/email-protection"
-                                                                class="__cf_email__"
-                                                                data-cfemail="0b616a786465694b6c666a626725686466">[email&#160;protected]</a></i>
+                                                        <i></i>
                                                     </div>
                                                 </li>
                                                 <li>
 
                                                     <figure>
-                                                        <img src="/assets/winkuLandingPage/images/resources/friend-avatar5.jpg"
+                                                        <img src=""
                                                             alt="">
                                                         <span class="status f-online"></span>
                                                     </figure>
                                                     <div class="friendz-meta">
                                                         <a href="time-line.html">daniel warber</a>
-                                                        <i><a href="http://www.wpkixx.com/cdn-cgi/l/email-protection"
-                                                                class="__cf_email__"
-                                                                data-cfemail="1e747f6d71707c5e79737f7772307d7173">[email&#160;protected]</a></i>
+                                                        <i></i>
                                                     </div>
                                                 </li>
                                                 <li>
 
                                                     <figure>
-                                                        <img src="/assets/winkuLandingPage/images/resources/friend-avatar6.jpg"
+                                                        <img src=""
                                                             alt="">
                                                         <span class="status f-away"></span>
                                                     </figure>
                                                     <div class="friendz-meta">
                                                         <a href="time-line.html">andrew</a>
-                                                        <i><a href="http://www.wpkixx.com/cdn-cgi/l/email-protection"
-                                                                class="__cf_email__"
-                                                                data-cfemail="355f54465a5b57755258545c591b565a58">[email&#160;protected]</a></i>
+                                                        <i></i>
                                                     </div>
                                                 </li>
                                                 <li>
 
                                                     <figure>
-                                                        <img src="/assets/winkuLandingPage/images/resources/friend-avatar7.jpg"
+                                                        <img src=""
                                                             alt="">
                                                         <span class="status f-off"></span>
                                                     </figure>
                                                     <div class="friendz-meta">
                                                         <a href="time-line.html">amy watson</a>
-                                                        <i><a href="http://www.wpkixx.com/cdn-cgi/l/email-protection"
-                                                                class="__cf_email__"
-                                                                data-cfemail="aec4cfddc1c0cceec9c3cfc7c280cdc1c3">[email&#160;protected]</a></i>
+                                                        <i></i>
                                                     </div>
                                                 </li>
 
@@ -740,5 +710,3 @@
         </section>
     </div>
 </body>
-
-</html>
