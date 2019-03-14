@@ -27,6 +27,7 @@ import { DeactivateGuardService } from './services/deactivateguard.service';
 //import { DropdownDirective } from './shared/dropdown.directive';
 import { AppRoutingModule } from './app-routing.module';
 import { CreatepageComponent } from './createpage/createpage.component';
+import { SharedDataService } from './services/shareddata.service';
 
 
 //const appRoutes : Routes = []
@@ -36,12 +37,9 @@ import { CreatepageComponent } from './createpage/createpage.component';
     AppComponent,
     RegisterComponent,
     SigninComponent,
-    //HomeComponent,
     HeaderComponent,
     FooterComponent,
     CreatepageComponent
- //   ReversePipe, ClearspaceDirective, DropdownDirective,
-    
   ],
   imports: [
     BrowserModule,
@@ -50,9 +48,9 @@ import { CreatepageComponent } from './createpage/createpage.component';
     AngularWebStorageModule,
     HttpModule, HttpClientModule,
     AppRoutingModule
-   // RouterModule.forRoot(appRoutes)
   ],
-  providers: [BackendConnector, LoginStatusService, AuthGuardService, DeactivateGuardService, ChatService],
+  providers: [BackendConnector, LoginStatusService, AuthGuardService, DeactivateGuardService, 
+              ChatService, SharedDataService],
   bootstrap: [AppComponent],
 
   exports: []

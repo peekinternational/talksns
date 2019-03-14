@@ -81,6 +81,8 @@ class FrontendConnectorController extends Controller
         $userId = $request->userId;
         $item_image = $request->image;
         $description = $request->description;
+        $_MaxPostId = (int)$request->maxPostId;
+        $status = $request->status;
 
         $uploadPicture = "";
         if ($item_image != "") {
@@ -98,7 +100,7 @@ class FrontendConnectorController extends Controller
         ]);
 
         if ($dataInserted) {
-            return response()->json($this->getandSendAllPostData($userId));
+            return response()->json($this->getandSendAllPostData($userId, $_MaxPostId, $status));
         }
     }
 
@@ -106,8 +108,11 @@ class FrontendConnectorController extends Controller
     public function retrievePost(Request $request)
     {
         $userId = $request->userId;
-        return response()->json($this->getandSendAllPostData($userId));
+        $_MaxPostId = $request->maxPostId;
+        $status = $request->status;
+        return response()->json($this->getandSendAllPostData($userId, $_MaxPostId, $status));
     }
+
 
     // Like the Post
     public function postLike(Request $request)
@@ -116,6 +121,8 @@ class FrontendConnectorController extends Controller
         $postId = $request->postId;
         $likeStatus = $request->isLiked;
         $dislikeStatus = $request->isDisliked;
+        $_MaxPostId = $request->maxPostId;
+        $status = $request->status;
 
         $doesPostExist = DB::table('postlikes')->where('user_id', '=', $userId)->where('post_id', '=', $postId)->first();
 
@@ -123,7 +130,7 @@ class FrontendConnectorController extends Controller
             DB::table('postlikes')->where('user_id', '=', $userId)->where('post_id', '=', $postId)->update(['likes' => $likeStatus]);
             DB::table('postlikes')->where('user_id', '=', $userId)->where('post_id', '=', $postId)->update(['dislikes' => $dislikeStatus]);
 
-            return response()->json($this->getandSendAllPostData($userId));
+            return response()->json($this->getandSendAllPostData($userId, $_MaxPostId, $status));
         } else {
             DB::table('postlikes')->insert([
                 'user_id' => $userId,
@@ -132,7 +139,7 @@ class FrontendConnectorController extends Controller
                 'dislikes' => $dislikeStatus
             ]);
 
-            return response()->json($this->getandSendAllPostData($userId));
+            return response()->json($this->getandSendAllPostData($userId, $_MaxPostId, $status));
         }
     }
 
@@ -141,6 +148,8 @@ class FrontendConnectorController extends Controller
         $userId = $request->userId;
         $postId = $request->postId;
         $comment = $request->comment;
+        $_MaxPostId = $request->maxPostId;
+        $status = $request->status;
 
         DB::table('comments')->insert([
             'user_id' => $userId,
@@ -148,7 +157,7 @@ class FrontendConnectorController extends Controller
             'description' => $comment,
         ]);
 
-        return response()->json($this->getandSendAllPostData($userId));
+        return response()->json($this->getandSendAllPostData($userId, $_MaxPostId, $status));
     }
 
     public function replies(Request $request)
@@ -157,6 +166,8 @@ class FrontendConnectorController extends Controller
         $postId = $request->postId;
         $commentId = $request->commentId;
         $reply = $request->commentReply;
+        $_MaxPostId = $request->maxPostId;
+        $status = $request->status;
 
         DB::table('replycomments')->insert([
             'user_id' => $userId,
@@ -165,13 +176,15 @@ class FrontendConnectorController extends Controller
             'replydescription' => $reply,
         ]);
 
-        return response()->json($this->getandSendAllPostData($userId));
+        return response()->json($this->getandSendAllPostData($userId, $_MaxPostId, $status));
     }
 
     public function profilePic(Request $request)
     {
         $userId = $request->userId;
         $profilepic = $request->profilePic;
+        $_MaxPostId = $request->maxPostId;
+        $status = $request->status;
 
         $uploadPicture = "";
         if ($profilepic != "") {
@@ -183,10 +196,12 @@ class FrontendConnectorController extends Controller
 
         DB::table('users')->where('user_id', '=', $userId)->update(['ProfilePic' => $uploadPicture]);
 
-        return response()->json($this->getandSendAllPostData($userId));
+        return response()->json($this->getandSendAllPostData($userId, $_MaxPostId, $status));
     }
 
-    //*********************************************************************************************************************8 */
+    //********************************************************************************************************************* */
+    //********************************************************************************************************************* */
+    //********************************************************************************************************************* */
     public function friendRequest(Request $request)
     {
         $senderId = $request->userId;
@@ -211,7 +226,8 @@ class FrontendConnectorController extends Controller
         return response()->json($this->setFriendsData());
     }
 
-    public function unfriend(Request $request){
+    public function unfriend(Request $request)
+    {
         $userId = $request->userId;
         $friendId = $request->friendUserId;
         $requestStatus = $request->requestStatus;
@@ -236,11 +252,11 @@ class FrontendConnectorController extends Controller
         foreach ($allFriendRequestData as &$friendRequest) {
             $friendRequest->ProfilePic = '';
 
-            foreach($allUserdata as $user){
-                if ($friendRequest->receiver_id == $user->user_id){
-                   $friendRequest->requestCount = DB::table("friends")->where('receiver_id' ,'=', $friendRequest->receiver_id)->where("friends.requeststatus", '=', 'sent')->count();
+            foreach ($allUserdata as $user) {
+                if ($friendRequest->receiver_id == $user->user_id) {
+                    $friendRequest->requestCount = DB::table("friends")->where('receiver_id', '=', $friendRequest->receiver_id)->where("friends.requeststatus", '=', 'sent')->count();
                 }
-           }
+            }
         }
 
         foreach ($profilePicName as $profilepic) {
@@ -261,14 +277,53 @@ class FrontendConnectorController extends Controller
         return ['allFriendRequests' =>  $allFriendRequestData, 'allUserdata' => $allUserdata];
     }
 
-    //*********************************************************************************************************************8 */
+    //********************************************************************************************************************** */
 
 
-
-    //************************************************ */
-    public function getandSendAllPostData($userId)
+    public function getMaxPostId()
     {
-        $allPosts = DB::table('posts')->get();
+        $maxPostId = DB::table('posts')->max("post_id");
+        return response()->json($maxPostId);
+    }
+    public function getCurrentUserMaxPostId(Request $request)
+    {
+        $userId = $request->userId;
+        $maxCurrentUserPostId = DB::table('posts')->where('user_id', '=', $userId)->max("post_id");
+        return response()->json($maxCurrentUserPostId);
+    }
+
+    //********************************************************************* */
+    public function getandSendAllPostData($userId, $_MaxPostId, $status)
+    {
+        $allPosts = null;
+
+        if ($status == "LoadMorePosts") {
+            $allPosts = DB::table('posts')->orderBy('post_id', 'desc')->where('post_id', '<', $_MaxPostId)->paginate(5);
+        } else if ($status == "timelinePost") {
+                $maxPostId1 = DB::table('posts')->max("post_id");
+                $allPosts = DB::table('posts')->orderBy('post_id', 'desc')->where('post_id', '<', $maxPostId1 + 1)->paginate(5);
+
+                $countCurrentUserPosts = 0;
+                $paginateCount = 10;
+                $i = 0;
+                while ($countCurrentUserPosts <= 3 && $i < count($allPosts)) {
+                    if ($allPosts[$i]->user_id == $userId) {
+                        $countCurrentUserPosts++;
+                    } else {
+                        $paginateCount++;
+                        $allPosts = DB::table('posts')->orderBy('post_id', 'desc')->where('post_id', '<', $maxPostId1 + 1)->paginate($paginateCount);
+                    }
+
+                    $i++;
+                }
+            } else {
+             $maxPostId2 = DB::table('posts')->max("post_id");
+            if ($maxPostId2 == 0)
+               $allPosts = DB::table('posts')->orderBy('post_id', 'desc')->where('post_id', '<', ($maxPostId2 + 1))->paginate($_MaxPostId);
+            else
+               $allPosts = DB::table('posts')->orderBy('post_id', 'desc')->where('post_id', '<', ($maxPostId2 + 1))->paginate(5);
+        }
+
         $allPostLikes = DB::table('postlikes')->get();
         $allPostComments = DB::table('comments')->get();
 
@@ -327,7 +382,7 @@ class FrontendConnectorController extends Controller
             'posts' => $allPosts, 'postlikes' => $allPostLikes, 'comments' => $allPostComments,
             'usernames' => $usersName, 'replies' => $replies, 'profilepics' => $profilepicFileNames,
             'loggedUserData' => $loggedInUserData, 'loggedInUserProfilepic' => $loggedInUserProfilePic,
-            'allFriendRequest' => $allFriendRequestData
+            'allFriendRequest' => $allFriendRequestData, 'currentUser_Id' => $userId
         ];
     }
 
@@ -335,31 +390,25 @@ class FrontendConnectorController extends Controller
     // **********************************************************************************************************************************************************************************************
     public function test()
     {
-        // $users = DB::table('friends')
-        //     ->select('posts.*')
-        //     ->leftJoin('posts', 'friends.sender_id', '=', 'posts.user_id')
-        //     ->where('friends.requeststatus' ,'=', 'accept')
-        //     ->get();
+        $userId = 2;
+        $maxPostId = DB::table('posts')->max("post_id");
+        $allPosts = DB::table('posts')->orderBy('post_id', 'desc')->where('post_id', '<', $maxPostId + 1)->paginate(5);
 
-        // $userId= 1;
 
-        // $myFriends = DB::table('friends')->where('sender_id' ,'=', $userId)->orWhere('receiver_id' ,'=', $userId)->where('friends.requeststatus' ,'=', 'accept') ->get();
-        // $friendsPost = null;
+        $countCurrentUserPosts = 0;
+        $paginateCount = 10;
+        $i = 0;
+        while ($countCurrentUserPosts <= 3 && $i < count($allPosts)) {
+            if ($allPosts[$i]->user_id == $userId) {
+                $countCurrentUserPosts++;
+            } else {
+                $paginateCount++;
+                $allPosts = DB::table('posts')->orderBy('post_id', 'desc')->where('post_id', '<', $maxPostId + 1)->paginate($paginateCount);
+            }
 
-        // $fp = 0;
-        // $allPosts = DB::table('posts')->get();
-        // foreach($allPosts as $post){
-        //     foreach($myFriends as $friend){
-        //      //if($friend->sender_id != $userId && $friend->receiver_id != $userId){
-        //         if ($post->user_id == $friend->sender_id || $post->user_id == $friend->receiver_id){
-        //             $friendsPost[$fp] = $post;
-        //           }
-        //     // }
-        //     }
-        //     $fp++;
-        // }
-        
-            
-      //  dd($friendsPost);
+            $i++;
+        }
+
+        dd($allPosts);
     }
 }

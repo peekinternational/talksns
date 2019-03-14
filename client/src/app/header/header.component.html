@@ -1,5 +1,3 @@
-
-
 <div class="topbar sticky-header">
     <div class="logo">
         <a routerLink="landingpage/home"><img src="/assets/winkuLandingPage/images/logo.png" alt=""></a>
@@ -20,8 +18,8 @@
                 <ng-template #noPicFound>
                     <span *ngIf="p == (usersProfilePic.length- 1) && !isProfilePicFound">
                         <!-- <span *ngIf="userPics.picFile == null || userPics.picFile == ''"> -->
-                            <img src="/assets/pics/noProfile.png" class="dropdown-toggle dropDownOveride"
-                                style="margin-top: 6px; width: 50px; height: 50px;">
+                        <img src="/assets/pics/noProfile.png" class="dropdown-toggle dropDownOveride"
+                            style="margin-top: 6px; width: 50px; height: 50px;">
                         <!-- </span> -->
                     </span>
 
@@ -84,7 +82,8 @@
                     <h6 style="text-align: center"> Friend Requests </h6>
                     <span *ngIf="receiveRequestUnfound()"></span>
                     <span *ngFor="let friendrequest of allFriendsRequest; let fr = index">
-                        <span  class="dropdown-item" *ngIf="(this.session.get('authUserId') == friendrequest.receiver_id && friendrequest.requeststatus == 'sent') ;else noRequestMessage">
+                        <span class="dropdown-item"
+                            *ngIf="(this.session.get('authUserId') == friendrequest.receiver_id && friendrequest.requeststatus == 'sent') ;else noRequestMessage">
                             <span *ngIf="receiveRequestFound()"></span>
                             <span *ngIf="friendrequest.ProfilePic != ''; else dummyPicR">
                                 <img class="rounded-circle" style="width: 50px; height: 50px;"
@@ -117,12 +116,18 @@
                             </span>
                         </span>
                         <ng-template #noRequestMessage>
-                                <p style="text-align: center" *ngIf= "fr == (allFriendsRequest.length-1) && !receiveRequestFoundStatus">
-                                  No Friend Request Found
-                                </p>
-                            </ng-template>
+                            <p style="text-align: center"
+                                *ngIf="fr == (allFriendsRequest.length-1) && !receiveRequestFoundStatus">
+                                No Friend Request Found
+                            </p>
+                        </ng-template>
                     </span>
-                  
+
+                    <span *ngIf="allFriendsRequest?.length == 0">
+                        <p style="text-align: center">
+                            No Friend Request Found
+                        </p>
+                    </span>
                 </span>
                 <!-- ********************************************************************************************************************* -->
                 <hr>
@@ -130,6 +135,7 @@
                 <span>
                     <h6 style="text-align: center"> Friend Suggestions</h6>
                     <span *ngIf="friendSuggestionNotFound()"></span>
+
                     <span *ngFor="let user of allUserdata; let u = index">
                         <span *ngIf="sentRequestUnfound()"></span>
                         <span *ngIf="receiveRequestUnfound()"></span>
@@ -145,7 +151,7 @@
 
                                 <span
                                     *ngIf="request.requeststatus == 'sent' && this.session.get('authUserId') != user.user_id">
-                         
+
                                     <span *ngIf="friendSuggestionFound()"></span>
                                     <span class="dropdown-item">
                                         <span *ngIf="user.ProfilePic != null; else dummyPic">
@@ -186,14 +192,11 @@
                                 </span>
                             </ng-template>
                         </span>
-                
-                   
-                        <span *ngIf = "u == (allUserdata.length-1) && !isFriendSuggestionFound">
-                                <p style="text-align: center"> No Friend Suggestions Found</p>
-                            </span>
+
 
                         <span *ngIf="allFriendsRequest == null || allFriendsRequest.length == 0">
                             <span class="dropdown-item" *ngIf="this.session.get('authUserId') != user.user_id">
+                                <span *ngIf="friendSuggestionFound()"></span>
                                 <span *ngIf="user.ProfilePic != null; else dummyPic">
                                     <img class="rounded-circle" style="width: 50px; height: 50px;"
                                         [src]="user.ProfilePic">
@@ -211,7 +214,13 @@
                             </span>
                         </span>
 
+                        <span *ngIf="u == (allUserdata.length-1) && !isFriendSuggestionFound">
+                            <p style="text-align: center"> No Friend Suggestions Found</p>
+                        </span>
+
+
                     </span>
+
                 </span>
             </li>
     </div>

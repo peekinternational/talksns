@@ -36,3 +36,6 @@ Route::post("/setfriendrequest", "FrontendConnectorController@friendRequest");
 Route::post("/getAddFriendData", "FrontendConnectorController@getAddFriendsData");
 Route::post("/friendrequestStatus", "FrontendConnectorController@friendRequestStatusUpdate");
 Route::post("/unfriendrequestStatus", "FrontendConnectorController@unfriend");
+
+Route::get("/maxPostId", "FrontendConnectorController@getMaxPostId");
+Route::post("/getMaxPostId", "FrontendConnectorController@getCurrentUserMaxPostId");

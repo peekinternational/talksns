@@ -6,6 +6,7 @@ import { ChatService } from 'src/app/services/chat.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { SessionStorageService } from 'angular-web-storage';
+import { SharedDataService } from 'src/app/services/shareddata.service';
 
 @Component({
   selector: 'app-timeline',
@@ -28,12 +29,16 @@ export class TimelineComponent implements OnInit, OnDestroy {
   allFriendsRequest: any;
   profilePics: any;
   loggedInUserProfilePic: any = "";
+  userActionStatus: string = '';
+  previousPosts = [];
 
   isPostLiked: boolean = false;
   isPostdisLiked: boolean = false;
   isProfileFound: boolean = false;
   activatedTab: string = 'timeline';
 
+  maxPostsId = 0;
+  totalPostsToLoad: number;
   userId: number = 0;
   imageSrc: string = "";
   profilePicSrc: string = "";
@@ -48,8 +53,12 @@ export class TimelineComponent implements OnInit, OnDestroy {
   selectedUploadFile: File = null;
   setUserProfilePic: any;
 
-  constructor(private route: Router, private loginService: LoginStatusService, public session: SessionStorageService,
-    private backendService: BackendConnector, private formbuilder: FormBuilder, private chatService: ChatService) { }
+  constructor(public session: SessionStorageService, private backendService: BackendConnector,
+    private formbuilder: FormBuilder, private chatService: ChatService,
+    private sharedService: SharedDataService) {
+
+    this.totalPostsToLoad = this.sharedService.getPostLoad();
+  }
 
   ngOnInit() {
 
@@ -66,8 +75,18 @@ export class TimelineComponent implements OnInit, OnDestroy {
       });
 
     this.getPostSubscription = this.chatService.getPost().subscribe(
-      (newpost: any) => {   
-        this.createpost = newpost.posts;
+      (newpost: any) => {
+        if (this.userActionStatus == 'loadmore' && newpost.currentUser_Id == this.session.get('authUserId')) {
+          this.createpost = this.previousPosts.concat(newpost.posts.data);
+          this.previousPosts = this.previousPosts.concat(newpost.posts.data);
+        }
+        else {
+          if (newpost.currentUser_Id == this.session.get('authUserId')) {
+            this.createpost = newpost.posts.data;
+            this.previousPosts = newpost.posts.data;
+          }
+        }
+
         this.createlike = newpost.postlikes;
         this.createcomments = newpost.comments;
         this.usernames = newpost.usernames;
@@ -142,12 +161,19 @@ export class TimelineComponent implements OnInit, OnDestroy {
         }
       });
     this.backendService.getFriendRequestData();
-    this.backendService.getPost();
+
+    this.backendService.getCurrentUserMaxPostId().then(
+      (maxPostId: any) => {
+        this.maxPostsId = maxPostId + 1;
+        this.backendService.getTimelinePost(this.maxPostsId);
+      }
+    );
 
   }
 
   public addMyPost(desc: string) {
-    this.backendService.uploadPost(this.selectedUploadFile, desc);
+    this.userActionStatus = '';
+    this.backendService.uploadPost(this.selectedUploadFile, desc, this.previousPosts.length);
     this.imageSrc = "";
     this.selectedUploadFile = null;
     this.postingFormGroup.reset();
@@ -180,17 +206,18 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
 
 
-
   onPostLike(postId: number, isLiked: number) {
+    this.userActionStatus = '';
     this.isPostLiked = !(isLiked);
     this.backendService.setCurrentLike({ 'postId': postId, 'LikedStatus': this.isPostLiked, 'dislikedStatus': false });
-    this.backendService.setLike(this.isPostLiked, false, postId);
+    this.backendService.setLike(this.isPostLiked, false, postId, this.previousPosts.length);
   }
 
   onPostdisLike(postId: number, isDisliked: number) {
+    this.userActionStatus = '';
     this.isPostdisLiked = !(isDisliked);
     this.backendService.setCurrentLike({ 'postId': postId, 'dislikedStatus': this.isPostdisLiked, 'likedStatus': false });
-    this.backendService.setLike(false, this.isPostdisLiked, postId);
+    this.backendService.setLike(false, this.isPostdisLiked, postId, this.previousPosts.length);
   }
 
   resetShow() {
@@ -201,8 +228,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
 
   MainComment(event, postId: number, textArea: HTMLInputElement) {
+    this.userActionStatus = '';
     if (event.keyCode == 13) {
-      this.backendService.setComment(postId, textArea.value);
+      this.backendService.setComment(postId, textArea.value, this.previousPosts.length);
       this.commentValue = "";
       this.commentReplyStatus = false;
       this.replyCommentStatus = false;
@@ -211,9 +239,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
 
   ReplyComment(event, postId: number, commentId: number, textArea: HTMLInputElement) {
-
+    this.userActionStatus = '';
     if (event.keyCode == 13) {
-      this.backendService.setReply(postId, commentId, textArea.value);
+      this.backendService.setReply(postId, commentId, textArea.value, this.previousPosts.length);
       this.replyValue = "";
       this.replyCommentStatus = false;
       this.commentReplyStatus = false;
@@ -222,7 +250,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
 
   showCommentReply(commentId: number) {
-
+    this.userActionStatus = '';
     this.replyValue = "";
     this.commentReplyStatus = !this.commentReplyStatus;
 
@@ -243,7 +271,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
 
   showReplyComment(userId: string, replyId: number) {
-
+    this.userActionStatus = '';
     for (var name of this.usernames) {
       if (name.user_id == userId)
         this.replyValue = "@" + name.username;
@@ -267,6 +295,11 @@ export class TimelineComponent implements OnInit, OnDestroy {
     }
   }
 
+  LoadMorePost(maxPostId: number) {
+    this.userActionStatus = 'loadmore';
+    this.backendService.getPost(maxPostId);
+  }
+
   ProfilePicFound() {
     this.isProfileFound = true;
   }
@@ -278,7 +311,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     this.activatedTab = tabname;
   }
 
-  unfriend(friendId: number){
+  unfriend(friendId: number) {
     this.backendService.UnFriendRequest(friendId, 'reject');
   }
 

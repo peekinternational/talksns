@@ -40,7 +40,7 @@ export class BackendConnector {
         return promise;
     }
 
-    public uploadPost(imageFile: File, description: string) {
+    public uploadPost(imageFile: File, description: string, maxPostId: number) {
         const fd = new FormData();
         const id = this.session.get('authUserId');
         var desc = "";
@@ -58,6 +58,8 @@ export class BackendConnector {
             fd.append('image', imageFile, "");
 
         fd.append('description', desc);
+        fd.append('maxPostId', (maxPostId + ''));
+        fd.append("status", 'uploadpost');
 
         return this.http.post("http://localhost:8000/api/uploadpost", fd).subscribe(
             (response: any) => {
@@ -84,17 +86,49 @@ export class BackendConnector {
         );
     }
 
-    public getPost() {
-        return this.http.post("http://localhost:8000/api/retrievepost", { 'userId': this.session.get('authUserId') }).subscribe(
+    public getPost(maxPostId: number) {
+        return this.http.post("http://localhost:8000/api/retrievepost", { 'userId': this.session.get('authUserId'), 'maxPostId': maxPostId, "status": 'LoadMorePosts' }).subscribe(
+            (response: any) => {
+                this.chatService.sendPost(response);
+                // console.log(response);
+            }
+        );
+    }
+
+
+    public getTimelinePost(maxPostId: number) {
+        return this.http.post("http://localhost:8000/api/retrievepost", { 'userId': this.session.get('authUserId'), 'maxPostId': maxPostId, "status": 'timelinePost' }).subscribe(
             (response: any) => {
                 this.chatService.sendPost(response);
             }
         );
     }
 
+    public getMaxPostId() {
+        var promise = new Promise((resolve, reject) => {
+            return this.http.get("http://localhost:8000/api/maxPostId").subscribe(
+                (response: any) => {
+                    resolve(response);
+                }
+            );
+        });
+        return promise;
+    }
+
+    public getCurrentUserMaxPostId() {
+        var promise = new Promise((resolve, reject) => {
+            return this.http.post("http://localhost:8000/api/getMaxPostId", { 'userId': this.session.get('authUserId') }).subscribe(
+                (response: any) => {
+                    resolve(response);
+                }
+            );
+        });
+        return promise;
+    }
+
     // ********* LIKES - dISLIKES ***************************************************************
-    public setLike(isLiked: boolean, isDisliked: boolean, postId: number) {
-        const postLikeData = { 'userId': this.session.get('authUserId'), 'postId': postId, 'isLiked': isLiked, 'isDisliked': isDisliked }
+    public setLike(isLiked: boolean, isDisliked: boolean, postId: number, maxPostId: number) {
+        const postLikeData = { 'userId': this.session.get('authUserId'), 'postId': postId, 'isLiked': isLiked, 'isDisliked': isDisliked, 'maxPostId': maxPostId, "status": 'likes' }
 
         return this.http.post("http://localhost:8000/api/postlike", postLikeData).subscribe(
             (response: any) => {
@@ -103,8 +137,8 @@ export class BackendConnector {
         );
     }
 
-    public setComment(postId: number, comment: string) {
-        const commentData = { 'userId': this.session.get('authUserId'), 'postId': postId, 'comment': comment }
+    public setComment(postId: number, comment: string, maxPostId: number) {
+        const commentData = { 'userId': this.session.get('authUserId'), 'postId': postId, 'comment': comment, 'maxPostId': maxPostId, "status": 'comment' }
 
         return this.http.post("http://localhost:8000/api/comment", commentData).subscribe(
             (response: any) => {
@@ -113,8 +147,8 @@ export class BackendConnector {
         );
     }
 
-    public setReply(postId: number, commentId: number, commentReply: string) {
-        const replyData = { 'userId': this.session.get('authUserId'), 'postId': postId, 'commentId': commentId, 'commentReply': commentReply }
+    public setReply(postId: number, commentId: number, commentReply: string, maxPostId: number) {
+        const replyData = { 'userId': this.session.get('authUserId'), 'postId': postId, 'commentId': commentId, 'commentReply': commentReply, 'maxPostId': maxPostId, "status": 'reply' }
 
         return this.http.post("http://localhost:8000/api/reply", replyData).subscribe(
             (response: any) => {
@@ -123,6 +157,9 @@ export class BackendConnector {
         );
     }
 
+    // **********************************************************************************************************************************************
+    // *************************** FRIEND REQUEST **************************************************************************************************
+    // ******************************************************************************************************************************************
     public setFriendRequest(receiverId: number, requestStatus: string) {
         const friendRequestData = { 'userId': this.session.get('authUserId'), 'receiverId': receiverId, 'requestStatus': requestStatus }
 
@@ -143,7 +180,6 @@ export class BackendConnector {
     }
 
     public UnFriendRequest(friendUserId: number, requestStatus: string) {
-        console.log(friendUserId);
         const unfriendRequestData = { 'userId': this.session.get('authUserId'), 'friendUserId': friendUserId, 'requestStatus': requestStatus }
         return this.http.post("http://localhost:8000/api/unfriendrequestStatus", unfriendRequestData).subscribe(
             (response: any) => {

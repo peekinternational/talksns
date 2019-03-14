@@ -99,20 +99,22 @@
 
 									<!-- **************** POSTS ******************************** -->
 									<div class="loadMore">
-										<span *ngFor="let posts of createpost | reverse; let i = index">
+										<span *ngFor="let posts of createpost; let i = index">
 											<span *ngIf="resetShow()"></span>
 											<span *ngIf="friendsPostNotFound()"></span>
-
+                                              
 											<span *ngFor="let friend of allFriendsRequest">
-												<span class="user-post central-meta item" *ngIf="(((this.session.get('authUserId') == friend.sender_id && posts.user_id == friend.receiver_id && friend.requeststatus == 'accept') || (this.session.get('authUserId') == friend.receiver_id && posts.user_id == friend.sender_id && friend.requeststatus == 'accept')) || (this.session.get('authUserId') == posts.user_id)) && !isPostFound">
+												<span class="user-post central-meta item" *ngIf="(((this.session.get('authUserId') == friend.sender_id && 
+												createpost[i].user_id == friend.receiver_id && friend.requeststatus == 'accept') || (this.session.get('authUserId') == friend.receiver_id && createpost[i].user_id == friend.sender_id && 
+												friend.requeststatus == 'accept')) || (this.session.get('authUserId') == createpost[i].user_id)) && !isPostFound">
 													<span *ngIf="friendsPostFound()"></span>
 													<span class="friend-info">
 														<figure>
 															<!-- <span *ngFor="let pic of profilePics; let j = index"> -->
-															<span *ngIf="posts.postUserpic != ''">
-																<img [src]="posts.postUserpic" alt="" class="createImageCircle">
+															<span *ngIf="createpost[i].postUserpic != ''">
+																<img [src]="createpost[i].postUserpic" alt="" class="createImageCircle">
 															</span>
-															<span *ngIf="posts.postUserpic == ''">
+															<span *ngIf="createpost[i].postUserpic == ''">
 																<img src="/assets/pics/noProfile.png" alt="" class="createImageCircle">
 															</span>
 															<!-- </span> -->
@@ -121,7 +123,7 @@
 														<div class="friend-name">
 															<ins>
 																<a href="time-line.html" title="">
-																	{{ posts.name.username }}
+																	{{ createpost[i].username }}
 																</a>
 
 															</ins>
@@ -130,14 +132,14 @@
 														<div class="post-meta">
 															<div class="description">
 																<p class="">
-																	{{posts.description}}
+																	{{createpost[i].description}}
 																</p>
 															</div>
 
-															<img class="resize" *ngIf="posts.imageFile != null || posts.imageFile != ''"
-																[src]="posts?.imageFile" alt="">
+															<img class="resize" *ngIf="createpost[i].imageFile != null || createpost[i].imageFile != ''"
+																[src]="createpost[i]?.imageFile" alt="">
 
-															<input type="hidden" [value]="posts.post_id" #postIdField>
+															<input type="hidden" [value]="createpost[i].post_id" #postIdField>
 															<div class="we-video-info">
 																<ul>
 																	<li>
@@ -151,20 +153,20 @@
 																		<span title="comments">
 																			<i class="fa fa-comments" style="cursor:pointer"></i>
 																			<ins
-																				*ngIf="posts.totalcomments > 0">{{posts.totalcomments + posts.totalreplies}}</ins>
+																				*ngIf="createpost[i].totalcomments > 0">{{createpost[i].totalcomments + createpost[i].totalreplies}}</ins>
 																		</span>
 																	</li>
 
 																	<span *ngFor="let like of createlike ; let j = index">
 																		<span
-																			*ngIf="like.user_id == userId && like.post_id == posts.post_id ; else notLiked">
+																			*ngIf="like.user_id == userId && like.post_id == createpost[i].post_id ; else notLiked">
 																			<span *ngIf="check()"></span>
 																			<li>
 																				<span title="like">
 																					<i class="fa fa-thumbs-up" style="cursor: pointer"
 																						(click)="onPostLike(postIdField.value, like?.likes)"
 																						[ngStyle]="{color: like?.likes==1 ? 'green' : ''}"></i>
-																					<ins>{{posts.totalLiked}}</ins>
+																					<ins>{{createpost[i].totalLiked}}</ins>
 																				</span>
 																			</li>
 																			<li>
@@ -172,7 +174,7 @@
 																					<i class="fa fa-thumbs-down" style="cursor: pointer"
 																						(click)="onPostdisLike(postIdField.value, like?.dislikes)"
 																						[ngStyle]="{color: like?.dislikes==1 ? 'green' : ''}"></i>
-																					<ins>{{posts.totaldisLiked}}</ins>
+																					<ins>{{createpost[i].totaldisLiked}}</ins>
 																				</span>
 																			</li>
 																		</span>
@@ -183,14 +185,14 @@
 																					<span title="like">
 																						<i class="fa fa-thumbs-up" style="cursor: pointer"
 																							(click)="onPostLike(postIdField.value, like?.likes)"></i>
-																						<ins>{{posts.totalLiked}}</ins>
+																						<ins>{{createpost[i].totalLiked}}</ins>
 																					</span>
 																				</li>
 																				<li>
 																					<span title="dislike">
 																						<i class="fa fa-thumbs-down" style="cursor: pointer"
 																							(click)="onPostdisLike(postIdField.value, like?.dislikes)"></i>
-																						<ins>{{posts.totaldisLiked}}</ins>
+																						<ins>{{createpost[i].totaldisLiked}}</ins>
 																					</span>
 																				</li>
 																			</span>
@@ -225,12 +227,12 @@
 																				</span>
 
 																			<textarea class="commentTextarea" [(ngModel)]="commentValue"
-																				(keydown.enter)="MainComment($event, posts.post_id, mainComment);false"
+																				(keydown.enter)="MainComment($event, createpost[i].post_id, mainComment);false"
 																				placeholder="Post your comment" #mainComment></textarea>
 																		</span>
 
 																		<span class="" *ngFor="let comment of createcomments">
-																			<ul class="we-comet" *ngIf="comment.post_id == posts.post_id">
+																			<ul class="we-comet" *ngIf="comment.post_id == createpost[i].post_id">
 																				<li>
 																					<!-- <div class="comet-avatar"> <img src="/assets/pics/noProfile.png" alt=""> </div> -->
 
@@ -268,7 +270,7 @@
 																					</div>
 																				</li>
 																				<li
-																					*ngIf="commentReplyStatus && comment.post_id == posts.post_id && comment.comment_id == currentReplyId">
+																					*ngIf="commentReplyStatus && comment.post_id == createpost[i].post_id && comment.comment_id == currentReplyId">
 																					<div style="margin-top: 9px">
 																						<span>
 																							<span *ngIf="ProfilePicNotFound() "> </span>
@@ -289,7 +291,7 @@
 
 																							<textarea class="replyComment" style="vertical-align: middle"
 																								[(ngModel)]="replyValue"
-																								(keydown.enter)="ReplyComment($event, posts.post_id, comment.comment_id, commentReply);false"
+																								(keydown.enter)="ReplyComment($event, createpost[i].post_id, comment.comment_id, commentReply);false"
 																								placeholder="Post your comment" #commentReply></textarea>
 																						</span>
 
@@ -304,7 +306,7 @@
 
 																					<span class="" *ngFor="let reply of createreplies">
 																						<ul class="we-comet"
-																							*ngIf="reply.post_id == posts.post_id && reply.comment_id == comment.comment_id">
+																							*ngIf="reply.post_id == createpost[i].post_id && reply.comment_id == comment.comment_id">
 																							<li>
 																								<div class="we-reply-comment">
 																									<div class="coment-head">
@@ -342,7 +344,7 @@
 																							</li>
 
 																							<li
-																								*ngIf="replyCommentStatus && reply.post_id == posts.post_id && reply.comment_id == comment.comment_id && reply.reply_id == currentReplyId">
+																								*ngIf="replyCommentStatus && reply.post_id == createpost[i].post_id && reply.comment_id == comment.comment_id && reply.reply_id == currentReplyId">
 																								<div style="margin-top: 9px">
 																									<span>
 																										<span *ngIf="ProfilePicNotFound() "> </span>
@@ -362,7 +364,7 @@
 
 																										<textarea class="replyComment" style="vertical-align: middle"
 																											[(ngModel)]="replyValue"
-																											(keydown.enter)="ReplyComment($event, posts.post_id, reply.comment_id, inlineCommentReply);false"
+																											(keydown.enter)="ReplyComment($event, createpost[i].post_id, reply.comment_id, inlineCommentReply);false"
 																											placeholder="Post your comment" #inlineCommentReply></textarea>
 																									</span>
 
@@ -386,7 +388,11 @@
 													</span> <!-- friendInfo class ends -->
 												</span> <!-- userPost class ends -->
 											</span> <!-- ngFor_FriendsRequest ends -->
-										</span>
+
+											<span *ngIf="i == (createpost.length-1) && createpost[(createpost.length-1)].post_id > 1">
+											    <button class="btn btn-primary" (click)="LoadMorePost(createpost[(createpost.length-1)].post_id)"> LoadMore </button>	
+											</span>
+										</span> <!-- ngFor_CreatePost ends -->
 									</div>
 
 								</div><!-- centerl meta -->

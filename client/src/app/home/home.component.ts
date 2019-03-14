@@ -1,3 +1,4 @@
+import { SharedDataService } from './../services/shareddata.service';
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
@@ -19,7 +20,14 @@ export class HomeComponent implements OnInit, OnDestroy {
   getPostSubscription: Subscription;
 
   postingFormGroup: FormGroup;
+
+  totalPostsToLoad: number = 0;
   createpost: any;
+  previousPosts= [];
+  nextPosts = [];
+  maxPostsId = 0;
+  userActionStatus: string = '';
+
   createlike: any;
   createcomments: any;
   createreplies: any;
@@ -60,7 +68,20 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.getPostSubscription = this.chatService.getPost().subscribe(
       (newpost: any) => { 
-        this.createpost = newpost.posts;
+        
+        if (this.userActionStatus == 'loadmore' && newpost.currentUser_Id == this.session.get('authUserId')){
+          this.createpost = this.previousPosts.concat(newpost.posts.data);
+          this.previousPosts = this.previousPosts.concat(newpost.posts.data);
+        }
+        else{ 
+          //***********recheck needed */
+          if (newpost.currentUser_Id == this.session.get('authUserId')){
+            this.createpost = newpost.posts.data;
+            this.previousPosts = newpost.posts.data;
+          }
+        
+        }
+
         this.createlike = newpost.postlikes;
         this.createcomments = newpost.comments;
         this.usernames = newpost.usernames;
@@ -137,18 +158,25 @@ export class HomeComponent implements OnInit, OnDestroy {
         }
       });
 
-      this.backendService.getPost();
+      this.backendService.getMaxPostId().then(
+        (maxPostId: any)=>{
+          this.maxPostsId = maxPostId + 1;
+          this.backendService.getPost(this.maxPostsId);
+        }
+      );
+     
   } // *** OnInit Ends *************
 
   public addMyPost(desc: string) {
-    this.backendService.uploadPost(this.selectedUploadFile, desc);
+    this.userActionStatus = '';
+    this.backendService.uploadPost(this.selectedUploadFile, desc, this.previousPosts.length);
     this.imageSrc = "";
     this.selectedUploadFile = null;
     this.postingFormGroup.reset();
   }
 
   onImageUpload(event) {
-    //if (this.selectedUploadFile == null) {
+    this.userActionStatus = '';
     this.selectedUploadFile = <File>event.target.files[0];
 
     if (event.target.files && event.target.files[0]) {
@@ -157,19 +185,20 @@ export class HomeComponent implements OnInit, OnDestroy {
       reader.onload = e => this.imageSrc = reader.result as string;
       reader.readAsDataURL(file);
     }
-    //}
   }
 
   onPostLike(postId: number, isLiked: number) {
+    this.userActionStatus = '';
     this.isPostLiked = !(isLiked);
     this.backendService.setCurrentLike({ 'postId': postId, 'LikedStatus': this.isPostLiked, 'dislikedStatus': false });
-    this.backendService.setLike(this.isPostLiked, false, postId);
+    this.backendService.setLike(this.isPostLiked, false, postId, this.previousPosts.length);
   }
 
   onPostdisLike(postId: number, isDisliked: number) {
+    this.userActionStatus = '';
     this.isPostdisLiked = !(isDisliked);
     this.backendService.setCurrentLike({ 'postId': postId, 'dislikedStatus': this.isPostdisLiked, 'likedStatus': false });
-    this.backendService.setLike(false, this.isPostdisLiked, postId);
+    this.backendService.setLike(false, this.isPostdisLiked, postId, this.previousPosts.length);
   }
 
   resetShow() {
@@ -180,8 +209,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   MainComment(event, postId: number, textArea: HTMLInputElement) {
+    this.userActionStatus = '';
     if (event.keyCode == 13) {
-      this.backendService.setComment(postId, textArea.value);
+      this.backendService.setComment(postId, textArea.value, this.previousPosts.length);
       this.commentValue = "";
       this.commentReplyStatus = false;
       this.replyCommentStatus = false;
@@ -190,9 +220,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ReplyComment(event, postId: number, commentId: number, textArea: HTMLInputElement) {
-
+    this.userActionStatus = '';
     if (event.keyCode == 13) {
-      this.backendService.setReply(postId, commentId, textArea.value);
+      this.backendService.setReply(postId, commentId, textArea.value, this.previousPosts.length);
       this.replyValue = "";
       this.replyCommentStatus = false;
       this.commentReplyStatus = false;
@@ -201,7 +231,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   showCommentReply(commentId: number) {
-
+    this.userActionStatus = '';
     this.replyValue = "";
     this.commentReplyStatus = !this.commentReplyStatus;
 
@@ -222,7 +252,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   showReplyComment(userId: string, replyId: number) {
-
+    this.userActionStatus = '';
     for (var name of this.usernames) {
       if (name.user_id == userId)
         this.replyValue = "@" + name.username;
@@ -244,6 +274,11 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.replyCommentStatus = true;
       }
     }
+  }
+
+  LoadMorePost(maxPostId: number){
+    this.userActionStatus = 'loadmore';
+    this.backendService.getPost(maxPostId);
   }
 
   ProfilePicFound() {
