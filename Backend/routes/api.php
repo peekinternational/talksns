@@ -13,29 +13,27 @@ use Illuminate\Http\Request;
 |
 */
 
-// Route::middleware('auth:api')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-// Route::post("/signup", "FrontendConnectorController@signUp");
-//Route::post("/signin", "FrontendConnectorController@signIn");
-
+//------------------- SIGN IN-UP -----------------------------------------
 Route::post("/signup", "FrontendConnectorController@signUp");
 Route::post("/signin", "FrontendConnectorController@signIn");
 
+//------------------- POSTS ----------------------------------------------
 Route::post("/uploadpost", "FrontendConnectorController@uploadPost");
 Route::post("/retrievepost", "FrontendConnectorController@retrievePost");
-
-Route::post("/postlike", "FrontendConnectorController@postLike");
-Route::post("/getlike", "FrontendConnectorController@getLikes");
-
+Route::post("/postlike", "FrontendConnectorController@postLikeDislike");
 Route::post("/comment", "FrontendConnectorController@comments");
 Route::post("/reply", "FrontendConnectorController@replies");
+//------------------------------------------------------------------------
 
-Route::post("/profilepic", "FrontendConnectorController@profilePic");
+//------------------- FRIEND REQUEST ---------------------------------------------------------
 Route::post("/setfriendrequest", "FrontendConnectorController@friendRequest");
 Route::post("/getAddFriendData", "FrontendConnectorController@getAddFriendsData");
 Route::post("/friendrequestStatus", "FrontendConnectorController@friendRequestStatusUpdate");
 Route::post("/unfriendrequestStatus", "FrontendConnectorController@unfriend");
+//--------------------------------------------------------------------------------------------
 
+//-------------------- OTHERS ----------------------------------------------------------------
+Route::post("/profilepic", "FrontendConnectorController@uploadProfilePic");
 Route::get("/maxPostId", "FrontendConnectorController@getMaxPostId");
-Route::post("/getMaxPostId", "FrontendConnectorController@getCurrentUserMaxPostId");
+Route::post("/getUserMaxPostId", "FrontendConnectorController@getCurrentUserMaxPostId");
+//--------------------------------------------------------------------------------------------

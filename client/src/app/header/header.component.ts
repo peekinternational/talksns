@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { LoginStatusService } from '../services/loginstatus.service';
 import { Subscription } from 'rxjs';
-import { ChatService } from '../services/chat.service';
+import { SocketService } from '../services/socket.service';
 import { SessionStorageService } from 'angular-web-storage';
 
 @Component({
@@ -32,7 +32,7 @@ export class HeaderComponent implements OnInit {
 
   constructor(private connectorService: BackendConnector, private loginService: LoginStatusService,
     private formBuilder: FormBuilder, private router: Router, public session: SessionStorageService,
-    private chatService: ChatService) {
+    private chatService: SocketService) {
 
     //Initialize formGroup with initial values and validators
     this.signinForm = this.formBuilder.group({
@@ -43,13 +43,11 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit() {
-
     // If user is logged-In, then navigate it to 'home' page
     if (this.loginService.isUserLoggedIn()) {
       this.loginService.deActivateLoginForm();
       if (localStorage.getItem('routerUrl') != null)
-        this.router.navigate(["/"+localStorage.getItem('routerUrl')]);
-  
+        this.router.navigate(["/" + localStorage.getItem('routerUrl')]);
     }
     else {
       // get loginForm visibilty status from LoginService
@@ -69,24 +67,24 @@ export class HeaderComponent implements OnInit {
         this.isUserLoggedIn = userLoginStatus;
       }
     );
-   
+
     this.getPostSubscription = this.chatService.getPost().subscribe(
       (newpost: any) => {
         this.usersProfilePic = newpost.profilepics;
       });
 
-      this.addFriendSubscription = this.chatService.getRequest().subscribe(
-        (friendsData: any) => {
-          this.allFriendsRequest = friendsData.allFriendRequests;
-          this.allUserdata = friendsData.allUserdata;
-        });
-  
-      this.connectorService.getFriendRequestData();
+    this.addFriendSubscription = this.chatService.getRequest().subscribe(
+      (friendsData: any) => {
+        this.allFriendsRequest = friendsData.allFriendRequests;
+        this.allUserdata = friendsData.allUserdata;
+      });
+
+    this.connectorService.getFriendRequestData();
   }
 
   onSignIn() {   // if user SignIn
 
-    // get user data
+    // get user entered data from HTML-FORM
     const EmailorUsername = this.signinForm.value.EmailUsername;
     const password = this.signinForm.value.password;
 
@@ -111,11 +109,11 @@ export class HeaderComponent implements OnInit {
         this.loginService.setUserPassword(password);
       }
       // -----------------------------------------------------------
-
-      this.router.navigate(['/signin']); // navigate to SignIn Page
+      this.loginService.deActivateLoginForm();
+      this.loginService.setForm('signinform');
     }
 
-    else { // --------- if form is valid ---
+    else { // --------- if form is valid ----------------------
       this.connectorService.signInRequest({ 'emailORusername': EmailorUsername, 'password': password }).then(
         (signInStatus: any) =>  // get data receieved from backend
         {
@@ -123,11 +121,11 @@ export class HeaderComponent implements OnInit {
             this.loginService.setSigninErrorStatus("incorrectData"); // store error msg, to show it in signIn page
             this.loginService.setUserEmail(EmailorUsername); // store username or email
             this.loginService.setUserPassword(password);  // store password
-            this.loginService.setNextRouteName("/signin");
-            this.router.navigate(['/signin']);
+            this.loginService.deActivateLoginForm();
+            this.loginService.setForm('signinform');
           }
           else {
-            this.loginService.activateLogin(); // update LoggedIn status
+            this.loginService.userLoggedIn(); // update LoggedIn status
             this.loginService.deActivateLoginForm(); // deActivate loginForm in headers
             this.session.set("email", EmailorUsername); // store user data in session service
             this.session.set("authUserId", signInStatus.data.user_id);
@@ -156,14 +154,19 @@ export class HeaderComponent implements OnInit {
     this.signinForm.value.email = "";
     this.signinForm.value.password = "";
     this.loginService.clearInputData();
-    this.router.navigate(['/']);
- }
+    this.loginService.setForm('regform');
+  }
+
+  LoadSignIn() {
+    this.loginService.deActivateLoginForm();
+    this.loginService.setForm('signinform');
+  }
 
   // SignOut, clear session and navigate to main-page
   Signout() {
-    this.session.remove("authUserId");     
+    this.session.remove("authUserId");
     this.session.remove("email");
-    this.loginService.deActivateLogin();
+    this.loginService.userLoggedOut();
     this.loginService.activateLoginForm();
     this.signinForm.reset();
     this.loginService.clearInputData();
@@ -172,18 +175,18 @@ export class HeaderComponent implements OnInit {
     this.router.navigate(['/']);
   }
 
-  goToRoute(nextRoute: string) {
+  setRoute(nextRoute: string) {
     this.loginService.setNextRouteName(nextRoute);
   }
 
   // ********************* Called in ngIF in HTML *****************************************************
-  friendSuggestionFound(){
+  friendSuggestionFound() {
     this.isFriendSuggestionFound = true;
   }
-  friendSuggestionNotFound(){
+  friendSuggestionNotFound() {
     this.isFriendSuggestionFound = false;
   }
-  
+
   sentRequestFound() {
     this.sentRequestFoundStatus = true;
   }
@@ -205,11 +208,10 @@ export class HeaderComponent implements OnInit {
     this.isProfilePicFound = false;
   }
 
-  RequestCountFound(){
+  RequestCountFound() {
     this.isTotalRequestFound = true;
   }
-
-  RequestCountNotFound(){
+  RequestCountNotFound() {
     this.isTotalRequestFound = false;
   }
   // ************************************************************************************************

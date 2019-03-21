@@ -1,12 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { LoginStatusService } from 'src/app/services/loginstatus.service';
 import { BackendConnector } from 'src/app/services/backendconnector.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
-import { ChatService } from 'src/app/services/chat.service';
-import { Router } from '@angular/router';
+import { SocketService } from 'src/app/services/socket.service';
 import { Subscription } from 'rxjs';
 import { SessionStorageService } from 'angular-web-storage';
-import { SharedDataService } from 'src/app/services/shareddata.service';
 
 @Component({
   selector: 'app-timeline',
@@ -38,10 +35,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
   activatedTab: string = 'timeline';
 
   maxPostsId = 0;
-  totalPostsToLoad: number;
   userId: number = 0;
   imageSrc: string = "";
-  profilePicSrc: string = "";
   commentValue: string = '';
   replyValue: string = '';
   currentReplyId: number = 0;
@@ -54,11 +49,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   setUserProfilePic: any;
 
   constructor(public session: SessionStorageService, private backendService: BackendConnector,
-    private formbuilder: FormBuilder, private chatService: ChatService,
-    private sharedService: SharedDataService) {
-
-    this.totalPostsToLoad = this.sharedService.getPostLoad();
-  }
+    private formbuilder: FormBuilder, private chatService: SocketService) {}
 
   ngOnInit() {
 
@@ -198,7 +189,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
       const reader = new FileReader();
-      reader.onload = e => this.profilePicSrc = reader.result as string;
+      reader.onload = e => reader.result as string;
       reader.readAsDataURL(file);
     }
 

@@ -7,8 +7,10 @@ use DB;
 
 class FrontendConnectorController extends Controller
 {
-    // SignUp Response after validation
-    public function signUp(Request $request)
+    // *******************************************************************************************
+    // *********************************** LOGIN - REGISTRATION ***********************************
+    // *******************************************************************************************
+    public function signUp(Request $request)  // SignUp Response after validation
     {
         // extract signUp data from array-request
         $username = $request->username;
@@ -22,14 +24,12 @@ class FrontendConnectorController extends Controller
         $birthday = $date . "/" . $month . "/" . $year; // append birthdate
 
         // check if username already exist or not
-        if (DB::table('users')->where('username', $username)->exists()) {
+        if (DB::table('users')->where('username', $username)->exists())
             return response()->json(['status' => false, 'message' => "nametaken"]); // send response
-        }
 
         // check if email already registered or not
-        if (DB::table('users')->where('email', $email)->exists()) {
+        if (DB::table('users')->where('email', $email)->exists())
             return response()->json(['status' => false, 'message' => "emailtaken"]); // send response
-        }
 
         // insert user signUp data in database
         $dataInserted = DB::table('users')->insert([
@@ -41,42 +41,46 @@ class FrontendConnectorController extends Controller
         ]);
 
         // if data inserted, then send 'successful' response to frontend
-        if ($dataInserted) {
+        if ($dataInserted)
             return response()->json(['status' => true, 'message' => "signup successfull"]);
-        }
-    } // ***** SignUp Function Ends *********
+    } // **** SignUp Function Ends *******
 
-
-    // SignIn Response after validation
-    public function signIn(Request $request)
+   
+    public function signIn(Request $request)  // SignIn Response after validation
     {
+       
         // extract signIn data from array-request
-        $emailOrusername = $request->emailORusername; //$request[0]; // email or password
+        $emailOrusername = $request->emailORusername;
         $password = $request->password; // password
 
         // get userData from database if email exist
         $user = DB::table('users')->where('email', $emailOrusername)->first();
-
-        if ($user == null) // if email not exist then check username
+      
+        if ($user == null || $user->length == 0){ // if email not exist then check username
             $user = DB::table('users')->where('username', $emailOrusername)->first();
+        }
 
-        // if user data is received from DB
         if ($user != null) {
             // (if userName OR email matches) AND (Password matches)
-            if (($user->email == $emailOrusername || $user->username == $emailOrusername) && $user->password == $password) {
+            if (($user->email == $emailOrusername || $user->username == $emailOrusername) && $user->password == $password)
                 return response()->json(['status' => true, 'data' => $user]);
-            }
+
             // (if userName OR email not matches) OR (Password not matches)
-            else if (($user->email != $emailOrusername || $user->username != $emailOrusername) || $user->password != $password) {
+            else if (($user->email != $emailOrusername || $user->username != $emailOrusername) || $user->password != $password)
                 return response()->json(['status' => false]);
-            }
-        } else { // if userData still doesn't exist in database
+        } else{  // if userData still doesn't exist in database
             return response()->json(['status' => false]);
         }
     } // ***** SignIn Function Ends *********
 
-    // Image Upload
-    public function uploadPost(Request $request)
+    // *******************************************************************************************
+    // ***************************************************************************************
+
+
+    // *******************************************************************************************
+    // ***************************** UPLOAD RELATED FUNCTIONS *****************************
+    // *******************************************************************************************
+    public function uploadPost(Request $request)   // Image Upload
     {
         $userId = $request->userId;
         $item_image = $request->image;
@@ -89,7 +93,6 @@ class FrontendConnectorController extends Controller
             $uploadPicture = rand(000000, 999999) . '.' . $item_image->getClientOriginalExtension();
             $destinationPath = public_path('images');
             $item_image->move($destinationPath, $uploadPicture);
-            $item_info['item_image'] = $uploadPicture;
         }
 
         // insert image in database
@@ -99,23 +102,11 @@ class FrontendConnectorController extends Controller
             'description' => $description
         ]);
 
-        if ($dataInserted) {
+        if ($dataInserted)
             return response()->json($this->getandSendAllPostData($userId, $_MaxPostId, $status));
-        }
     }
 
-    // Send Image to FrontEnd's BackendConnector Service
-    public function retrievePost(Request $request)
-    {
-        $userId = $request->userId;
-        $_MaxPostId = $request->maxPostId;
-        $status = $request->status;
-        return response()->json($this->getandSendAllPostData($userId, $_MaxPostId, $status));
-    }
-
-
-    // Like the Post
-    public function postLike(Request $request)
+    public function postLikeDislike(Request $request)  
     {
         $userId = $request->userId;
         $postId = $request->postId;
@@ -179,7 +170,7 @@ class FrontendConnectorController extends Controller
         return response()->json($this->getandSendAllPostData($userId, $_MaxPostId, $status));
     }
 
-    public function profilePic(Request $request)
+    public function uploadProfilePic(Request $request)
     {
         $userId = $request->userId;
         $profilepic = $request->profilePic;
@@ -191,7 +182,6 @@ class FrontendConnectorController extends Controller
             $uploadPicture = rand(000000, 999999) . '.' . $profilepic->getClientOriginalExtension();
             $destinationPath = public_path('profilepics');
             $profilepic->move($destinationPath, $uploadPicture);
-            $item_info['item_image'] = $uploadPicture;
         }
 
         DB::table('users')->where('user_id', '=', $userId)->update(['ProfilePic' => $uploadPicture]);
@@ -199,9 +189,127 @@ class FrontendConnectorController extends Controller
         return response()->json($this->getandSendAllPostData($userId, $_MaxPostId, $status));
     }
 
+    public function getMaxPostId()
+    {
+        $maxPostId = DB::table('posts')->max("post_id");
+        return response()->json($maxPostId);
+    }
+    
+    public function getCurrentUserMaxPostId(Request $request)
+    {
+        $userId = $request->userId;
+        $maxCurrentUserPostId = DB::table('posts')->where('user_id', '=', $userId)->max("post_id");
+        return response()->json($maxCurrentUserPostId);
+    }
+
+    // Send Image to FrontEnd's BackendConnector Service
+    public function retrievePost(Request $request)
+    {
+        $userId = $request->userId;
+        $_MaxPostId = $request->maxPostId;
+        $status = $request->status;
+        return response()->json($this->getandSendAllPostData($userId, $_MaxPostId, $status));
+    }
+
+
+    public function getandSendAllPostData($userId, $_MaxPostId, $status)
+    {
+        $allPosts = null;
+
+        if ($status == "LoadMorePosts") {
+            $allPosts = DB::table('posts')->orderBy('post_id', 'desc')->where('post_id', '<', $_MaxPostId)->paginate(5);
+        } else if ($status == "timelinePost") {
+            $maxPostId1 = DB::table('posts')->max("post_id");
+            $allPosts = DB::table('posts')->orderBy('post_id', 'desc')->where('post_id', '<', $maxPostId1 + 1)->paginate(5);
+
+            $countCurrentUserPosts = 0;
+            $paginateCount = 10;
+            $i = 0;
+            while ($countCurrentUserPosts <= 3 && $i < count($allPosts)) {
+                if ($allPosts[$i]->user_id == $userId) {
+                    $countCurrentUserPosts++;
+                } else {
+                    $paginateCount++;
+                    $allPosts = DB::table('posts')->orderBy('post_id', 'desc')->where('post_id', '<', $maxPostId1 + 1)->paginate($paginateCount);
+                }
+
+                $i++;
+            }
+        } else {
+            $maxPostId2 = DB::table('posts')->max("post_id");
+            if ($maxPostId2 == 0)
+                $allPosts = DB::table('posts')->orderBy('post_id', 'desc')->where('post_id', '<', ($maxPostId2 + 1))->paginate($_MaxPostId);
+            else
+                $allPosts = DB::table('posts')->orderBy('post_id', 'desc')->where('post_id', '<', ($maxPostId2 + 1))->paginate(5);
+        }
+
+        $allPostLikes = DB::table('postlikes')->get();
+        $allPostComments = DB::table('comments')->get();
+
+        $usersName = DB::table('users')->select('user_id', 'username')->get();
+        $replies = DB::table('replycomments')->get();
+        $profilepicFileNames = DB::table('users')->select('user_id', 'ProfilePic')->where('ProfilePic', '!=', null)->get();
+        $loggedInUserData = DB::table('users')->select('user_id', 'username', 'email', 'gender', 'birthday', 'ProfilePic')->where('user_id', '=', $userId)->get();
+
+        $loggedInUserProfilePic = "";
+
+        foreach ($allPosts as &$post) {
+            $post->getPost = DB::table('postlikes')->select('likes', 'dislikes')->where('postlikes.post_id', '=', $post->post_id)->get();
+            $post->totalLiked = DB::table('postlikes')->select('likes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.likes', '=', 1)->count();
+            $post->totaldisLiked = DB::table('postlikes')->select('dislikes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.dislikes', '=', 1)->count();
+            $post->name = DB::table('users')->select('username')->where('users.user_id', '=', $post->user_id)->first();
+            $post->totalcomments = DB::table('comments')->select('description')->where('comments.post_id', '=', $post->post_id)->count();
+            $post->totalreplies = DB::table('replycomments')->select('replydescription')->where('replycomments.post_id', '=', $post->post_id)->count();
+
+            $imageFileName = DB::table('posts')->select('imageFile')->where('imageFile', '=', $post->imageFile)->get();
+
+            if ($post->imageFile != '')
+                $post->imageFile = url("images/" . $imageFileName[0]->imageFile);
+            else
+                $post->imageFile = '';
+
+            foreach ($profilepicFileNames as $profilepic) {
+                if ($post->user_id == $profilepic->user_id) {
+                    $post->postUserpic = url("profilepics/" . $profilepic->ProfilePic);
+                    break;
+                } else {
+                    $post->postUserpic = '';
+                }
+
+                if ($profilepic->user_id == $userId) {
+                    $loggedInUserProfilePic = url("profilepics/" . $profilepic->ProfilePic);
+                    break;
+                }
+            }
+        }
+
+        $allUsersData = DB::table('users')->select('user_id', 'username', 'ProfilePic')->get();
+        $profilepicFileNames = DB::table('users')->select('user_id', 'ProfilePic')->where('ProfilePic', '!=', null)->get();
+        foreach ($profilepicFileNames as &$profilepic) {
+            $profilepic->picFile = url("profilepics/" . $profilepic->ProfilePic);
+
+            foreach ($allUsersData as $user_Id) {
+                if ($user_Id->user_id == $profilepic->user_id) {
+                    $user_Id->ProfilePic = url("profilepics/" . $profilepic->ProfilePic);
+                    $profilepic->username = DB::table('users')->select('username')->where('users.user_id', '=', $user_Id->user_id)->get();
+                }
+            }
+        }
+
+        $allFriendRequestData = DB::table('friends')->get();
+        return [
+            'posts' => $allPosts, 'postlikes' => $allPostLikes, 'comments' => $allPostComments,
+            'usernames' => $usersName, 'replies' => $replies, 'profilepics' => $profilepicFileNames,
+            'loggedUserData' => $loggedInUserData, 'loggedInUserProfilepic' => $loggedInUserProfilePic,
+            'allFriendRequest' => $allFriendRequestData, 'currentUser_Id' => $userId
+        ];
+    }
+
+
     //********************************************************************************************************************* */
     //********************************************************************************************************************* */
     //********************************************************************************************************************* */
+
     public function friendRequest(Request $request)
     {
         $senderId = $request->userId;
@@ -277,138 +385,7 @@ class FrontendConnectorController extends Controller
         return ['allFriendRequests' =>  $allFriendRequestData, 'allUserdata' => $allUserdata];
     }
 
-    //********************************************************************************************************************** */
-
-
-    public function getMaxPostId()
-    {
-        $maxPostId = DB::table('posts')->max("post_id");
-        return response()->json($maxPostId);
-    }
-    public function getCurrentUserMaxPostId(Request $request)
-    {
-        $userId = $request->userId;
-        $maxCurrentUserPostId = DB::table('posts')->where('user_id', '=', $userId)->max("post_id");
-        return response()->json($maxCurrentUserPostId);
-    }
-
-    //********************************************************************* */
-    public function getandSendAllPostData($userId, $_MaxPostId, $status)
-    {
-        $allPosts = null;
-
-        if ($status == "LoadMorePosts") {
-            $allPosts = DB::table('posts')->orderBy('post_id', 'desc')->where('post_id', '<', $_MaxPostId)->paginate(5);
-        } else if ($status == "timelinePost") {
-                $maxPostId1 = DB::table('posts')->max("post_id");
-                $allPosts = DB::table('posts')->orderBy('post_id', 'desc')->where('post_id', '<', $maxPostId1 + 1)->paginate(5);
-
-                $countCurrentUserPosts = 0;
-                $paginateCount = 10;
-                $i = 0;
-                while ($countCurrentUserPosts <= 3 && $i < count($allPosts)) {
-                    if ($allPosts[$i]->user_id == $userId) {
-                        $countCurrentUserPosts++;
-                    } else {
-                        $paginateCount++;
-                        $allPosts = DB::table('posts')->orderBy('post_id', 'desc')->where('post_id', '<', $maxPostId1 + 1)->paginate($paginateCount);
-                    }
-
-                    $i++;
-                }
-            } else {
-             $maxPostId2 = DB::table('posts')->max("post_id");
-            if ($maxPostId2 == 0)
-               $allPosts = DB::table('posts')->orderBy('post_id', 'desc')->where('post_id', '<', ($maxPostId2 + 1))->paginate($_MaxPostId);
-            else
-               $allPosts = DB::table('posts')->orderBy('post_id', 'desc')->where('post_id', '<', ($maxPostId2 + 1))->paginate(5);
-        }
-
-        $allPostLikes = DB::table('postlikes')->get();
-        $allPostComments = DB::table('comments')->get();
-
-        $usersName = DB::table('users')->select('user_id', 'username')->get();
-        $replies = DB::table('replycomments')->get();
-        $profilepicFileNames = DB::table('users')->select('user_id', 'ProfilePic')->where('ProfilePic', '!=', null)->get();
-        $loggedInUserData = DB::table('users')->select('user_id', 'username', 'email', 'gender', 'birthday', 'ProfilePic')->where('user_id', '=', $userId)->get();
-
-        $loggedInUserProfilePic = "";
-
-        foreach ($allPosts as &$post) {
-            $post->getPost = DB::table('postlikes')->select('likes', 'dislikes')->where('postlikes.post_id', '=', $post->post_id)->get();
-            $post->totalLiked = DB::table('postlikes')->select('likes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.likes', '=', 1)->count();
-            $post->totaldisLiked = DB::table('postlikes')->select('dislikes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.dislikes', '=', 1)->count();
-            $post->name = DB::table('users')->select('username')->where('users.user_id', '=', $post->user_id)->first();
-            $post->totalcomments = DB::table('comments')->select('description')->where('comments.post_id', '=', $post->post_id)->count();
-            $post->totalreplies = DB::table('replycomments')->select('replydescription')->where('replycomments.post_id', '=', $post->post_id)->count();
-
-            $imageFileName = DB::table('posts')->select('imageFile')->where('imageFile', '=', $post->imageFile)->get();
-
-            if ($post->imageFile != '')
-                $post->imageFile = url("images/" . $imageFileName[0]->imageFile);
-            else
-                $post->imageFile = '';
-
-            foreach ($profilepicFileNames as $profilepic) {
-                if ($post->user_id == $profilepic->user_id) {
-                    $post->postUserpic = url("profilepics/" . $profilepic->ProfilePic);
-                    break;
-                } else {
-                    $post->postUserpic = '';
-                }
-
-                if ($profilepic->user_id == $userId) {
-                    $loggedInUserProfilePic = url("profilepics/" . $profilepic->ProfilePic);
-                    break;
-                }
-            }
-        }
-
-        $allUsersData = DB::table('users')->select('user_id', 'username', 'ProfilePic')->get();
-        $profilepicFileNames = DB::table('users')->select('user_id', 'ProfilePic')->where('ProfilePic', '!=', null)->get();
-        foreach ($profilepicFileNames as &$profilepic) {
-            $profilepic->picFile = url("profilepics/" . $profilepic->ProfilePic);
-
-            foreach ($allUsersData as $user_Id) {
-                if ($user_Id->user_id == $profilepic->user_id) {
-                    $user_Id->ProfilePic = url("profilepics/" . $profilepic->ProfilePic);
-                    $profilepic->username = DB::table('users')->select('username')->where('users.user_id', '=', $user_Id->user_id)->get();
-                }
-            }
-        }
-
-        $allFriendRequestData = DB::table('friends')->get();
-        return [
-            'posts' => $allPosts, 'postlikes' => $allPostLikes, 'comments' => $allPostComments,
-            'usernames' => $usersName, 'replies' => $replies, 'profilepics' => $profilepicFileNames,
-            'loggedUserData' => $loggedInUserData, 'loggedInUserProfilepic' => $loggedInUserProfilePic,
-            'allFriendRequest' => $allFriendRequestData, 'currentUser_Id' => $userId
-        ];
-    }
-
-
     // **********************************************************************************************************************************************************************************************
     public function test()
-    {
-        $userId = 2;
-        $maxPostId = DB::table('posts')->max("post_id");
-        $allPosts = DB::table('posts')->orderBy('post_id', 'desc')->where('post_id', '<', $maxPostId + 1)->paginate(5);
-
-
-        $countCurrentUserPosts = 0;
-        $paginateCount = 10;
-        $i = 0;
-        while ($countCurrentUserPosts <= 3 && $i < count($allPosts)) {
-            if ($allPosts[$i]->user_id == $userId) {
-                $countCurrentUserPosts++;
-            } else {
-                $paginateCount++;
-                $allPosts = DB::table('posts')->orderBy('post_id', 'desc')->where('post_id', '<', $maxPostId + 1)->paginate($paginateCount);
-            }
-
-            $i++;
-        }
-
-        dd($allPosts);
-    }
+    { }
 }

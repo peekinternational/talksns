@@ -1,4 +1,4 @@
-import { ChatService } from './chat.service';
+import { SocketService } from './socket.service';
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Subject } from 'rxjs';
@@ -6,13 +6,13 @@ import { SessionStorageService } from 'angular-web-storage';
 
 @Injectable()
 export class BackendConnector {
-    //http://127.0.0.1:8000/api/signup
-    //http://192.168.100.7:8000/api/signup
 
     responseStatus: any;
     quickLike = new Subject<any>();
 
-    constructor(private http: HttpClient, private session: SessionStorageService, private chatService: ChatService) { }
+    constructor(private http: HttpClient, private session: SessionStorageService,
+        private chatService: SocketService) { }
+
 
     // Connect and Send Registration Data to laravel-Backend function
     signUpRequest(signupData: any) {
@@ -40,6 +40,9 @@ export class BackendConnector {
         return promise;
     }
 
+    //*************************************************************************************/
+    //**************************** POSTS  *********************************************************/
+    //*************************************************************************************/
     public uploadPost(imageFile: File, description: string, maxPostId: number) {
         const fd = new FormData();
         const id = this.session.get('authUserId');
@@ -86,51 +89,10 @@ export class BackendConnector {
         );
     }
 
-    public getPost(maxPostId: number) {
-        return this.http.post("http://localhost:8000/api/retrievepost", { 'userId': this.session.get('authUserId'), 'maxPostId': maxPostId, "status": 'LoadMorePosts' }).subscribe(
-            (response: any) => {
-                this.chatService.sendPost(response);
-                // console.log(response);
-            }
-        );
-    }
-
-
-    public getTimelinePost(maxPostId: number) {
-        return this.http.post("http://localhost:8000/api/retrievepost", { 'userId': this.session.get('authUserId'), 'maxPostId': maxPostId, "status": 'timelinePost' }).subscribe(
-            (response: any) => {
-                this.chatService.sendPost(response);
-            }
-        );
-    }
-
-    public getMaxPostId() {
-        var promise = new Promise((resolve, reject) => {
-            return this.http.get("http://localhost:8000/api/maxPostId").subscribe(
-                (response: any) => {
-                    resolve(response);
-                }
-            );
-        });
-        return promise;
-    }
-
-    public getCurrentUserMaxPostId() {
-        var promise = new Promise((resolve, reject) => {
-            return this.http.post("http://localhost:8000/api/getMaxPostId", { 'userId': this.session.get('authUserId') }).subscribe(
-                (response: any) => {
-                    resolve(response);
-                }
-            );
-        });
-        return promise;
-    }
-
-    // ********* LIKES - dISLIKES ***************************************************************
     public setLike(isLiked: boolean, isDisliked: boolean, postId: number, maxPostId: number) {
         const postLikeData = { 'userId': this.session.get('authUserId'), 'postId': postId, 'isLiked': isLiked, 'isDisliked': isDisliked, 'maxPostId': maxPostId, "status": 'likes' }
 
-        return this.http.post("http://localhost:8000/api/postlike", postLikeData).subscribe(
+        return this.http.post("http://localhost:8000/api/postLikeDislike", postLikeData).subscribe(
             (response: any) => {
                 this.chatService.sendPost(response);
             }
@@ -155,6 +117,49 @@ export class BackendConnector {
                 this.chatService.sendPost(response);
             }
         );
+    }
+
+    // ------------------------- GETTERS ----------------------------------------------------------------
+    public getPost(maxPostId: number) {
+        return this.http.post("http://localhost:8000/api/retrievepost", { 'userId': this.session.get('authUserId'), 'maxPostId': maxPostId, "status": 'LoadMorePosts' }).subscribe(
+            (response: any) => {
+                this.chatService.sendPost(response);
+            }
+        );
+    }
+
+    public getTimelinePost(maxPostId: number) {
+        return this.http.post("http://localhost:8000/api/retrievepost", { 'userId': this.session.get('authUserId'), 'maxPostId': maxPostId, "status": 'timelinePost' }).subscribe(
+            (response: any) => {
+                this.chatService.sendPost(response);
+            }
+        );
+    }
+
+    public getMaxPostId() {
+        var promise = new Promise((resolve, reject) => {
+            return this.http.get("http://localhost:8000/api/maxPostId").subscribe(
+                (response: any) => {
+                    resolve(response);
+                }
+            );
+        });
+        return promise;
+    }
+
+    public getCurrentUserMaxPostId() {
+        var promise = new Promise((resolve, reject) => {
+            return this.http.post("http://localhost:8000/api/getUserMaxPostId", { 'userId': this.session.get('authUserId') }).subscribe(
+                (response: any) => {
+                    resolve(response);
+                }
+            );
+        });
+        return promise;
+    }
+
+    public setCurrentLike(currentPostLike: any) {
+        this.quickLike.next(currentPostLike);
     }
 
     // **********************************************************************************************************************************************
@@ -198,7 +203,4 @@ export class BackendConnector {
         );
     }
 
-    public setCurrentLike(currentPostLike: any) {
-        this.quickLike.next(currentPostLike);
-    }
 }

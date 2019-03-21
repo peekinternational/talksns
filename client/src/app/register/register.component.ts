@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { BackendConnector } from '../services/backendconnector.service';
 import { Router } from '@angular/router';
 import { SessionStorageService } from 'angular-web-storage';
+import { LoginStatusService } from '../services/loginstatus.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-register',
@@ -10,7 +12,9 @@ import { SessionStorageService } from 'angular-web-storage';
   styleUrls: ['./register.component.css']
 })
 
-export class RegisterComponent implements OnInit {
+export class RegisterComponent implements OnInit, OnDestroy {
+
+  loginSubscription: Subscription;
 
   //-- Birthday Variables -------------------------------------------------------------------------
   currentYear: number = 2019;
@@ -21,27 +25,39 @@ export class RegisterComponent implements OnInit {
     "November", "December"];
   years = [];
   //-----------------------------------------------------------------------------------------------
-
+  signinForm: FormGroup;
   signupForm: FormGroup;
   // Form input-fields validation variables
   nameValidationStatus: boolean = false;
   nameInputFieldError: boolean = false;
+
   emailValidationStatus: boolean = false;
   emailInputFieldError: boolean = false;
+
   genderValidationStatus: boolean = false;
   birthdayValidationStatus: boolean = false;
   passwordValidationStatus: boolean = false;
   passwordMatchStatus: boolean = false;
 
+  activatedForm: string = "regform";
   usernameErrorMsg: string = "";
-  emailErrorMsg: string = ""
+  emailErrorMsg: string = "";
+  message: string = "";
+  passwordErrorMsg: string = "";
+
   passwordField: HTMLInputElement;
 
   breakLineStatus: boolean = false;
-  message: string = "";
+  invalidPassword: boolean = false;
+  invalidEmail: boolean = false;
 
-  constructor(private formBuilder: FormBuilder, private connectorService: BackendConnector, 
-    private router: Router, public session: SessionStorageService) {
+  // variables used in 'Value' property of input textfields
+  emailFieldInputValue: string = "";
+  passwordFieldInputValue: string = "";
+
+  constructor(private formBuilder: FormBuilder, private connectorService: BackendConnector,
+    private router: Router, public session: SessionStorageService,
+    private loginService: LoginStatusService) {
 
     // calculate years and store it in array
     for (var i = this.minimumYear; i < this.currentYear; i++) {
@@ -62,7 +78,43 @@ export class RegisterComponent implements OnInit {
     });
   } //---- Constructor Ends --------------------------------------
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.loginSubscription = this.loginService.updateActivatedForm.subscribe(
+      (getActivatedForm: string) => {
+        this.activatedForm = getActivatedForm;
+        this.message = "";
+        // check error type and set error message ---------------------------------
+        if (this.loginService.getSigninErrorStatus() == "invalidEmail") {
+          this.invalidEmail = true; this.invalidPassword = false;
+          this.emailErrorMsg = "invalid email/username";
+        }
+        else if (this.loginService.getSigninErrorStatus() == "invalidPassword") {
+          this.invalidPassword = true; this.invalidEmail = false;
+          this.passwordErrorMsg = "invalid password";
+        }
+        else if (this.loginService.getSigninErrorStatus() == "bothInvalid") {
+          this.invalidPassword = true; this.invalidEmail = true;
+          this.emailErrorMsg = "invalid email/username";
+          this.passwordErrorMsg = "invalid password";
+        }
+        else if (this.loginService.getSigninErrorStatus() == "incorrectData") {
+          this.invalidPassword = this.invalidEmail = false;
+          this.message = "incorrect email/username or password";
+        }
+      }
+    );
+
+    // initialize form inputFields values and Validators
+    this.signinForm = this.formBuilder.group({
+      username_email: [this.loginService.getUserEmail(), [Validators.required]],
+      password: [this.loginService.getUserPassword(), Validators.required]
+    });
+    // ----------------------------------------------------------------------
+
+    // store username/email and password to show them in input textFields
+    this.emailFieldInputValue = this.loginService.getUserEmail();
+    this.passwordFieldInputValue = this.loginService.getUserPassword();
+  }
 
   onSignUp() {
     // Gender Validation (If gender option is not selected by default)
@@ -108,6 +160,33 @@ export class RegisterComponent implements OnInit {
           this.removeMsg();
         }
       });
+  }
+
+  onLogin() {
+    // get and store input fields data
+    const email_username = this.signinForm.value.username_email;
+    const password = this.signinForm.value.password;
+
+    if (email_username != "" || password != "") { // if required fields are filled
+
+      this.connectorService.signInRequest({ 'emailORusername': email_username, 'password': password }).then(
+        (signInStatusResponse: any) => {
+          if (!signInStatusResponse.status) { // if response has 'false' in it, then signIn failed
+            this.loginService.setSigninErrorStatus("bothInvalid");
+            this.message = "incorrect email/password";
+          }
+          else {
+            this.loginService.setSigninErrorStatus("");
+            this.loginService.userLoggedIn(); // update LoggedIn status
+            this.loginService.deActivateLoginForm(); // deActivate loginForm in headers
+            this.session.set("email", email_username); // store user data in session service
+            this.session.set("authUserId", signInStatusResponse.data.user_id);
+            this.loginService.setNextRouteName("landingpage/home");
+            this.router.navigate(['landingpage/home']);
+          }
+        }
+      );
+    }
   }
 
   // ****************** SignUp Form Validation Function **********************************
@@ -213,7 +292,17 @@ export class RegisterComponent implements OnInit {
     }
   } // *** Function Ends ***
 
+  resetErrorValidations() {
+    this.invalidEmail = false;
+    this.invalidPassword = false;
+    this.loginService.setSigninErrorStatus("");
+  }
+
   removeMsg() {
     setTimeout(() => { this.message = ""; }, 1500);
+  }
+
+  ngOnDestroy(){
+    this.loginSubscription.unsubscribe();
   }
 }// *** Class Ends ***

@@ -1,11 +1,10 @@
-import { SharedDataService } from './../services/shareddata.service';
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
-import { LoginStatusService } from '../services/loginstatus.service';
-import { BackendConnector } from '../services/backendconnector.service';
+import { LoginStatusService } from '../../services/loginstatus.service';
+import { BackendConnector } from '../../services/backendconnector.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
-import { ChatService } from '../services/chat.service';
+import { SocketService } from '../../services/socket.service';
 import { SessionStorageService } from 'angular-web-storage';
 
 @Component({
@@ -21,10 +20,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   postingFormGroup: FormGroup;
 
-  totalPostsToLoad: number = 0;
   createpost: any;
   previousPosts= [];
-  nextPosts = [];
   maxPostsId = 0;
   userActionStatus: string = '';
 
@@ -40,22 +37,21 @@ export class HomeComponent implements OnInit, OnDestroy {
   isPostdisLiked: boolean = false;
   isProfileFound: boolean = false;
   isPostFound: boolean = false;
+  anyPostShowd
  
   userId: number = 0;
-  index: number = 0;
   imageSrc: string = "";
   commentValue: string = '';
   replyValue: string = '';
   currentReplyId: number = 0;
   previousReplyId: number = 0;
-  show: boolean = false;
-  clearView: boolean = false;
+  showPost: boolean = false;
   commentReplyStatus: boolean = false;
   replyCommentStatus: boolean = false;
   selectedUploadFile: File = null;
 
   constructor(private route: Router, private loginService: LoginStatusService, public session: SessionStorageService,
-    private backendService: BackendConnector, private formbuilder: FormBuilder, private chatService: ChatService) {
+    private backendService: BackendConnector, private formbuilder: FormBuilder, private chatService: SocketService) {
     }
 
   ngOnInit() {
@@ -68,18 +64,17 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.getPostSubscription = this.chatService.getPost().subscribe(
       (newpost: any) => { 
-        
         if (this.userActionStatus == 'loadmore' && newpost.currentUser_Id == this.session.get('authUserId')){
           this.createpost = this.previousPosts.concat(newpost.posts.data);
           this.previousPosts = this.previousPosts.concat(newpost.posts.data);
         }
         else{ 
-          //***********recheck needed */
+          //*********** recheck needed */
+          
           if (newpost.currentUser_Id == this.session.get('authUserId')){
             this.createpost = newpost.posts.data;
             this.previousPosts = newpost.posts.data;
           }
-        
         }
 
         this.createlike = newpost.postlikes;
@@ -202,10 +197,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   resetShow() {
-    this.show = false;
+    this.showPost = false;
   }
   check() {
-    this.show = true;
+    this.showPost = true;
   }
 
   MainComment(event, postId: number, textArea: HTMLInputElement) {

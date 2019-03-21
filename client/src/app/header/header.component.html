@@ -17,10 +17,8 @@
 
                 <ng-template #noPicFound>
                     <span *ngIf="p == (usersProfilePic.length- 1) && !isProfilePicFound">
-                        <!-- <span *ngIf="userPics.picFile == null || userPics.picFile == ''"> -->
                         <img src="/assets/pics/noProfile.png" class="dropdown-toggle dropDownOveride"
                             style="margin-top: 6px; width: 50px; height: 50px;">
-                        <!-- </span> -->
                     </span>
 
                 </ng-template>
@@ -29,7 +27,7 @@
 
             <div class="dropdown-menu dropDownMenuOveride">
                 <a class="dropdown-item dropdownItemOveride" style="cursor: pointer"
-                    (click)="goToRoute('landingpage/timeline')" routerLink="landingpage/timeline">MyProfile</a>
+                    (click)="setRoute('landingpage/timeline')" routerLink="landingpage/timeline">MyProfile</a>
                 <hr>
                 <span class="showDropButton">
                     <a class="dropdown-item dropdownItemOveride" style="cursor: pointer">NewsFeed</a>
@@ -246,7 +244,7 @@
     </div>
     <!-- If loginForm is visible then show singIn button on small screens -->
     <div *ngIf="showLoginForm" class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-3 ">
-        <button class="btn btn-success displayMe" routerLink="/signin" style="cursor: pointer;"> Signin
+        <button class="btn btn-success displayMe" (click)="LoadSignIn()" style="cursor: pointer;"> Signin
         </button>
     </div>
 

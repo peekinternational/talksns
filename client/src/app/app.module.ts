@@ -1,45 +1,30 @@
 // ********** MODULES ****************************************
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes} from '@angular/router';
 import { FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { HttpModule } from "@angular/http";
 import { HttpClientModule} from "@angular/common/http";
 
 // ********** SERVICES **************************************
-import { ChatService } from './services/chat.service';
+import { SocketService } from './services/socket.service';
 import { AngularWebStorageModule } from 'angular-web-storage';
 // ********** COMPONENT *************************************
 import { AppComponent } from './app.component';
 import { RegisterComponent } from './register/register.component';
-import { SigninComponent } from './signin/signin.component';
-//import { HomeComponent } from './home/home.component';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import { BackendConnector } from './services/backendconnector.service';
 import { LoginStatusService } from './services/loginstatus.service';
 import { AuthGuardService } from './services/authguard.service';
 import { DeactivateGuardService } from './services/deactivateguard.service';
-//import { ReversePipe } from './shared/reverse.pipe';
-//import { ClearspaceDirective } from './shared/clearspace.directive';
-//import { TimelineComponent } from './landingpage/timeline/timeline.component';
-//import { LandingpageComponent } from './landingpage/landingpage.component';
-//import { DropdownDirective } from './shared/dropdown.directive';
 import { AppRoutingModule } from './app-routing.module';
-import { CreatepageComponent } from './createpage/createpage.component';
-import { SharedDataService } from './services/shareddata.service';
-
-
-//const appRoutes : Routes = []
 
 @NgModule({
   declarations: [
     AppComponent,
     RegisterComponent,
-    SigninComponent,
     HeaderComponent,
-    FooterComponent,
-    CreatepageComponent
+    FooterComponent
   ],
   imports: [
     BrowserModule,
@@ -49,8 +34,7 @@ import { SharedDataService } from './services/shareddata.service';
     HttpModule, HttpClientModule,
     AppRoutingModule
   ],
-  providers: [BackendConnector, LoginStatusService, AuthGuardService, DeactivateGuardService, 
-              ChatService, SharedDataService],
+  providers: [BackendConnector, LoginStatusService, AuthGuardService, DeactivateGuardService, SocketService],
   bootstrap: [AppComponent],
 
   exports: []

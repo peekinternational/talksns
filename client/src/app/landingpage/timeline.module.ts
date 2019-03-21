@@ -10,7 +10,7 @@ import { ReversePipe } from '../shared/reverse.pipe';
 import { ClearspaceDirective } from '../shared/clearspace.directive';
 import { DropdownDirective } from '../shared/dropdown.directive';
 
-import { HomeComponent } from '../home/home.component';
+import { HomeComponent } from './home/home.component';
 import { LandingpageComponent } from '../landingpage/landingpage.component';
 import { TimelineComponent } from '../landingpage/timeline/timeline.component';
 
