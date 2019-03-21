@@ -225,6 +225,23 @@
 																	</ng-template>
 																</span>
 
+																<span *ngIf="createlike.length == 0">
+																	<li>
+																		<span title="like">
+																			<i class="fa fa-thumbs-up"
+																				style="cursor: pointer"
+																				(click)="onPostLike(postIdField.value, like?.likes)"></i>
+																		</span>
+																	</li>
+																	<li>
+																		<span title="dislike">
+																			<i class="fa fa-thumbs-down"
+																				style="cursor: pointer"
+																				(click)="onPostdisLike(postIdField.value, like?.dislikes)"></i>
+																		</span>
+																	</li>
+																</span>
+
 																<li class="">
 																	<div class="">
 																		<div class="btn trigger"><i

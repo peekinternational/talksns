@@ -92,7 +92,7 @@ export class BackendConnector {
     public setLike(isLiked: boolean, isDisliked: boolean, postId: number, maxPostId: number) {
         const postLikeData = { 'userId': this.session.get('authUserId'), 'postId': postId, 'isLiked': isLiked, 'isDisliked': isDisliked, 'maxPostId': maxPostId, "status": 'likes' }
 
-        return this.http.post("http://localhost:8000/api/postLikeDislike", postLikeData).subscribe(
+        return this.http.post("http://localhost:8000/api/postlikedislike", postLikeData).subscribe(
             (response: any) => {
                 this.chatService.sendPost(response);
             }

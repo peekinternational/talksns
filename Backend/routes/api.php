@@ -20,7 +20,7 @@ Route::post("/signin", "FrontendConnectorController@signIn");
 //------------------- POSTS ----------------------------------------------
 Route::post("/uploadpost", "FrontendConnectorController@uploadPost");
 Route::post("/retrievepost", "FrontendConnectorController@retrievePost");
-Route::post("/postlike", "FrontendConnectorController@postLikeDislike");
+Route::post("/postlikedislike", "FrontendConnectorController@postLikeDislike");
 Route::post("/comment", "FrontendConnectorController@comments");
 Route::post("/reply", "FrontendConnectorController@replies");
 //------------------------------------------------------------------------
