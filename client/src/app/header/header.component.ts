@@ -32,7 +32,7 @@ export class HeaderComponent implements OnInit {
 
   constructor(private connectorService: BackendConnector, private loginService: LoginStatusService,
     private formBuilder: FormBuilder, private router: Router, public session: SessionStorageService,
-    private chatService: SocketService) {
+    private socketService: SocketService) {
 
     //Initialize formGroup with initial values and validators
     this.signinForm = this.formBuilder.group({
@@ -68,15 +68,17 @@ export class HeaderComponent implements OnInit {
       }
     );
 
-    this.getPostSubscription = this.chatService.getPost().subscribe(
+    this.getPostSubscription = this.socketService.getPost().subscribe(
       (newpost: any) => {
         this.usersProfilePic = newpost.profilepics;
+       // console.log(newpost);
       });
 
-    this.addFriendSubscription = this.chatService.getRequest().subscribe(
+    this.addFriendSubscription = this.socketService.getRequest().subscribe(
       (friendsData: any) => {
         this.allFriendsRequest = friendsData.allFriendRequests;
         this.allUserdata = friendsData.allUserdata;
+      //  console.log(friendsData);
       });
 
     this.connectorService.getFriendRequestData();

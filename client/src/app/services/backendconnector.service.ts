@@ -7,11 +7,10 @@ import { SessionStorageService } from 'angular-web-storage';
 @Injectable()
 export class BackendConnector {
 
-    responseStatus: any;
-    quickLike = new Subject<any>();
+   // quickLike = new Subject<any>();
 
     constructor(private http: HttpClient, private session: SessionStorageService,
-        private chatService: SocketService) { }
+        private socketService: SocketService) { }
 
 
     // Connect and Send Registration Data to laravel-Backend function
@@ -19,8 +18,7 @@ export class BackendConnector {
         var promise = new Promise((resolve, reject) => {
             return this.http.post("http://localhost:8000/api/signup", signupData).subscribe(
                 (response: any) => {
-                    this.responseStatus = response;
-                    resolve(this.responseStatus);
+                    resolve(response);
                 }
             );
         });
@@ -32,8 +30,7 @@ export class BackendConnector {
         var promise = new Promise((resolve, reject) => {
             return this.http.post("http://localhost:8000/api/signin", signinData).subscribe(
                 (response: any) => {
-                    this.responseStatus = response;
-                    resolve(this.responseStatus);
+                    resolve(response);
                 }
             );
         });
@@ -66,7 +63,7 @@ export class BackendConnector {
 
         return this.http.post("http://localhost:8000/api/uploadpost", fd).subscribe(
             (response: any) => {
-                this.chatService.sendPost(response);
+                this.socketService.sendPost(response);
             }
         );
     }
@@ -84,17 +81,24 @@ export class BackendConnector {
 
         return this.http.post("http://localhost:8000/api/profilepic", fd).subscribe(
             (response: any) => {
-                this.chatService.sendPost(response);
+                this.socketService.sendPost(response);
             }
         );
     }
 
     public setLike(isLiked: boolean, isDisliked: boolean, postId: number, maxPostId: number) {
+       // console.log(this.session.get('authUserId'));
         const postLikeData = { 'userId': this.session.get('authUserId'), 'postId': postId, 'isLiked': isLiked, 'isDisliked': isDisliked, 'maxPostId': maxPostId, "status": 'likes' }
-
-        return this.http.post("http://localhost:8000/api/postlikedislike", postLikeData).subscribe(
+        return this.http.post("http://localhost:8000/api/setlike", postLikeData).subscribe(
             (response: any) => {
-                this.chatService.sendPost(response);
+               this.socketService.sendLikes(response);
+            }
+        );
+    }
+    public getLike(){
+        return this.http.get("http://localhost:8000/api/getlike").subscribe(
+            (response: any) => {
+               this.socketService.sendLikes(response);
             }
         );
     }
@@ -102,9 +106,16 @@ export class BackendConnector {
     public setComment(postId: number, comment: string, maxPostId: number) {
         const commentData = { 'userId': this.session.get('authUserId'), 'postId': postId, 'comment': comment, 'maxPostId': maxPostId, "status": 'comment' }
 
-        return this.http.post("http://localhost:8000/api/comment", commentData).subscribe(
+        return this.http.post("http://localhost:8000/api/setcomment", commentData).subscribe(
             (response: any) => {
-                this.chatService.sendPost(response);
+                this.socketService.sendComments(response);
+            }
+        );
+    }
+    public getComment() {
+        return this.http.get("http://localhost:8000/api/getcomment").subscribe(
+            (response: any) => {
+                this.socketService.sendComments(response);
             }
         );
     }
@@ -112,9 +123,16 @@ export class BackendConnector {
     public setReply(postId: number, commentId: number, commentReply: string, maxPostId: number) {
         const replyData = { 'userId': this.session.get('authUserId'), 'postId': postId, 'commentId': commentId, 'commentReply': commentReply, 'maxPostId': maxPostId, "status": 'reply' }
 
-        return this.http.post("http://localhost:8000/api/reply", replyData).subscribe(
+        return this.http.post("http://localhost:8000/api/setreply", replyData).subscribe(
             (response: any) => {
-                this.chatService.sendPost(response);
+                this.socketService.sendReplies(response);
+            }
+        );
+    }
+    public getReply() {
+        return this.http.get("http://localhost:8000/api/getreply").subscribe(
+            (response: any) => {
+                this.socketService.sendReplies(response);
             }
         );
     }
@@ -123,7 +141,7 @@ export class BackendConnector {
     public getPost(maxPostId: number) {
         return this.http.post("http://localhost:8000/api/retrievepost", { 'userId': this.session.get('authUserId'), 'maxPostId': maxPostId, "status": 'LoadMorePosts' }).subscribe(
             (response: any) => {
-                this.chatService.sendPost(response);
+                this.socketService.sendPost(response);
             }
         );
     }
@@ -131,7 +149,7 @@ export class BackendConnector {
     public getTimelinePost(maxPostId: number) {
         return this.http.post("http://localhost:8000/api/retrievepost", { 'userId': this.session.get('authUserId'), 'maxPostId': maxPostId, "status": 'timelinePost' }).subscribe(
             (response: any) => {
-                this.chatService.sendPost(response);
+                this.socketService.sendPost(response);
             }
         );
     }
@@ -158,9 +176,9 @@ export class BackendConnector {
         return promise;
     }
 
-    public setCurrentLike(currentPostLike: any) {
-        this.quickLike.next(currentPostLike);
-    }
+    // public setCurrentLike(currentPostLike: any) {
+    //     this.quickLike.next(currentPostLike);
+    // }
 
     // **********************************************************************************************************************************************
     // *************************** FRIEND REQUEST **************************************************************************************************
@@ -170,7 +188,7 @@ export class BackendConnector {
 
         return this.http.post("http://localhost:8000/api/setfriendrequest", friendRequestData).subscribe(
             (response: any) => {
-                this.chatService.sendFriendRequest(response);
+                this.socketService.sendFriendRequest(response);
             }
         );
     }
@@ -179,7 +197,7 @@ export class BackendConnector {
         const friendRequestData = { 'userId': this.session.get('authUserId'), 'senderId': senderId, 'requestStatus': requestStatus }
         return this.http.post("http://localhost:8000/api/friendrequestStatus", friendRequestData).subscribe(
             (response: any) => {
-                this.chatService.sendFriendRequest(response);
+                this.socketService.sendFriendRequest(response);
             }
         );
     }
@@ -188,7 +206,7 @@ export class BackendConnector {
         const unfriendRequestData = { 'userId': this.session.get('authUserId'), 'friendUserId': friendUserId, 'requestStatus': requestStatus }
         return this.http.post("http://localhost:8000/api/unfriendrequestStatus", unfriendRequestData).subscribe(
             (response: any) => {
-                this.chatService.sendFriendRequest(response);
+                this.socketService.sendFriendRequest(response);
             }
         );
     }
@@ -198,7 +216,7 @@ export class BackendConnector {
 
         return this.http.post("http://localhost:8000/api/getAddFriendData", friendRequestData).subscribe(
             (response: any) => {
-                this.chatService.sendFriendRequest(response);
+                this.socketService.sendFriendRequest(response);
             }
         );
     }

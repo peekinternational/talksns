@@ -1,621 +1,640 @@
 <body>
-	<div class="theme-layout">
-		<section>
-			<div class="gap2 gray-bg">
-				<div class="container-fluid">
-					<div class="row">
-						<div class="col-lg-12">
-							<div class="row merged20" id="page-contents" style="margin-top: 50px">
-								<div class="col-sm-3 col-lg-3 hideMeLeftPanel" style="position: fixed; left: 0">
-									<aside class="sidebar static left">
+  <div class="theme-layout">
+    <section>
+      <div class="gap2 gray-bg">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="row merged20" id="page-contents" style="margin-top: 50px">
+                <div class="col-sm-3 col-lg-3 hideMeLeftPanel" style="position: fixed; left: 0">
+                  <aside class="sidebar static left">
 
-										<div class="widget">
-											<h4 class="widget-title">Shortcuts</h4>
-											<ul class="naves">
-												<li>
-													<i class="ti-clipboard"></i>
-													<a href="newsfeed.html" title="">News feed</a>
-												</li>
-												<li>
-													<i class="ti-mouse-alt"></i>
-													<a href="inbox.html" title="">Inbox</a>
-												</li>
-												<li>
-													<i class="ti-files"></i>
-													<a href="fav-page.html" title="">My pages</a>
-												</li>
-												<li>
-													<i class="ti-user"></i>
-													<a href="timeline-friends.html" title="">Friends</a>
-												</li>
-												<li>
-													<i class="ti-image"></i>
-													<a href="timeline-photos.html" title="">Images</a>
-												</li>
-												<li>
-													<i class="ti-video-camera"></i>
-													<a href="timeline-videos.html" title="">Videos</a>
-												</li>
-												<li>
-													<i class="ti-comments-smiley"></i>
-													<a href="messages.html" title="">Messages</a>
-												</li>
-												<li>
-													<i class="ti-bell"></i>
-													<a href="notifications.html" title="">Notifications</a>
-												</li>
-											</ul>
-										</div><!-- Shortcuts -->
-									</aside>
-								</div><!-- sidebar -->
+                    <div class="widget">
+                      <!-- <h4 class="widget-title">Shortcuts</h4> -->
+                      <ul class="naves">
+                        <li>
+                          <i class="fa fa-clipboard"></i>
+                          <a title="">My Profile</a>
+                        </li>
+                        <li>
+                          <i class="fa fa-envelope"></i>
+                          <a title="">Messages</a>
+                        </li>
+                        <li>
+                          <i class="fa fa-gear"></i>
+                          <a title="">Settings</a>
+                        </li>
+                        <li>
+                          <i class="fa fa-image"></i>
+                          <a title="">Albums</a>
+                        </li>
+                        <li>
+                          <i class="fa fa-save"></i>
+                          <a title="">Saved Posts</a>
+                        </li>
+                        <li>
+                          <i class="fa fa-users"></i>
+                          <a title="">My Groups</a>
+                        </li>
+                        <li>
+                          <i class="fa fa-file"></i>
+                          <a title="">My Pages</a>
+                        </li>
+                        <li>
+                          <i class="fa fa-rss-square"></i>
+                          <a title="">Blog</a>
+                        </li>
+                        <li>
+                          <i class="fa fa-adn"></i>
+                          <a title="">My Articles</a>
+                        </li>
+                      </ul>
+                    </div><!-- Shortcuts -->
+                  </aside>
+                </div><!-- sidebar -->
 
-								<!-- ******************* CREATE POST ********************************* -->
-								<div class="col-sm-6 col-lg-6 expandMiddleContent setMiddleContentToRight setMidleContentMaxWidth setMidleContentMinWidth"
-									style="margin: 0 auto">
-									<div class="central-meta">
-										<div class="new-postbox">
-											<span *ngIf="ProfilePicNotFound() "> </span>
-											<span *ngFor="let pic of profilePics; let p = index">
-												<span class="comet-avatar"
-													*ngIf="this.session.get('authUserId') == pic.user_id; else picNotFound1">
-													<span *ngIf="ProfilePicFound()"> </span>
-													<img [src]="pic.picFile" alt="" style=" width: 11%"
-														class="createImageCircle">
-												</span>
-												<ng-template #picNotFound1>
-													<span *ngIf="!isProfileFound && p == (profilePics.length-1)">
-														<img src="/assets/pics/noProfile.png" alt="" style=" width: 11%"
-															class="createImageCircle">
+                <!-- ******************* CREATE POST ********************************* -->
+                <div
+                  class="col-sm-6 col-lg-6 expandMiddleContent setMiddleContentToRight setMidleContentMaxWidth setMidleContentMinWidth"
+                  style="margin: 0 auto">
+                  <div class="central-meta">
+                    <div class="new-postbox">
+                      <span *ngIf="ProfilePicNotFound() "> </span>
+                      <span *ngFor="let pic of profilePics; let p = index">
+                        <span class="comet-avatar"
+                          *ngIf="this.session.get('authUserId') == pic.user_id; else picNotFound1">
+                          <span *ngIf="ProfilePicFound()"> </span>
+                          <img [src]="pic.picFile" alt="" style=" width: 11%" class="createImageCircle">
+                        </span>
+                        <ng-template #picNotFound1>
+                          <span *ngIf="!isProfileFound && p == (profilePics.length-1)">
+                            <img src="/assets/pics/noProfile.png" alt="" style=" width: 11%" class="createImageCircle">
 
-													</span>
-												</ng-template>
-											</span>
+                          </span>
+                        </ng-template>
+                      </span>
 
-											<div class="newpst-input">
-												<form [formGroup]="postingFormGroup">
-													<textarea class="postTextarea" rows="2"
-														placeholder="write something" formControlName="desc" name="desc"
-														#desc></textarea>
+                      <div class="newpst-input">
+                        <form [formGroup]="postingFormGroup">
+                          <textarea class="postTextarea" rows="2" placeholder="write something" formControlName="desc"
+                            name="desc" #desc></textarea>
 
-													<img class="img-responsive" [src]="imageSrc">
+                          <img class="img-responsive" [src]="imageSrc">
 
-													<div class="attachments">
-														<ul>
-															<li>
-																<input id="upload" name="upload" type="file"
-																	class="btn btn-secondary" style="display: none;"
-																	(change)="onImageUpload($event)" #uploadedImage>
-																<label for="upload"
-																	style="vertical-align: top; background: lightgray; padding: 1px 11px;"
-																	class="btn btn-default">Upload</label>
-															</li>
-															<li>
-																<button class="btn btn-primary" name="submit"
-																	type="button"
-																	(click)="addMyPost(desc.value, imageSrc)">Post</button>
-															</li>
-														</ul>
-													</div>
-												</form>
-											</div>
-										</div>
-									</div><!-- add post new box -->
+                          <div class="attachments">
+                            <ul>
+                              <li>
+                                <input id="upload" name="upload" type="file" class="btn btn-secondary"
+                                  style="display: none;" (change)="onImageUpload($event)" #uploadedImage>
+                                <label for="upload"
+                                  style="vertical-align: top; background: lightgray; padding: 1px 11px;"
+                                  class="btn btn-default">Upload</label>
+                              </li>
+                              <li>
+                                <button class="btn btn-primary" name="submit" type="button"
+                                  (click)="addMyPost(desc.value, imageSrc)">Post</button>
+                              </li>
+                            </ul>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div><!-- add post new box -->
 
-									<!-- **************** POSTS ******************************** -->
-									<div class="loadMore">
-										<span *ngFor="let posts of createpost; let i = index">
-											<span *ngIf="resetShow()"></span>
-											<span *ngIf="friendsPostNotFound()"></span>
+                  <!-- **************** POSTS ******************************** -->
 
-											<span *ngIf="allFriendsRequest.length == 0 && createpost.length > 0">
-												<span
-													*ngIf="posts.user_id != this.session.get('authUserId'); else posts">
-												</span>
-											</span>
+                  <div class="loadMore">
+                    <span *ngFor="let posts of createpost; let i = index; trackBy: trackByFn">
+                      <!-- <span *ngIf="resetShow()"></span> -->
+                      <span *ngIf="friendsPostNotFound()"></span>
 
-											<span *ngFor="let friend of allFriendsRequest">
-												<span class="user-post central-meta item"
-													*ngIf="(((this.session.get('authUserId') == friend.sender_id && 
-												createpost[i].user_id == friend.receiver_id && friend.requeststatus == 'accept') || (this.session.get('authUserId') == friend.receiver_id && createpost[i].user_id == friend.sender_id && 
-												friend.requeststatus == 'accept')) || (this.session.get('authUserId') == createpost[i].user_id)) && !isPostFound">
-													<span *ngIf="friendsPostFound()"></span>
-													<span *ngIf="false; else posts"> </span>
-												</span> <!-- userPost class ends -->
-											</span> <!-- ngFor_FriendsRequest ends -->
+                      <span *ngIf="allFriendsRequest.length == 0 && createpost.length > 0">
+                        <span *ngIf="posts.user_id != this.session.get('authUserId'); else posts">
+                        </span>
+                      </span>
 
-											<ng-template #posts>
-												<span class="friend-info">
-													<figure>
-														<!-- <span *ngFor="let pic of profilePics; let j = index"> -->
-														<span *ngIf="createpost[i].postUserpic != ''">
-															<img [src]="createpost[i].postUserpic" alt=""
-																class="createImageCircle">
-														</span>
-														<span *ngIf="createpost[i].postUserpic == ''">
-															<img src="/assets/pics/noProfile.png" alt=""
-																class="createImageCircle">
-														</span>
-														<!-- </span> -->
-													</figure>
+                      <span *ngFor="let friend of allFriendsRequest">
+                        <span class="user-post central-meta item"
+                          *ngIf="(((this.session.get('authUserId') == friend.sender_id && 
+													createpost[i].user_id == friend.receiver_id && friend.requeststatus == 'accept') || (this.session.get('authUserId') == friend.receiver_id && createpost[i].user_id == friend.sender_id && 
+													friend.requeststatus == 'accept')) || (this.session.get('authUserId') == createpost[i].user_id)) && !isPostFound">
+                          <span *ngIf="friendsPostFound()"></span>
+                          <span *ngIf="false; else posts"> </span>
+                        </span> <!-- userPost class ends -->
+                      </span> <!-- ngFor_FriendsRequest ends -->
 
-													<div class="friend-name">
-														<ins>
-															<a href="time-line.html" title="">
-																{{ createpost[i].username }}
-															</a>
+                      <ng-template #posts>
+                        <span class="friend-info">
+                          <figure>
+                            <span *ngIf="createpost[i].postUserpic != ''">
+                              <img [src]="createpost[i].postUserpic" alt="" class="createImageCircle">
+                            </span>
+                            <span *ngIf="createpost[i].postUserpic == ''">
+                              <img src="/assets/pics/noProfile.png" alt="" class="createImageCircle">
+                            </span>
+                          </figure>
 
-														</ins>
-														<span>published: june,2 2018 19:PM</span>
-													</div>
-													<div class="post-meta">
-														<div class="description">
-															<p class="">
-																{{createpost[i].description}}
-															</p>
-														</div>
+                          <div class="friend-name">
+                            <ins>
+                              <a href="time-line.html" title="">
+                                {{ createpost[i].username }}
+                              </a>
 
-														<img class="resize"
-															*ngIf="createpost[i].imageFile != null || createpost[i].imageFile != ''"
-															[src]="createpost[i]?.imageFile" alt="">
+                            </ins>
+                            <span>published: june,2 2018 19:PM</span>
+                          </div>
+                          <div class="post-meta">
+                            <div class="description">
+                              <p class="">
+                                {{createpost[i].description}}
+                              </p>
+                            </div>
 
-														<input type="hidden" [value]="createpost[i].post_id"
-															#postIdField>
-														<div class="we-video-info">
-															<ul>
-																<li>
-																	<span title="views">
-																		<i class="fa fa-eye" for=""></i>
-																		<ins>1.2k</ins>
-																	</span>
-																</li>
+                            <img class="resize" *ngIf="createpost[i].imageFile != null || createpost[i].imageFile != ''"
+                              [src]="createpost[i]?.imageFile" alt="">
 
-																<li>
-																	<span title="comments">
-																		<i class="fa fa-comments"
-																			style="cursor:pointer"></i>
-																		<ins
-																			*ngIf="createpost[i].totalcomments > 0">{{createpost[i].totalcomments + createpost[i].totalreplies}}</ins>
-																	</span>
-																</li>
+                            <input type="hidden" [value]="createpost[i].post_id" #postIdField>
+                            <div class="we-video-info">
 
-																<span *ngFor="let like of createlike ; let j = index">
-																	<span
-																		*ngIf="like.user_id == userId && like.post_id == createpost[i].post_id ; else notLiked">
-																		<span *ngIf="check()"></span>
-																		<li>
-																			<span title="like">
-																				<i class="fa fa-thumbs-up"
-																					style="cursor: pointer"
-																					(click)="onPostLike(postIdField.value, like?.likes)"
-																					[ngStyle]="{color: like?.likes==1 ? 'green' : ''}"></i>
-																				<ins>{{createpost[i].totalLiked}}</ins>
-																			</span>
-																		</li>
-																		<li>
-																			<span title="dislike">
-																				<i class="fa fa-thumbs-down"
-																					style="cursor: pointer"
-																					(click)="onPostdisLike(postIdField.value, like?.dislikes)"
-																					[ngStyle]="{color: like?.dislikes==1 ? 'green' : ''}"></i>
-																				<ins>{{createpost[i].totaldisLiked}}</ins>
-																			</span>
-																		</li>
-																	</span>
+                              <ul>
 
-																	<ng-template #notLiked>
-																		<span
-																			*ngIf="this.showPost==false && j==(createlike.length-1)">
-																			<li>
-																				<span title="like">
-																					<i class="fa fa-thumbs-up"
-																						style="cursor: pointer"
-																						(click)="onPostLike(postIdField.value, like?.likes)"></i>
-																					<ins>{{createpost[i].totalLiked}}</ins>
-																				</span>
-																			</li>
-																			<li>
-																				<span title="dislike">
-																					<i class="fa fa-thumbs-down"
-																						style="cursor: pointer"
-																						(click)="onPostdisLike(postIdField.value, like?.dislikes)"></i>
-																					<ins>{{createpost[i].totaldisLiked}}</ins>
-																				</span>
-																			</li>
-																		</span>
-																	</ng-template>
-																</span>
+                                <span *ngIf="commentNotFound()"></span>
+                                <span *ngFor="let comments of totalComments ; let c = index">
+                                  <span *ngIf="replyNotFound()"></span>
+                                  <span *ngIf="comments.post_id == createpost[i].post_id ; else notCommented">
+                                    <span *ngIf="commentFound()"></span>
 
-																<span *ngIf="createlike.length == 0">
-																	<li>
-																		<span title="like">
-																			<i class="fa fa-thumbs-up"
-																				style="cursor: pointer"
-																				(click)="onPostLike(postIdField.value, like?.likes)"></i>
-																		</span>
-																	</li>
-																	<li>
-																		<span title="dislike">
-																			<i class="fa fa-thumbs-down"
-																				style="cursor: pointer"
-																				(click)="onPostdisLike(postIdField.value, like?.dislikes)"></i>
-																		</span>
-																	</li>
-																</span>
+                                    <span *ngFor="let reply of totalReplies ; let r = index">
+                                      <span *ngIf="reply.post_id == createpost[i].post_id; else showOnlyTotalComments">
+                                        <span *ngIf="replyFound()"></span>
+                                        <li>
+                                          <span title="comments">
+                                            <i class="fa fa-comments"></i>
+                                            <ins>{{comments.totalComments + reply.totalReplies}}</ins>
+                                          </span>
+                                        </li>
+                                      </span>
+                                      <ng-template #showOnlyTotalComments>
+                                        <span *ngIf="!this.isReplyFound && r==(totalReplies.length-1)">
+                                          <li>
+                                            <span title="comments">
+                                              <i class="fa fa-comments"></i>
+                                              <ins>{{comments.totalComments}}</ins>
+                                            </span>
+                                          </li>
+                                        </span>
+                                      </ng-template>
+                                    </span>
 
-																<li class="">
-																	<div class="">
-																		<div class="btn trigger"><i
-																				class="fa fa-share-alt"></i></div>
-																	</div>
-																</li>
-															</ul>
-															<br>
+                                  </span>
 
-															<div class="post-comment">
-
-																<div class="post-comt-box">
-																	<span>
-																		<span *ngIf="ProfilePicNotFound() "> </span>
-																		<span
-																			*ngFor="let pic of profilePics; let p = index">
-																			<span class="comet-avatar"
-																				*ngIf="this.session.get('authUserId') == pic.user_id; else picNotFound2">
-																				<span *ngIf="ProfilePicFound()"> </span>
-																				<img [src]="pic.picFile" alt=""
-																					style=" width: 15%; float: left"
-																					class="createImageCircle">
-																			</span>
-																			<ng-template #picNotFound2>
-																				<span
-																					*ngIf="!isProfileFound && p == (profilePics.length-1)">
-																					<img src="/assets/pics/noProfile.png"
-																						alt=""
-																						style=" width: 15%; float: left"
-																						class="createImageCircle">
-
-																				</span>
-																			</ng-template>
-																		</span>
-
-																		<textarea class="commentTextarea"
-																			[(ngModel)]="commentValue"
-																			(keydown.enter)="MainComment($event, createpost[i].post_id, mainComment);false"
-																			placeholder="Post your comment"
-																			#mainComment></textarea>
-																	</span>
-
-																	<span class=""
-																		*ngFor="let comment of createcomments">
-																		<ul class="we-comet"
-																			*ngIf="comment.post_id == createpost[i].post_id">
-																			<li>
-																				<!-- <div class="comet-avatar"> <img src="/assets/pics/noProfile.png" alt=""> </div> -->
-
-																				<div class="we-comment">
-																					<div class="coment-head">
-
-																						<!-- Commented User Profile Pic set  -->
-																						<span
-																							*ngIf="ProfilePicNotFound() ">
-																						</span>
-
-																						<span
-																							*ngFor="let pic of profilePics; let p = index">
-																							<span class="comet-avatar"
-																								*ngIf="comment.user_id == pic.user_id; else picNotFound">
-																								<span
-																									*ngIf="ProfilePicFound()">
-																								</span>
-																								<img [src]="pic.picFile"
-																									alt=""
-																									style=" width: 15px"
-																									class="createImageCircle">
-																							</span>
-																							<ng-template #picNotFound>
-																								<span
-																									*ngIf="!isProfileFound && p == (profilePics.length-1)">
-																									<img src="/assets/pics/noProfile.png"
-																										alt=""
-																										style=" width: 15px"
-																										class="createImageCircle">
-
-																								</span>
-																							</ng-template>
-																						</span>
-
-																						<h5
-																							*ngFor="let names of usernames">
-																							<a href="" title=""
-																								*ngIf="comment.user_id==names.user_id">
-																								{{ names.username }}
-																							</a>
-																						</h5>
-																						<!-- <span>1 year ago</span> -->
-																						<a class="we-reply"
-																							style="cursor:pointer"
-																							(click)="showCommentReply(comment.comment_id)"
-																							title="Reply"><i
-																								class="fa fa-reply"></i></a>
-																					</div>
-																					<p> {{ comment.description }} </p>
-																				</div>
-																			</li>
-																			<li
-																				*ngIf="commentReplyStatus && comment.post_id == createpost[i].post_id && comment.comment_id == currentReplyId">
-																				<div style="margin-top: 9px">
-																					<span>
-																						<span
-																							*ngIf="ProfilePicNotFound() ">
-																						</span>
-																						<span
-																							*ngFor="let pic of profilePics; let p = index">
-																							<span class="comet-avatar"
-																								*ngIf="this.session.get('authUserId') == pic.user_id; else picNotFound3">
-																								<span
-																									*ngIf="ProfilePicFound()">
-																								</span>
-																								<img [src]="pic.picFile"
-																									alt=""
-																									style=" width: 15%; float: left"
-																									class="createImageCircle">
-																							</span>
-																							<ng-template #picNotFound3>
-																								<span
-																									*ngIf="!isProfileFound && p == (profilePics.length-1)">
-																									<img src="/assets/pics/noProfile.png"
-																										alt=""
-																										style=" width: 15%; float: left"
-																										class="createImageCircle">
-
-																								</span>
-																							</ng-template>
-																						</span>
+                                  <ng-template #notCommented>
+                                    <span *ngIf="!this.isCommentFound && c==(totalComments.length-1)">
+                                      <li>
+                                        <span title="comments">
+                                          <i class="fa fa-comments"></i>
+                                          <ins>0</ins>
+                                        </span>
+                                      </li>
+                                    </span>
+                                  </ng-template>
+                                </span>
 
 
-																						<textarea class="replyComment"
-																							style="vertical-align: middle"
-																							[(ngModel)]="replyValue"
-																							(keydown.enter)="ReplyComment($event, createpost[i].post_id, comment.comment_id, commentReply);false"
-																							placeholder="Post your comment"
-																							#commentReply></textarea>
-																					</span>
-
-																					<!-- <div class="post-comt-box">
-																								
-																							</div> -->
-																				</div>
-																			</li>
-
-																			<!-----------------  SHOW INLINE COMMENTS ---------------------------------------------------->
-																			<li>
-
-																				<span class=""
-																					*ngFor="let reply of createreplies">
-																					<ul class="we-comet"
-																						*ngIf="reply.post_id == createpost[i].post_id && reply.comment_id == comment.comment_id">
-																						<li>
-																							<div
-																								class="we-reply-comment">
-																								<div
-																									class="coment-head">
-
-																									<!-- Replied User Profile Pic set  -->
-																									<span
-																										*ngIf="ProfilePicNotFound() ">
-																									</span>
-
-																									<span
-																										*ngFor="let pic of profilePics; let pr = index">
-																										<span
-																											class="comet-avatar"
-																											*ngIf="reply.user_id == pic.user_id; else replypicNotFound">
-																											<span
-																												*ngIf="ProfilePicFound()">
-																											</span>
-																											<img [src]="pic.picFile"
-																												alt=""
-																												style=" width: 15px"
-																												class="createImageCircle">
-																										</span>
-																										<ng-template
-																											#replypicNotFound>
-																											<span
-																												*ngIf="!isProfileFound && pr == (profilePics.length-1)">
-																												<img src="/assets/pics/noProfile.png"
-																													alt=""
-																													style=" width: 15px"
-																													class="createImageCircle">
-																											</span>
-																										</ng-template>
-																									</span>
-
-																									<h5
-																										*ngFor="let names of usernames">
-																										<a href=""
-																											title=""
-																											*ngIf="reply.user_id==names.user_id">
-																											{{ names.username }}
-																										</a>
-																									</h5>
-																									<!-- <span>1 year ago</span> -->
-
-																									<a class="we-reply"
-																										style="cursor:pointer"
-																										(click)="showReplyComment(reply.user_id, reply.reply_id)"
-																										title="Reply"><i
-																											class="fa fa-reply"></i></a>
-																								</div>
-																								<p> {{ reply.replydescription }}
-																								</p>
-																							</div>
-																						</li>
-
-																						<li
-																							*ngIf="replyCommentStatus && reply.post_id == createpost[i].post_id && reply.comment_id == comment.comment_id && reply.reply_id == currentReplyId">
-																							<div
-																								style="margin-top: 9px">
-																								<span>
-																									<span
-																										*ngIf="ProfilePicNotFound() ">
-																									</span>
-																									<span
-																										*ngFor="let pic of profilePics; let p = index">
-																										<span
-																											class="comet-avatar"
-																											*ngIf="this.session.get('authUserId') == pic.user_id; else picNotFound4">
-																											<span
-																												*ngIf="ProfilePicFound()">
-																											</span>
-																											<img [src]="pic.picFile"
-																												alt=""
-																												style=" width: 15%; float: left"
-																												class="createImageCircle">
-																										</span>
-																										<ng-template
-																											#picNotFound4>
-																											<span
-																												*ngIf="!isProfileFound && p == (profilePics.length-1)">
-																												<img src="/assets/pics/noProfile.png"
-																													alt=""
-																													style=" width: 15%; float: left"
-																													class="createImageCircle">
-
-																											</span>
-																										</ng-template>
-																									</span>
-
-																									<textarea
-																										class="replyComment"
-																										style="vertical-align: middle"
-																										[(ngModel)]="replyValue"
-																										(keydown.enter)="ReplyComment($event, createpost[i].post_id, reply.comment_id, inlineCommentReply);false"
-																										placeholder="Post your comment"
-																										#inlineCommentReply></textarea>
-																								</span>
-
-																							</div>
-																						</li>
-																					</ul>
-																				</span>
-																			</li>
-
-																		</ul>
-
-																	</span> <!-- coment-area ends here -->
-																	<!-- </div>  -->
-																</div>
-
-															</div>
-
-														</div>
-
-													</div>
-												</span> <!-- friendInfo class ends -->
-
-												<span
-													*ngIf="i == (createpost.length-1) && createpost[(createpost.length-1)].post_id > 1">
-													<button class="btn btn-primary"
-														(click)="LoadMorePost(createpost[(createpost.length-1)].post_id)">
-														LoadMore </button>
-												</span>
-											</ng-template>
+                                <span *ngIf="totalComments.length == 0">
+                                  <li>
+                                    <span title="comments">
+                                      <i class="fa fa-comments"></i>
+                                      <ins>0</ins>
+                                    </span>
+                                  </li>
+                                </span>
 
 
-										</span> <!-- ngFor_CreatePost ends -->
-									</div>
+                                <!-- ************************************************************************************************* -->
+                                <span *ngIf="LikeNotFound()"></span>
+                                <span *ngIf="disLikeNotFound()"></span>
+                                <span *ngIf="totalLikednotFound()"></span>
+                                <span *ngIf="totaldisLikednotFound()"></span>
 
-								</div><!-- centerl meta -->
+                                <!-- <li> -->
+                                <span *ngFor="let like of createlike; let l = index">
 
-								<div class="col-sm-3 col-lg-3 hideMeRightPanel" style="position: fixed; right: 0">
-									<aside class="sidebar static right">
-										<div class="widget">
-											<h4 class="widget-title">Your page</h4>
-											<div class="your-page">
-												<figure>
-													<a href="#" title=""><img src="" alt=""></a>
-												</figure>
-												<div class="page-meta">
-													<a href="#" title="" class="underline">My page</a>
-													<span><i class="ti-comment"></i><a href="insight.html"
-															title="">Messages <em>9</em></a></span>
-													<span><i class="ti-bell"></i><a href="insight.html"
-															title="">Notifications
-															<em>2</em></a></span>
-												</div>
-												<div class="page-likes">
-													<ul class="nav nav-tabs likes-btn">
-														<li class="nav-item"><a class="active" href="#link1"
-																data-toggle="tab">likes</a></li>
-														<li class="nav-item"><a class="" href="#link2"
-																data-toggle="tab">views</a></li>
-													</ul>
-													<!-- Tab panes -->
-													<div class="tab-content">
-														<div class="tab-pane active fade show " id="link1">
-															<span><i class="ti-heart"></i>884</span>
-															<a href="#" title="weekly-likes">35 new likes this week</a>
-															<div class="users-thumb-list">
-																<a href="#" title="Anderw" data-toggle="tooltip">
-																	<img src="" alt="">
-																</a>
-																<a href="#" title="frank" data-toggle="tooltip">
-																	<img src="" alt="">
-																</a>
-																<a href="#" title="Sara" data-toggle="tooltip">
-																	<img src="" alt="">
-																</a>
-																<a href="#" title="Amy" data-toggle="tooltip">
-																	<img src="" alt="">
-																</a>
-																<a href="#" title="Ema" data-toggle="tooltip">
-																	<img src="" alt="">
-																</a>
-																<a href="#" title="Sophie" data-toggle="tooltip">
-																	<img src="" alt="">
-																</a>
-																<a href="#" title="Maria" data-toggle="tooltip">
-																	<img src="" alt="">
-																</a>
-															</div>
-														</div>
-														<div class="tab-pane fade" id="link2">
-															<span><i class="ti-eye"></i>440</span>
-															<a href="#" title="weekly-likes">440 new views this week</a>
-															<div class="users-thumb-list">
-																<a href="#" title="Anderw" data-toggle="tooltip">
-																	<img src="" alt="">
-																</a>
-																<a href="#" title="frank" data-toggle="tooltip">
-																	<img src="" alt="">
-																</a>
-																<a href="#" title="Sara" data-toggle="tooltip">
-																	<img src="" alt="">
-																</a>
-																<a href="#" title="Amy" data-toggle="tooltip">
-																	<img src="" alt="">
-																</a>
-																<a href="#" title="Ema" data-toggle="tooltip">
-																	<img src="" alt="">
-																</a>
-																<a href="#" title="Sophie" data-toggle="tooltip">
-																	<img src="" alt="">
-																</a>
-																<a href="#" title="Maria" data-toggle="tooltip">
-																	<img src="" alt="">
-																</a>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div><!-- page like widget -->
-									</aside>
-								</div><!-- sidebar -->
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-	</div>
+                                  <span title="like"
+                                    *ngIf="(like.user_id == userId) && (like.post_id == createpost[i].post_id); else notLiked">
+                                    <span *ngIf="LikeFound()"></span>
+                                    <!-- <li> -->
+                                    <i class="fa fa-thumbs-up" style="cursor: pointer"
+                                      (click)="onPostLike(postIdField.value, like?.likes)"
+                                      [ngStyle]="{color: like?.likes==1 ? 'green' : ''}"></i>
+                                    <!-- </li> -->
+                                  </span>
+
+                                  <ng-template #notLiked>
+                                    <span *ngIf="this.isLikeFound==false && l==(createlike.length-1)">
+                                      <!-- <li> -->
+                                      <span title="like">
+                                        <i class="fa fa-thumbs-up" style="cursor: pointer"
+                                          (click)="onPostLike(postIdField.value, 0)"></i>
+                                      </span>
+                                      <!-- </li> -->
+                                    </span>
+                                  </ng-template>
+                                </span>
+
+                                <span *ngIf="createlike.length != 0">
+                                  <span *ngFor="let like of postLikesDislikes; let tl = index">
+
+                                    <span *ngIf="!isTotalLikedFound && (like.post_id == createpost[i].post_id)">
+                                      <span *ngIf="totalLikedFound()"></span>
+                                      <li>
+                                        <span title="like">
+                                          <ins>{{like.totalLikes}}</ins>
+                                        </span>
+                                      </li>
+                                    </span>
+
+                                    <ng-template #totaLikesNotFound>
+                                      <span *ngIf="!isTotalLikedFound && tl==(createlike.length-1)">
+                                        <li>
+                                          <span title="like">
+                                            <ins>0</ins>
+                                          </span>
+                                        </li>
+                                      </span>
+
+                                    </ng-template>
+                                  </span>
+                                </span>
+                                <!-- </li> -->
+                                <!-- -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- -->
+                                <!-- <li> -->
+                                <span *ngFor="let like of createlike; let d = index">
+                                  <span title="dislike"
+                                    *ngIf=" (like.user_id == userId) && (like.post_id == createpost[i].post_id); else notdisLiked">
+                                    <span *ngIf="disLikeFound()"></span>
+                                    <!-- <li> -->
+                                    <i class="fa fa-thumbs-down" style="cursor: pointer"
+                                      (click)="onPostdisLike(postIdField.value, like?.dislikes)"
+                                      [ngStyle]="{color: like?.dislikes==1 ? 'green' : ''}"></i>
+                                    <!-- </li> -->
+                                  </span>
+
+                                  <ng-template #notdisLiked>
+                                    <span *ngIf="this.isdisLikeFound==false && d==(createlike.length-1)">
+                                      <!-- <li> -->
+                                      <span title="dislike">
+                                        <i class="fa fa-thumbs-down" style="cursor: pointer"
+                                          (click)="onPostdisLike(postIdField.value, 0)"></i>
+                                      </span>
+                                      <!-- </li> -->
+                                    </span>
+                                  </ng-template>
+                                </span>
+
+                                <span *ngIf="createlike.length != 0">
+                                  <span *ngFor="let like of postLikesDislikes; let td= index">
+                                    <span *ngIf="!isTotaldisLikedFound && (like.post_id == createpost[i].post_id)">
+                                      <span *ngIf="totaldisLikedFound()"></span>
+                                      <li>
+                                        <span title="dislike">
+                                          <ins>{{like.totalDislikes}}</ins>
+                                        </span>
+                                      </li>
+                                    </span>
+                                    <ng-template #totaldisLikedNotFound>
+                                      <span *ngIf="!isTotaldisLikedFound && td==(createlike.length-1)">
+                                        <li>
+                                          <span title="dislike">
+                                            <ins>0</ins>
+                                          </span>
+                                        </li>
+                                      </span>
+                                    </ng-template>
+                                  </span>
+                                </span>
+                                <!-- </li> -->
+
+                                <!-- ------------------------------------------------------------------------------------------- -->
+                                <span *ngIf="createlike.length == 0">
+                                  <li>
+                                    <span title="like">
+                                      <i class="fa fa-thumbs-up" style="cursor: pointer"
+                                        (click)="onPostLike(postIdField.value, like?.likes)">
+                                      </i>
+                                      <ins>0</ins>
+                                    </span>
+                                  </li>
+                                  <li>
+                                    <span title="dislike">
+                                      <i class="fa fa-thumbs-down" style="cursor: pointer"
+                                        (click)="onPostdisLike(postIdField.value, like?.dislikes)">
+                                      </i>
+                                      <ins>0</ins>
+                                    </span>
+                                  </li>
+                                </span>
+
+                              </ul>
+                              <br>
+
+                              <div class="post-comment">
+
+                                <div class="post-comt-box">
+                                  <span>
+                                    <span *ngIf="ProfilePicNotFound() "> </span>
+                                    <span *ngFor="let pic of profilePics; let p = index">
+                                      <span class="comet-avatar"
+                                        *ngIf="this.session.get('authUserId') == pic.user_id; else picNotFound2">
+                                        <span *ngIf="ProfilePicFound()"> </span>
+                                        <img [src]="pic.picFile" alt="" style=" width: 15%; float: left"
+                                          class="createImageCircle">
+                                      </span>
+                                      <ng-template #picNotFound2>
+                                        <span *ngIf="!isProfileFound && p == (profilePics.length-1)">
+                                          <img src="/assets/pics/noProfile.png" alt="" style=" width: 15%; float: left"
+                                            class="createImageCircle">
+
+                                        </span>
+                                      </ng-template>
+                                    </span>
+
+                                    <textarea class="commentTextarea" [(ngModel)]="commentValue"
+                                      (keydown.enter)="MainComment($event, createpost[i].post_id, mainComment);false"
+                                      placeholder="Post your comment" #mainComment></textarea>
+                                  </span>
+
+                                  <span class="" *ngFor="let comment of createcomments">
+                                    <ul class="we-comet" *ngIf="comment.post_id == createpost[i].post_id">
+                                      <li>
+                                        <!-- <div class="comet-avatar"> <img src="/assets/pics/noProfile.png" alt=""> </div> -->
+
+                                        <div class="we-comment">
+                                          <div class="coment-head">
+
+                                            <!-- Commented User Profile Pic set  -->
+                                            <span *ngIf="ProfilePicNotFound() ">
+                                            </span>
+
+                                            <span *ngFor="let pic of profilePics; let p = index">
+                                              <span class="comet-avatar"
+                                                *ngIf="comment.user_id == pic.user_id; else picNotFound">
+                                                <span *ngIf="ProfilePicFound()">
+                                                </span>
+                                                <img [src]="pic.picFile" alt="" style=" width: 15px"
+                                                  class="createImageCircle">
+                                              </span>
+                                              <ng-template #picNotFound>
+                                                <span *ngIf="!isProfileFound && p == (profilePics.length-1)">
+                                                  <img src="/assets/pics/noProfile.png" alt="" style=" width: 15px"
+                                                    class="createImageCircle">
+
+                                                </span>
+                                              </ng-template>
+                                            </span>
+
+                                            <h5 *ngFor="let names of usernames">
+                                              <a href="" title="" *ngIf="comment.user_id==names.user_id">
+                                                {{ names.username }}
+                                              </a>
+                                            </h5>
+                                            <!-- <span>1 year ago</span> -->
+                                            <a class="we-reply" style="cursor:pointer"
+                                              (click)="showCommentReply(comment.comment_id)" title="Reply"><i
+                                                class="fa fa-reply"></i></a>
+                                          </div>
+                                          <p> {{ comment.description }} </p>
+                                        </div>
+                                      </li>
+                                      <li
+                                        *ngIf="commentReplyStatus && comment.post_id == createpost[i].post_id && comment.comment_id == currentReplyId">
+                                        <div style="margin-top: 9px">
+                                          <span>
+                                            <span *ngIf="ProfilePicNotFound() ">
+                                            </span>
+                                            <span *ngFor="let pic of profilePics; let p = index">
+                                              <span class="comet-avatar"
+                                                *ngIf="this.session.get('authUserId') == pic.user_id; else picNotFound3">
+                                                <span *ngIf="ProfilePicFound()">
+                                                </span>
+                                                <img [src]="pic.picFile" alt="" style=" width: 15%; float: left"
+                                                  class="createImageCircle">
+                                              </span>
+                                              <ng-template #picNotFound3>
+                                                <span *ngIf="!isProfileFound && p == (profilePics.length-1)">
+                                                  <img src="/assets/pics/noProfile.png" alt=""
+                                                    style=" width: 15%; float: left" class="createImageCircle">
+
+                                                </span>
+                                              </ng-template>
+                                            </span>
+
+
+                                            <textarea class="replyComment" style="vertical-align: middle"
+                                              [(ngModel)]="replyValue"
+                                              (keydown.enter)="ReplyComment($event, createpost[i].post_id, comment.comment_id, commentReply);false"
+                                              placeholder="Post your comment" #commentReply></textarea>
+                                          </span>
+
+                                          <!-- <div class="post-comt-box">
+																									
+																								</div> -->
+                                        </div>
+                                      </li>
+
+                                      <!-----------------  SHOW INLINE COMMENTS ---------------------------------------------------->
+                                      <li>
+
+                                        <span class="" *ngFor="let reply of createreplies">
+                                          <ul class="we-comet"
+                                            *ngIf="reply.post_id == createpost[i].post_id && reply.comment_id == comment.comment_id">
+                                            <li>
+                                              <div class="we-reply-comment">
+                                                <div class="coment-head">
+
+                                                  <!-- Replied User Profile Pic set  -->
+                                                  <span *ngIf="ProfilePicNotFound() ">
+                                                  </span>
+
+                                                  <span *ngFor="let pic of profilePics; let pr = index">
+                                                    <span class="comet-avatar"
+                                                      *ngIf="reply.user_id == pic.user_id; else replypicNotFound">
+                                                      <span *ngIf="ProfilePicFound()">
+                                                      </span>
+                                                      <img [src]="pic.picFile" alt="" style=" width: 15px"
+                                                        class="createImageCircle">
+                                                    </span>
+                                                    <ng-template #replypicNotFound>
+                                                      <span *ngIf="!isProfileFound && pr == (profilePics.length-1)">
+                                                        <img src="/assets/pics/noProfile.png" alt=""
+                                                          style=" width: 15px" class="createImageCircle">
+                                                      </span>
+                                                    </ng-template>
+                                                  </span>
+
+                                                  <h5 *ngFor="let names of usernames">
+                                                    <a href="" title="" *ngIf="reply.user_id==names.user_id">
+                                                      {{ names.username }}
+                                                    </a>
+                                                  </h5>
+                                                  <!-- <span>1 year ago</span> -->
+
+                                                  <a class="we-reply" style="cursor:pointer"
+                                                    (click)="showReplyComment(reply.user_id, reply.reply_id)"
+                                                    title="Reply"><i class="fa fa-reply"></i></a>
+                                                </div>
+                                                <p> {{ reply.replydescription }}
+                                                </p>
+                                              </div>
+                                            </li>
+
+                                            <li
+                                              *ngIf="replyCommentStatus && reply.post_id == createpost[i].post_id && reply.comment_id == comment.comment_id && reply.reply_id == currentReplyId">
+                                              <div style="margin-top: 9px">
+                                                <span>
+                                                  <span *ngIf="ProfilePicNotFound() ">
+                                                  </span>
+                                                  <span *ngFor="let pic of profilePics; let p = index">
+                                                    <span class="comet-avatar"
+                                                      *ngIf="this.session.get('authUserId') == pic.user_id; else picNotFound4">
+                                                      <span *ngIf="ProfilePicFound()">
+                                                      </span>
+                                                      <img [src]="pic.picFile" alt="" style=" width: 15%; float: left"
+                                                        class="createImageCircle">
+                                                    </span>
+                                                    <ng-template #picNotFound4>
+                                                      <span *ngIf="!isProfileFound && p == (profilePics.length-1)">
+                                                        <img src="/assets/pics/noProfile.png" alt=""
+                                                          style=" width: 15%; float: left" class="createImageCircle">
+
+                                                      </span>
+                                                    </ng-template>
+                                                  </span>
+
+                                                  <textarea class="replyComment" style="vertical-align: middle"
+                                                    [(ngModel)]="replyValue"
+                                                    (keydown.enter)="ReplyComment($event, createpost[i].post_id, reply.comment_id, inlineCommentReply);false"
+                                                    placeholder="Post your comment" #inlineCommentReply></textarea>
+                                                </span>
+
+                                              </div>
+                                            </li>
+                                          </ul>
+                                        </span>
+                                      </li>
+
+                                    </ul>
+
+                                  </span> <!-- coment-area ends here -->
+                                  <!-- </div>  -->
+                                </div>
+
+                              </div>
+
+                            </div>
+
+                          </div>
+                        </span> <!-- friendInfo class ends -->
+
+                        <span *ngIf="i == (createpost.length-1) && createpost[(createpost.length-1)].post_id > 1">
+                          <button class="btn btn-primary"
+                            (click)="LoadMorePost(createpost[(createpost.length-1)].post_id)">
+                            LoadMore </button>
+                        </span>
+                      </ng-template>
+
+
+                    </span> <!-- ngFor_CreatePost ends -->
+                  </div>
+
+                </div><!-- centerl meta -->
+
+                <div class="col-sm-3 col-lg-3 hideMeRightPanel" style="position: fixed; right: 0">
+                  <aside class="sidebar static right">
+                    <div class="widget">
+                      <h4 class="widget-title">Your page</h4>
+                      <div class="your-page">
+                        <figure>
+                          <a href="#" title=""><img src="" alt=""></a>
+                        </figure>
+                        <div class="page-meta">
+                          <a href="#" title="" class="underline">My page</a>
+                          <span><i class="ti-comment"></i><a href="insight.html" title="">Messages <em>9</em></a></span>
+                          <span><i class="ti-bell"></i><a href="insight.html" title="">Notifications
+                              <em>2</em></a></span>
+                        </div>
+                        <div class="page-likes">
+                          <ul class="nav nav-tabs likes-btn">
+                            <li class="nav-item"><a class="active" href="#link1" data-toggle="tab">likes</a></li>
+                            <li class="nav-item"><a class="" href="#link2" data-toggle="tab">views</a></li>
+                          </ul>
+                          <!-- Tab panes -->
+                          <div class="tab-content">
+                            <div class="tab-pane active fade show " id="link1">
+                              <span><i class="ti-heart"></i>884</span>
+                              <a href="#" title="weekly-likes">35 new likes this week</a>
+                              <div class="users-thumb-list">
+                                <a href="#" title="Anderw" data-toggle="tooltip">
+                                  <img src="" alt="">
+                                </a>
+                                <a href="#" title="frank" data-toggle="tooltip">
+                                  <img src="" alt="">
+                                </a>
+                                <a href="#" title="Sara" data-toggle="tooltip">
+                                  <img src="" alt="">
+                                </a>
+                                <a href="#" title="Amy" data-toggle="tooltip">
+                                  <img src="" alt="">
+                                </a>
+                                <a href="#" title="Ema" data-toggle="tooltip">
+                                  <img src="" alt="">
+                                </a>
+                                <a href="#" title="Sophie" data-toggle="tooltip">
+                                  <img src="" alt="">
+                                </a>
+                                <a href="#" title="Maria" data-toggle="tooltip">
+                                  <img src="" alt="">
+                                </a>
+                              </div>
+                            </div>
+                            <div class="tab-pane fade" id="link2">
+                              <span><i class="ti-eye"></i>440</span>
+                              <a href="#" title="weekly-likes">440 new views this week</a>
+                              <div class="users-thumb-list">
+                                <a href="#" title="Anderw" data-toggle="tooltip">
+                                  <img src="" alt="">
+                                </a>
+                                <a href="#" title="frank" data-toggle="tooltip">
+                                  <img src="" alt="">
+                                </a>
+                                <a href="#" title="Sara" data-toggle="tooltip">
+                                  <img src="" alt="">
+                                </a>
+                                <a href="#" title="Amy" data-toggle="tooltip">
+                                  <img src="" alt="">
+                                </a>
+                                <a href="#" title="Ema" data-toggle="tooltip">
+                                  <img src="" alt="">
+                                </a>
+                                <a href="#" title="Sophie" data-toggle="tooltip">
+                                  <img src="" alt="">
+                                </a>
+                                <a href="#" title="Maria" data-toggle="tooltip">
+                                  <img src="" alt="">
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div><!-- page like widget -->
+                  </aside>
+                </div><!-- sidebar -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
 </body>

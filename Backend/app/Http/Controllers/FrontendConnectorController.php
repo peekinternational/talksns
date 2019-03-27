@@ -106,8 +106,8 @@ class FrontendConnectorController extends Controller
             return response()->json($this->getandSendAllPostData($userId, $_MaxPostId, $status));
     }
 
-    public function postLikeDislike(Request $request)  
-    {
+    public function setlikes(Request $request)  
+    { 
         $userId = $request->userId;
         $postId = $request->postId;
         $likeStatus = $request->isLiked;
@@ -121,7 +121,8 @@ class FrontendConnectorController extends Controller
             DB::table('postlikes')->where('user_id', '=', $userId)->where('post_id', '=', $postId)->update(['likes' => $likeStatus]);
             DB::table('postlikes')->where('user_id', '=', $userId)->where('post_id', '=', $postId)->update(['dislikes' => $dislikeStatus]);
 
-            return response()->json($this->getandSendAllPostData($userId, $_MaxPostId, $status));
+            return response()->json($this->getlikes());
+           // return response()->json(true);
         } else {
             DB::table('postlikes')->insert([
                 'user_id' => $userId,
@@ -129,12 +130,24 @@ class FrontendConnectorController extends Controller
                 'likes' => $likeStatus,
                 'dislikes' => $dislikeStatus
             ]);
-
-            return response()->json($this->getandSendAllPostData($userId, $_MaxPostId, $status));
+          //  return response()->json(true);
+            return response()->json($this->getlikes());
         }
     }
 
-    public function comments(Request $request)
+    public function getlikes(){
+        $allLikesDislikes = DB::table('postlikes')->get();
+        $allPosts = DB::table('posts')->select('user_id', 'post_id')->orderBy('post_id', 'desc')->get();
+
+        foreach ($allPosts as &$post) {
+            $post->totalLikes = DB::table('postlikes')->select('likes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.likes', '=', 1)->count();
+            $post->totalDislikes = DB::table('postlikes')->select('dislikes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.dislikes', '=', 1)->count();
+        }
+
+        return ['likedDisliked'=> $allLikesDislikes, 'postTotalLikes'=> $allPosts];//, 'totalLikes'=>$totalLikes, "totalDislikes"=>$totalDislikes]; 
+    }
+
+    public function setComments(Request $request)
     {
         $userId = $request->userId;
         $postId = $request->postId;
@@ -148,10 +161,21 @@ class FrontendConnectorController extends Controller
             'description' => $comment,
         ]);
 
-        return response()->json($this->getandSendAllPostData($userId, $_MaxPostId, $status));
+        return response()->json($this->getComments());
     }
 
-    public function replies(Request $request)
+    public function getComments(){
+        $allPostComments = DB::table('comments')->get();
+        $allPosts = DB::table('posts')->select('user_id', 'post_id')->orderBy('post_id', 'desc')->get();
+
+        foreach ($allPosts as &$post) {
+            $post->totalComments = DB::table('comments')->select('description')->where('comments.post_id', '=', $post->post_id)->count();
+        }
+
+        return ['comments' => $allPostComments, 'totalComments' => $allPosts];
+    }
+
+    public function setreplies(Request $request)
     {
         $userId = $request->userId;
         $postId = $request->postId;
@@ -167,7 +191,19 @@ class FrontendConnectorController extends Controller
             'replydescription' => $reply,
         ]);
 
-        return response()->json($this->getandSendAllPostData($userId, $_MaxPostId, $status));
+        return response()->json($this->getreplies());
+    }
+
+    public function getreplies(){
+        $replies = DB::table('replycomments')->get();
+        $allPosts = DB::table('posts')->select('user_id', 'post_id')->orderBy('post_id', 'desc')->get();
+
+        foreach ($allPosts as &$post) {
+          $post->totalReplies = DB::table('replycomments')->select('replydescription')->where('replycomments.post_id', '=', $post->post_id)->count();
+
+        }
+
+        return [ 'replies' => $replies , 'totalReplies'=> $allPosts];
     }
 
     public function uploadProfilePic(Request $request)
@@ -243,11 +279,11 @@ class FrontendConnectorController extends Controller
                 $allPosts = DB::table('posts')->orderBy('post_id', 'desc')->where('post_id', '<', ($maxPostId2 + 1))->paginate(5);
         }
 
-        $allPostLikes = DB::table('postlikes')->get();
-        $allPostComments = DB::table('comments')->get();
+        //$allPostLikes = DB::table('postlikes')->get();
+        //$allPostComments = DB::table('comments')->get();
 
         $usersName = DB::table('users')->select('user_id', 'username')->get();
-        $replies = DB::table('replycomments')->get();
+       // $replies = DB::table('replycomments')->get();
         $profilepicFileNames = DB::table('users')->select('user_id', 'ProfilePic')->where('ProfilePic', '!=', null)->get();
         $loggedInUserData = DB::table('users')->select('user_id', 'username', 'email', 'gender', 'birthday', 'ProfilePic')->where('user_id', '=', $userId)->get();
 
@@ -255,11 +291,11 @@ class FrontendConnectorController extends Controller
 
         foreach ($allPosts as &$post) {
             $post->getPost = DB::table('postlikes')->select('likes', 'dislikes')->where('postlikes.post_id', '=', $post->post_id)->get();
-            $post->totalLiked = DB::table('postlikes')->select('likes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.likes', '=', 1)->count();
-            $post->totaldisLiked = DB::table('postlikes')->select('dislikes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.dislikes', '=', 1)->count();
+           // $post->totalLiked = DB::table('postlikes')->select('likes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.likes', '=', 1)->count();
+           // $post->totaldisLiked = DB::table('postlikes')->select('dislikes')->where('postlikes.post_id', '=', $post->post_id)->where('postlikes.dislikes', '=', 1)->count();
             $post->name = DB::table('users')->select('username')->where('users.user_id', '=', $post->user_id)->first();
-            $post->totalcomments = DB::table('comments')->select('description')->where('comments.post_id', '=', $post->post_id)->count();
-            $post->totalreplies = DB::table('replycomments')->select('replydescription')->where('replycomments.post_id', '=', $post->post_id)->count();
+           // $post->totalcomments = DB::table('comments')->select('description')->where('comments.post_id', '=', $post->post_id)->count();
+           // $post->totalreplies = DB::table('replycomments')->select('replydescription')->where('replycomments.post_id', '=', $post->post_id)->count();
 
             $imageFileName = DB::table('posts')->select('imageFile')->where('imageFile', '=', $post->imageFile)->get();
 
@@ -274,11 +310,6 @@ class FrontendConnectorController extends Controller
                     break;
                 } else {
                     $post->postUserpic = '';
-                }
-
-                if ($profilepic->user_id == $userId) {
-                    $loggedInUserProfilePic = url("profilepics/" . $profilepic->ProfilePic);
-                    break;
                 }
             }
         }
@@ -298,10 +329,10 @@ class FrontendConnectorController extends Controller
 
         $allFriendRequestData = DB::table('friends')->get();
         return [
-            'posts' => $allPosts, 'postlikes' => $allPostLikes, 'comments' => $allPostComments,
-            'usernames' => $usersName, 'replies' => $replies, 'profilepics' => $profilepicFileNames,
-            'loggedUserData' => $loggedInUserData, 'loggedInUserProfilepic' => $loggedInUserProfilePic,
-            'allFriendRequest' => $allFriendRequestData, 'currentUser_Id' => $userId
+            'posts' => $allPosts, 'profilepics' => $profilepicFileNames,
+            'usernames' => $usersName, 'loggedUserData' => $loggedInUserData,
+            'allFriendRequest' => $allFriendRequestData, 'currentUser_Id' => $userId,
+            'status' => $status
         ];
     }
 
@@ -363,6 +394,7 @@ class FrontendConnectorController extends Controller
             foreach ($allUserdata as $user) {
                 if ($friendRequest->receiver_id == $user->user_id) {
                     $friendRequest->requestCount = DB::table("friends")->where('receiver_id', '=', $friendRequest->receiver_id)->where("friends.requeststatus", '=', 'sent')->count();
+                    break;
                 }
             }
         }

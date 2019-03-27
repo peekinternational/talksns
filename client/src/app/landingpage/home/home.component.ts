@@ -15,16 +15,21 @@ import { SessionStorageService } from 'angular-web-storage';
 
 export class HomeComponent implements OnInit, OnDestroy {
 
-  postSubscription: Subscription;
+  // postSubscription: Subscription;
   getPostSubscription: Subscription;
+  getLikeSubscription: Subscription;
+  getCommentSubscription: Subscription;
+  getReplySubscription: Subscription;
 
   postingFormGroup: FormGroup;
 
   createpost: any;
-  previousPosts= [];
+  previousPosts = [];
   maxPostsId = 0;
   userActionStatus: string = '';
 
+  // totalLikes: number = 0;  totaldisLikes: number = 0;
+  totalComments: number = 0; totalReplies: number = 0;
   createlike: any;
   createcomments: any;
   createreplies: any;
@@ -32,27 +37,31 @@ export class HomeComponent implements OnInit, OnDestroy {
   profilePics: any;
   loggedInUserProfilePic: any = "";
   allFriendsRequest: any = "";
+  postLikesDislikes: any;
 
   isPostLiked: boolean = false;
   isPostdisLiked: boolean = false;
   isProfileFound: boolean = false;
   isPostFound: boolean = false;
-  anyPostShowd
- 
+  isCommentFound: boolean = false;
+  isLikeFound: boolean = false; isdisLikeFound: boolean = false;
+  isTotalLikedFound: boolean = false; isTotaldisLikedFound: boolean = false;
+  isReplyFound: boolean = false;
+
   userId: number = 0;
   imageSrc: string = "";
   commentValue: string = '';
   replyValue: string = '';
   currentReplyId: number = 0;
   previousReplyId: number = 0;
-  showPost: boolean = false;
+  //newPostUploaded: boolean;
   commentReplyStatus: boolean = false;
   replyCommentStatus: boolean = false;
   selectedUploadFile: File = null;
 
   constructor(private route: Router, private loginService: LoginStatusService, public session: SessionStorageService,
-    private backendService: BackendConnector, private formbuilder: FormBuilder, private chatService: SocketService) {
-    }
+    private backendService: BackendConnector, private formbuilder: FormBuilder, private socketService: SocketService) {
+  }
 
   ngOnInit() {
     this.userId = parseInt(this.session.get('authUserId'));
@@ -62,107 +71,138 @@ export class HomeComponent implements OnInit, OnDestroy {
       'desc': [''],
     });
 
-    this.getPostSubscription = this.chatService.getPost().subscribe(
-      (newpost: any) => { 
-        if (this.userActionStatus == 'loadmore' && newpost.currentUser_Id == this.session.get('authUserId')){
+    this.getPostSubscription = this.socketService.getPost().subscribe(
+      (newpost: any) => {
+        //console.log(newpost);
+        if ((this.userActionStatus == 'loadmore') && newpost.currentUser_Id == this.session.get('authUserId')) {
+          // console.log(newpost.currentUser_Id +" B== "+ this.session.get('authUserId'));
           this.createpost = this.previousPosts.concat(newpost.posts.data);
           this.previousPosts = this.previousPosts.concat(newpost.posts.data);
         }
-        else{ 
-          //*********** recheck needed */
-          
-          if (newpost.currentUser_Id == this.session.get('authUserId')){
+
+        else {   //*********** recheck needed */
+          if (newpost.currentUser_Id == this.session.get('authUserId')) {
+            // console.log(newpost.currentUser_Id +" A== "+ this.session.get('authUserId'));
+            this.createpost = newpost.posts.data;
+            this.previousPosts = newpost.posts.data;
+          }
+
+          if (newpost.status == "uploadpost") {
             this.createpost = newpost.posts.data;
             this.previousPosts = newpost.posts.data;
           }
         }
 
-        this.createlike = newpost.postlikes;
-        this.createcomments = newpost.comments;
         this.usernames = newpost.usernames;
-        this.createreplies = newpost.replies;
         this.profilePics = newpost.profilepics;
         this.loggedInUserProfilePic = newpost.loggedInUserProfilepic;
         this.allFriendsRequest = newpost.allFriendRequest;
       });
 
-    this.postSubscription = this.backendService.quickLike.subscribe(
-      (postLikeData: any) => {
-  
-        for (var i = 0; i < this.createlike.length; i++) {
-          if (this.createlike[i].user_id == this.session.get('authUserId') && postLikeData.postId == this.createlike[i].post_id) {
+    this.backendService.getLike();
+    this.getLikeSubscription = this.socketService.getLikes().subscribe(
+      (likes: any) => {
+        //console.log(likes);
+        this.postLikesDislikes = likes.postTotalLikes;
+        this.createlike = likes.likedDisliked;
+      }
+    );
 
-            for (var j = 0; j < this.createpost.length; j++) {
+    this.backendService.getComment();
+    this.getCommentSubscription = this.socketService.getComments().subscribe(
+      (postcomments: any) => {
+        //  console.log(postcomments);
+        this.totalComments = postcomments.totalComments;
+        this.createcomments = postcomments.comments;
+      }
+    );
 
-              if (this.createpost[j].post_id == postLikeData.postId) {
+    this.backendService.getReply();
+    this.getReplySubscription = this.socketService.getReplies().subscribe(
+      (postreplies: any) => {
+        //  console.log(postreplies);
+        this.totalReplies = postreplies.totalReplies;
+        this.createreplies = postreplies.replies;
+      }
+    );
 
-                if ((!this.createlike[i].likes && !this.createlike[i].dislikes) && (postLikeData.LikedStatus && !postLikeData.dislikedStatus)) {
-                  this.createpost[j].totalLiked += 1; break;
-                }
-                else if ((!this.createlike[i].likes && !this.createlike[i].dislikes) && (!postLikeData.LikedStatus && postLikeData.dislikedStatus)) {
-                  this.createpost[j].totaldisLiked += 1; break;
-                }
-                //********* */
-                else if ((this.createlike[i].likes && !this.createlike[i].dislikes) && (!postLikeData.LikedStatus && !postLikeData.dislikedStatus)) {
-                  this.createpost[j].totalLiked -= 1;
-                  if (this.createpost[j].totalLiked <= 0)
-                    this.createpost[j].totalLiked = 0;
-                  break;
-                }
-                else if ((this.createlike[i].likes && !this.createlike[i].dislikes) && (postLikeData.LikedStatus && !postLikeData.dislikedStatus)) {
-                  this.createpost[j].totalLiked -= 1;
-                  if (this.createpost[j].totalLiked <= 0)
-                    this.createpost[j].totalLiked = 0;
-                  break;
-                }
-                else if ((this.createlike[i].likes && !this.createlike[i].dislikes) && (!postLikeData.LikedStatus && postLikeData.dislikedStatus)) {
-                  this.createpost[j].totalLiked -= 1;
-                  this.createpost[j].totaldisLiked += 1;
-                  if (this.createpost[j].totalLiked <= 0)
-                    this.createpost[j].totalLiked = 0;
-                  break;
-                }
-                //********* */
-                else if ((!this.createlike[i].likes && this.createlike[i].dislikes) && (!postLikeData.LikedStatus && !postLikeData.dislikedStatus)) {
-                  this.createpost[j].totaldisLiked -= 1;
-                  if (this.createpost[j].totaldisLiked <= 0)
-                    this.createpost[j].totaldisLiked = 0;
-                  break;
-                }
-                else if ((!this.createlike[i].likes && this.createlike[i].dislikes) && (!postLikeData.LikedStatus && postLikeData.dislikedStatus)) {
-                  this.createpost[j].totaldisLiked -= 1;
-                  if (this.createpost[j].totaldisLiked <= 0)
-                    this.createpost[j].totaldisLiked = 0;
-                  break;
-                }
-                else if ((!this.createlike[i].likes && this.createlike[i].dislikes) && (postLikeData.LikedStatus && !postLikeData.dislikedStatus)) {
-                  this.createpost[j].totalLiked += 1;
-                  this.createpost[j].totaldisLiked -= 1;
-                  if (this.createpost[j].totaldisLiked <= 0)
-                    this.createpost[j].totaldisLiked = 0;
-                  break;
-                }
-              }
-            }
+    // this.postSubscription = this.backendService.quickLike.subscribe(
+    //   (postLikeData: any) => {
+    //     for (var i = 0; i < this.createlike.length; i++) {
+    //       if (this.createlike[i].user_id == this.session.get('authUserId') && postLikeData.postId == this.createlike[i].post_id) {
 
-            this.createlike[i].likes = postLikeData.LikedStatus;
-            this.createlike[i].dislikes = postLikeData.dislikedStatus;
+    //         for (var j = 0; j < this.createpost.length; j++) {
 
-            break;
-          }
-        }
-      });
+    //           if (this.createpost[j].post_id == postLikeData.postId) {
 
-      this.backendService.getMaxPostId().then(
-        (maxPostId: any)=>{
-          this.maxPostsId = maxPostId + 1;
-          this.backendService.getPost(this.maxPostsId);
-        }
-      );
-     
+    //             if ((!this.createlike[i].likes && !this.createlike[i].dislikes) && (postLikeData.LikedStatus && !postLikeData.dislikedStatus)) {
+    //               this.createpost[j].totalLiked += 1; break;
+    //             }
+    //             else if ((!this.createlike[i].likes && !this.createlike[i].dislikes) && (!postLikeData.LikedStatus && postLikeData.dislikedStatus)) {
+    //               this.createpost[j].totaldisLiked += 1; break;
+    //             }
+    //             //********* */
+    //             else if ((this.createlike[i].likes && !this.createlike[i].dislikes) && (!postLikeData.LikedStatus && !postLikeData.dislikedStatus)) {
+    //               this.createpost[j].totalLiked -= 1;
+    //               if (this.createpost[j].totalLiked <= 0)
+    //                 this.createpost[j].totalLiked = 0;
+    //               break;
+    //             }
+    //             else if ((this.createlike[i].likes && !this.createlike[i].dislikes) && (postLikeData.LikedStatus && !postLikeData.dislikedStatus)) {
+    //               this.createpost[j].totalLiked -= 1;
+    //               if (this.createpost[j].totalLiked <= 0)
+    //                 this.createpost[j].totalLiked = 0;
+    //               break;
+    //             }
+    //             else if ((this.createlike[i].likes && !this.createlike[i].dislikes) && (!postLikeData.LikedStatus && postLikeData.dislikedStatus)) {
+    //               this.createpost[j].totalLiked -= 1;
+    //               this.createpost[j].totaldisLiked += 1;
+    //               if (this.createpost[j].totalLiked <= 0)
+    //                 this.createpost[j].totalLiked = 0;
+    //               break;
+    //             }
+    //             //********* */
+    //             else if ((!this.createlike[i].likes && this.createlike[i].dislikes) && (!postLikeData.LikedStatus && !postLikeData.dislikedStatus)) {
+    //               this.createpost[j].totaldisLiked -= 1;
+    //               if (this.createpost[j].totaldisLiked <= 0)
+    //                 this.createpost[j].totaldisLiked = 0;
+    //               break;
+    //             }
+    //             else if ((!this.createlike[i].likes && this.createlike[i].dislikes) && (!postLikeData.LikedStatus && postLikeData.dislikedStatus)) {
+    //               this.createpost[j].totaldisLiked -= 1;
+    //               if (this.createpost[j].totaldisLiked <= 0)
+    //                 this.createpost[j].totaldisLiked = 0;
+    //               break;
+    //             }
+    //             else if ((!this.createlike[i].likes && this.createlike[i].dislikes) && (postLikeData.LikedStatus && !postLikeData.dislikedStatus)) {
+    //               this.createpost[j].totalLiked += 1;
+    //               this.createpost[j].totaldisLiked -= 1;
+    //               if (this.createpost[j].totaldisLiked <= 0)
+    //                 this.createpost[j].totaldisLiked = 0;
+    //               break;
+    //             }
+    //           }
+    //         }
+
+    //         this.createlike[i].likes = postLikeData.LikedStatus;
+    //         this.createlike[i].dislikes = postLikeData.dislikedStatus;
+
+    //         break;
+    //       }
+    //     }
+    //   });
+
+    this.backendService.getMaxPostId().then(
+      (maxPostId: any) => {
+        this.maxPostsId = maxPostId + 1;
+        this.backendService.getPost(this.maxPostsId);
+      }
+    );
+
   } // *** OnInit Ends *************
 
   public addMyPost(desc: string) {
+    //this.newPostUploaded = true;
     this.userActionStatus = '';
     this.backendService.uploadPost(this.selectedUploadFile, desc, this.previousPosts.length);
     this.imageSrc = "";
@@ -184,23 +224,60 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   onPostLike(postId: number, isLiked: number) {
     this.userActionStatus = '';
+    // console.log(isLiked);
     this.isPostLiked = !(isLiked);
-    this.backendService.setCurrentLike({ 'postId': postId, 'LikedStatus': this.isPostLiked, 'dislikedStatus': false });
+    // console.log(this.isPostLiked);
+    //this.backendService.setCurrentLike({ 'postId': postId, 'LikedStatus': this.isPostLiked, 'dislikedStatus': false });
     this.backendService.setLike(this.isPostLiked, false, postId, this.previousPosts.length);
   }
 
   onPostdisLike(postId: number, isDisliked: number) {
     this.userActionStatus = '';
     this.isPostdisLiked = !(isDisliked);
-    this.backendService.setCurrentLike({ 'postId': postId, 'dislikedStatus': this.isPostdisLiked, 'likedStatus': false });
+    // this.backendService.setCurrentLike({ 'postId': postId, 'dislikedStatus': this.isPostdisLiked, 'likedStatus': false });
     this.backendService.setLike(false, this.isPostdisLiked, postId, this.previousPosts.length);
   }
 
-  resetShow() {
-    this.showPost = false;
+  totaldisLikedFound() {
+    this.isTotaldisLikedFound = true;
   }
-  check() {
-    this.showPost = true;
+  totaldisLikednotFound() {
+    this.isTotaldisLikedFound = false;
+  }
+
+  totalLikedFound() {
+    this.isTotalLikedFound = true;
+  }
+  totalLikednotFound() {
+    this.isTotalLikedFound = false;
+  }
+
+  commentFound() {
+    this.isCommentFound = true;
+  }
+  commentNotFound() {
+    this.isCommentFound = false;
+  }
+
+  LikeFound() {
+    this.isLikeFound = true;
+  }
+  LikeNotFound() {
+    this.isLikeFound = false;
+  }
+
+  disLikeFound() {
+    this.isdisLikeFound = true;
+  }
+  disLikeNotFound() {
+    this.isdisLikeFound = false;
+  }
+
+  replyFound() {
+    this.isReplyFound = true;
+  }
+  replyNotFound() {
+    this.isReplyFound = false;
   }
 
   MainComment(event, postId: number, textArea: HTMLInputElement) {
@@ -270,8 +347,37 @@ export class HomeComponent implements OnInit, OnDestroy {
       }
     }
   }
+  trackByFn(index, item) {
+    //console.log(item.post_id);
+    return item.post_id; // or item.post_id
+  }
 
-  LoadMorePost(maxPostId: number){
+  // postTrackByFn(index, item) {
+  //   return item.post_id;
+  // }
+
+  // picTrackByFn(index, item) {
+  //   return item.user_id;
+  // }
+
+  // likeTrackByFn(index, item) {
+  //   return item.likes_id;
+  // }
+
+  // commentTrackByFn(index, item) {
+  //   return item.comment_id;
+  // }
+
+  // replyTrackByFn(index, item) {
+  //   return item.reply_id;
+  // }
+
+  // nameTrackByFn(index, item) {
+  //   return item.user_id;
+  // }
+
+
+  LoadMorePost(maxPostId: number) {
     this.userActionStatus = 'loadmore';
     this.backendService.getPost(maxPostId);
   }
@@ -283,11 +389,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.isProfileFound = false;
   }
 
-  friendsPostFound(){
+  friendsPostFound() {
     this.isPostFound = true;
   }
 
-  friendsPostNotFound(){
+  friendsPostNotFound() {
     this.isPostFound = false;
   }
 
@@ -302,8 +408,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy(){
-    this.postSubscription.unsubscribe();
+  ngOnDestroy() {
+    //this.postSubscription.unsubscribe();
     this.getPostSubscription.unsubscribe();
+    this.getCommentSubscription.unsubscribe();
+    this.getReplySubscription.unsubscribe();
+    this.getLikeSubscription.unsubscribe();
   }
 }

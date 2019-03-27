@@ -18,6 +18,18 @@ io.on('connection', (socket) => {
     socket.on('add-friend', (friendrequest) => {
         io.emit('addfriend', friendrequest);
     });
+
+    socket.on('set-likes',(like) => {
+        io.emit('set-likes', like);
+    });
+
+    socket.on('set-comments',(like) => {
+        io.emit('set-comments', like);
+    });
+
+    socket.on('set-replies',(like) => {
+        io.emit('set-replies', like);
+    });
 });
 
 server.listen(port , () => {

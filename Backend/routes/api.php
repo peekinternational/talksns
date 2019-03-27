@@ -20,9 +20,15 @@ Route::post("/signin", "FrontendConnectorController@signIn");
 //------------------- POSTS ----------------------------------------------
 Route::post("/uploadpost", "FrontendConnectorController@uploadPost");
 Route::post("/retrievepost", "FrontendConnectorController@retrievePost");
-Route::post("/postlikedislike", "FrontendConnectorController@postLikeDislike");
-Route::post("/comment", "FrontendConnectorController@comments");
-Route::post("/reply", "FrontendConnectorController@replies");
+
+Route::post("/setlike", "FrontendConnectorController@setlikes");
+Route::get("/getlike", "FrontendConnectorController@getlikes");
+
+Route::post("/setcomment", "FrontendConnectorController@setComments");
+Route::get("/getcomment", "FrontendConnectorController@getComments");
+
+Route::post("/setreply", "FrontendConnectorController@setreplies");
+Route::get("/getreply", "FrontendConnectorController@getreplies");
 //------------------------------------------------------------------------
 
 //------------------- FRIEND REQUEST ---------------------------------------------------------
